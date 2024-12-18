@@ -15,4 +15,8 @@ router.get(
   "/seances/:enseignantId/:semestre",
   seanceController.fetchSeancesByIdTeacherAndSemestre
 );
+router.post(
+  "/get-periodic-sessions-by-teacher",
+  seanceController.getPeriodicSessionsByTeacher
+);
 module.exports = router;

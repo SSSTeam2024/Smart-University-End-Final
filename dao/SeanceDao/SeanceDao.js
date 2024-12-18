@@ -115,6 +115,27 @@ const getSeancesByIdTeacher = async (teacherId, jour, emploi_periodique_id) => {
   }
 };
 
+const getPeriodicSessionsByTeacher = async (
+  teacherId,
+  emploi_periodique_id
+) => {
+  try {
+    const query = {
+      enseignant: teacherId,
+      emploiPeriodique_id: emploi_periodique_id,
+    };
+    return await seanceModel
+      .find(query)
+      .populate("classe")
+      .populate("matiere")
+      .populate("enseignant")
+      .populate("salle");
+  } catch (error) {
+    console.error("Error fetching seances:", error);
+    throw error;
+  }
+};
+
 const getSessionsByRoomId = async (roomId) => {
   try {
     const query = {
@@ -191,4 +212,5 @@ module.exports = {
   getSeanceByDayAndTime,
   getSeancesByTeacher,
   fetchSeancesByIdTeacherAndSemestre,
+  getPeriodicSessionsByTeacher,
 };

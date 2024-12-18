@@ -16,4 +16,9 @@ router.post(
   "/get-teacher-periods",
   teacherPeriodController.getTeacherPeriodsByTeacherId
 );
+
+router.post(
+  "/periods",
+  teacherPeriodController.fetchPeriodsBySemesterAndTeacherId
+);
 module.exports = router;

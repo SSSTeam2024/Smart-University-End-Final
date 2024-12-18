@@ -106,6 +106,25 @@ const getSeancesByIdTeacher = async (req, res) => {
   }
 };
 
+const getPeriodicSessionsByTeacher = async (req, res) => {
+  try {
+    const { teacher_id, emplois_periodiques_ids } = req.body;
+
+    const seances = await seanceService.getPeriodicSessionsByTeacher(
+      teacher_id,
+      emplois_periodiques_ids
+    );
+
+    if (!seances) {
+      return res.status(404).send("Pas de séances");
+    }
+    res.json(seances);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+};
+
 const getSessionsByRoomId = async (req, res) => {
   try {
     const roomId = req.params.id;
@@ -192,4 +211,5 @@ module.exports = {
   getSeancesByIdTeacher,
   getSessionsByRoomId,
   fetchSeancesByIdTeacherAndSemestre,
+  getPeriodicSessionsByTeacher,
 };

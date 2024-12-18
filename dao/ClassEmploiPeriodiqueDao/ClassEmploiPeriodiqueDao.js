@@ -11,6 +11,15 @@ const getClassEmploiPeriodique = async (id) => {
   return await classEmploiPeriodiqueModel.find(query).populate("id_classe");
 };
 
+const getClassEmploiPeriodiqueByState = async (id, semestre) => {
+  const query = {
+    etat: "En élaboration",
+    id_classe: id,
+    semestre: semestre,
+  };
+  return await classEmploiPeriodiqueModel.find(query).populate("id_classe");
+};
+
 const getAllClassEmploiPeriodiqueBySemestre = async (semestre) => {
   const query = {
     semestre: semestre,
@@ -39,4 +48,5 @@ module.exports = {
   updateClassEmploiPeriodique,
   getAllClassEmploiPeriodiqueBySemestre,
   getEmploiPeriodiqueByClass,
+  getClassEmploiPeriodiqueByState,
 };

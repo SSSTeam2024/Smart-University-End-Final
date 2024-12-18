@@ -1,5 +1,5 @@
 const seanceDao = require("../../dao/SeanceDao/SeanceDao");
-// const SalleDisponibiliteService = require("../../services/SalleDisponibiliteServices/SalleDisponibiliteServices");
+const SalleDisponibiliteService = require("../../services/SalleDisponibiliteServices/SalleDisponibiliteServices");
 const teacherPeriodService = require("../../services/TeacherPeriodServices/TeacherPeriodServices");
 
 const createSeance = async (data) => {
@@ -52,6 +52,18 @@ const getSeancesByIdTeacher = async (
   for (const id of emplois_periodiques_ids) {
     const result = await seanceDao.getSeancesByIdTeacher(teacherId, jour, id);
     seances.push(result);
+  }
+  return seances;
+};
+
+const getPeriodicSessionsByTeacher = async (
+  teacherId,
+  emplois_periodiques_ids
+) => {
+  let seances = [];
+  for (const id of emplois_periodiques_ids) {
+    const result = await seanceDao.getPeriodicSessionsByTeacher(teacherId, id);
+    seances = seances.concat(result);
   }
   return seances;
 };
@@ -142,4 +154,5 @@ module.exports = {
   getSessionsByRoomId,
   getSeancesByTeacher,
   getSeancesByIdTeacherAndSemestre,
+  getPeriodicSessionsByTeacher,
 };

@@ -4,8 +4,6 @@ const createClassEmploiPeriodique = async (req, res) => {
   try {
     const { date_debut, date_fin, semestre, id_classe, etat } = req.body;
 
-    console.log(req.body);
-
     const classEmploiPeriodique =
       await classEmploiPeriodiqueService.createClassEmploiPeriodique({
         date_debut,

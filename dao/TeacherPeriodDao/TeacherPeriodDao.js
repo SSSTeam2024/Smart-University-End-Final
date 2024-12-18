@@ -41,9 +41,24 @@ const updateTeacherPeriod = async (id, nbr_heure) => {
   );
 };
 
+const fetchPeriodsBySemesterAndTeacherId = async (semester, teacherId) => {
+  try {
+    return await teacherPeriodModel
+      .find({
+        semestre: semester,
+        id_teacher: teacherId,
+      })
+      .populate("id_teacher")
+      .populate("id_classe_period");
+  } catch (error) {
+    throw new Error("Error fetching periods: " + error.message);
+  }
+};
+
 module.exports = {
   createTeacherPeriod,
   getTeacherPeriod,
   updateTeacherPeriod,
   getTeacherPeriodByIdClassPeriod,
+  fetchPeriodsBySemesterAndTeacherId,
 };

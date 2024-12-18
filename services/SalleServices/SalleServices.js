@@ -1,6 +1,6 @@
 const salleDao = require("../../dao/SalleDao/SalleDao");
 const DepartementModel = require("../../model/DepartementModel/DepartementModel");
-// const SalleDisponibiliteService = require("../../services/SalleDisponibiliteServices/SalleDisponibiliteServices");
+const SalleDisponibiliteService = require("../../services/SalleDisponibiliteServices/SalleDisponibiliteServices");
 const seanceDao = require("../../dao/SeanceDao/SeanceDao");
 const classEmploiPeriodiqueDao = require("../../dao/ClassEmploiPeriodiqueDao/ClassEmploiPeriodiqueDao");
 const rattrapageService = require("../RattrapageServices/RattrapageServices");
@@ -54,17 +54,17 @@ const getSallesByDayAndTime = async (
     return intervalStart <= givenEnd && intervalEnd >= givenStart;
   });
 
-  console.log("intersectingIntervals", intersectingIntervals);
+  // console.log("intersectingIntervals", intersectingIntervals);
 
   let sessions = [];
 
   for (const interval of intersectingIntervals) {
-    console.log("interval", interval);
+    // console.log("interval", interval);
     let day_sessions = await seanceDao.getSeanceByDayAndTime(interval._id, day);
-    console.log("day_sessions", day_sessions);
+    // console.log("day_sessions", day_sessions);
     sessions = sessions.concat(day_sessions);
   }
-  console.log("sessions", sessions);
+  // console.log("sessions", sessions);
 
   let filteredSessions = sessions.filter(
     (s) =>

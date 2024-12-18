@@ -63,9 +63,26 @@ const getTeacherPeriodsByTeacherId = async (req, res) => {
   }
 };
 
+const fetchPeriodsBySemesterAndTeacherId = async (req, res) => {
+  const { semester, teacherId } = req.body;
+
+  try {
+    const periods = await teacherPeriodService.getPeriodsBySemesterAndTeacher(
+      semester,
+      teacherId
+    );
+    res.status(200).json(periods);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching periods: " + error.message });
+  }
+};
+
 module.exports = {
   createTeacherPeriod,
   updateTeacherPeriod,
   getTeacherPeriod,
   getTeacherPeriodsByTeacherId,
+  fetchPeriodsBySemesterAndTeacherId,
 };
