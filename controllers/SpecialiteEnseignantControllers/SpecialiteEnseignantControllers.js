@@ -2,37 +2,28 @@ const specialiteEnseignantService = require("../../services/SpecialiteEnseignant
 
 const addSpecialiteEnseignant = async (req, res) => {
   try {
-    const { value_specialite_enseignant, specialite_ar, specialite_fr } =
-      req.body;
+    const { specialite_ar, specialite_fr } = req.body;
 
     const specialiteEnseignant =
       await specialiteEnseignantService.registerSpecialiteEnseignant({
-        value_specialite_enseignant,
         specialite_ar,
         specialite_fr,
       });
     res.json(specialiteEnseignant);
   } catch (error) {
     console.error(error);
-    if (error.code === 11000) {
-      res.status(400).send("Value must be unique.");
-    } else {
-      res.status(500).send(error.message);
-    }
   }
 };
 
 const updateSpecialiteEnseignantById = async (req, res) => {
   try {
     const specialiteEnseignantId = req.params.id;
-    const { value_specialite_enseignant, specialite_ar, specialite_fr } =
-      req.body;
+    const { specialite_ar, specialite_fr } = req.body;
 
     const updatedSpecialiteEnseignant =
       await specialiteEnseignantService.updateSpecialiteEnseignantDao(
         specialiteEnseignantId,
         {
-          value_specialite_enseignant,
           specialite_ar,
           specialite_fr,
         }

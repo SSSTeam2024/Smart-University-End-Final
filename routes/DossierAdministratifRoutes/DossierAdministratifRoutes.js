@@ -5,6 +5,8 @@ const router = express.Router();
 
 router.post('/create-dossier-administratif', dossierAdministratifController.addDossierAdministratif);
 router.get('/get-all-dossiers', dossierAdministratifController.getAllDossierAdmnistratifs);
-router.delete('/dossier/:dossierId/papier/:papierId/entity/:entityId/type/:entityType', dossierAdministratifController.removePaperFromDossier);
 router.put('/update-dossier', dossierAdministratifController.updateDossierAdministratif);
+router.delete('/remove-paper', dossierAdministratifController.removeSpecificPaperFromDossier);
+router.put('/archive-dossier', dossierAdministratifController.archiveDossierAdministratif);
+router.put('/restore-dossier', dossierAdministratifController.restoreDossierAdministratifController);
 module.exports = router;

@@ -5,8 +5,9 @@ const templateBodySchema = new Schema({
   title: String,
   body: String,
   langue: String,
-  intended_for: String
-
+  intended_for: String,
+  isArray: String,
+  arraysNumber: String
 });
 
 

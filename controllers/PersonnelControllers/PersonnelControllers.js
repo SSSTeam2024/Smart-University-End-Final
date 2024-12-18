@@ -1,14 +1,18 @@
 const personnelService = require("../../services/PersonnelServices/PersonnelServices");
 const Personnel = require("../../model/PersonnelModel/PersonnelModel");
 const globalFunctions = require("../../utils/globalFunctions");
-const path = require('path');
-
+const path = require("path");
+const fs = require("fs");
 const addPersonnel = async (req, res) => {
   try {
     const {
       nom_fr,
+      category,
+      files_papier_administratif,
       nom_ar,
       prenom_fr,
+      mat_cnrps,
+      matricule,
       prenom_ar,
       lieu_naissance_fr,
       lieu_naissance_ar,
@@ -41,10 +45,16 @@ const addPersonnel = async (req, res) => {
       job_conjoint,
       nombre_fils,
       PhotoProfilFileExtension,
-      PhotoProfilFileBase64String
+      PhotoProfilFileBase64String,
     } = req.body;
     const PhotoProfilPath = "files/personnelFiles/PhotoProfil/";
-    const PhotoProfilFilePath = path.join(PhotoProfilPath, globalFunctions.generateUniqueFilename(PhotoProfilFileExtension, "photo_profil"));
+    const PhotoProfilFilePath = path.join(
+      PhotoProfilPath,
+      globalFunctions.generateUniqueFilename(
+        PhotoProfilFileExtension,
+        "photo_profil"
+      )
+    );
 
     let documents = [
       {
@@ -52,45 +62,52 @@ const addPersonnel = async (req, res) => {
         extension: PhotoProfilFileExtension,
         name: path.basename(PhotoProfilFilePath),
         path: PhotoProfilPath,
-      }
+      },
     ];
-    const personnel = await personnelService.registerPersonnelDao({
-      nom_fr,
-      nom_ar,
-      prenom_fr,
-      prenom_ar,
-      lieu_naissance_fr,
-      lieu_naissance_ar,
-      date_naissance,
-      nationalite,
-      etat_civil,
-      sexe,
-      etat_compte,
-      poste,
-      grade,
-      specilaite,
-      date_designation,
-      date_affectation,
-      compte_courant,
-      identifinat_unique,
-      num_cin,
-      date_delivrance,
-      categorie,
-      service,
-      state,
-      dependence,
-      code_postale,
-      departements,
-      adress_ar,
-      adress_fr,
-      num_phone1,
-      num_phone2,
-      email,
-      nom_conjoint,
-      job_conjoint,
-      nombre_fils,
-      photo_profil: path.basename(PhotoProfilFilePath)
-    },documents);
+    const personnel = await personnelService.registerPersonnelDao(
+      {
+        nom_fr,
+        nom_ar,
+        category,
+        prenom_fr,
+        files_papier_administratif,
+        prenom_ar,
+        lieu_naissance_fr,
+        lieu_naissance_ar,
+        date_naissance,
+        mat_cnrps,
+        matricule,
+        nationalite,
+        etat_civil,
+        sexe,
+        etat_compte,
+        poste,
+        grade,
+        specilaite,
+        date_designation,
+        date_affectation,
+        compte_courant,
+        identifinat_unique,
+        num_cin,
+        date_delivrance,
+        categorie,
+        service,
+        state,
+        dependence,
+        code_postale,
+        departements,
+        adress_ar,
+        adress_fr,
+        num_phone1,
+        num_phone2,
+        email,
+        nom_conjoint,
+        job_conjoint,
+        nombre_fils,
+        photo_profil: path.basename(PhotoProfilFilePath),
+      },
+      documents
+    );
 
     const populatedPersonnel = await Personnel.findById(personnel._id)
       .populate("etat_compte")
@@ -263,14 +280,12 @@ const updatePersonnelById = async (req, res) => {
   }
 };
 
-
+// controller
 const getPersonnelById = async (req, res) => {
   try {
-    const personnelId = req.params.id;
+    const personnelId = req.body.personnelId; // Corrected to match your request body
 
-    const getPersonnel = await personnelService.getPersonnelDaoById(
-      personnelId
-    );
+    const getPersonnel = await personnelService.getPersonnelDaoById(personnelId);
 
     if (!getPersonnel) {
       return res.status(404).send("Personnel not found");
@@ -281,6 +296,7 @@ const getPersonnelById = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+
 
 const deletePersonnelById = async (req, res) => {
   try {

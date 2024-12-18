@@ -87,7 +87,6 @@ const deleteClasseById = async (req, res) => {
   }
 };
 
-
 async function assignMatieresToClasseController(req, res, next) {
   const classeId = req.params.classeId;
   const matiereIds = req.body.matiereIds;
@@ -130,6 +129,20 @@ async function getAssignedMatieres(req, res) {
   }
 }
 
+const getAllClassesByTeacher = async (req, res) => {
+  try {
+    const { teacherId, semestre } = req.body;
+    const classes = await classeService.getClassesByTeacherId(
+      teacherId,
+      semestre
+    );
+    res.json(classes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   addClasse,
   updateClasseById,
@@ -139,4 +152,5 @@ module.exports = {
   assignMatieresToClasseController,
   deleteAssignedMatiereFromClasse,
   getAssignedMatieres,
+  getAllClassesByTeacher,
 };

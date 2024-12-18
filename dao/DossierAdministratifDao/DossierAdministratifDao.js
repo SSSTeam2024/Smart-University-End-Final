@@ -1,6 +1,4 @@
 const DossierAdministratif = require("../../model/DossierAdministratifModel/DossierAdministratifModel");
-const EnseignantModel = require("../../model/EnseignantModel/EnseignantModel");
-const PersonnelModel = require("../../model/PersonnelModel/PersonnelModel");
 const addDossierAdministratif = async (dossierData) => {
   try {
     return await DossierAdministratif.create(dossierData);
@@ -26,68 +24,7 @@ const getDossiersAdministratifs = async () => {
   }
 };
 
-// const removePaperFromDossier = async (dossierId, papierId) => {
-//   try {
-//     const dossier = await DossierAdministratif.findById(dossierId);
-//     if (!dossier) {
-//       throw new Error('Dossier not found');
-//     }
-//     dossier.papers = dossier.papers.filter(paper => paper.papier_administratif.toString() !== papierId);
-//     await dossier.save();
-//     return dossier;
-//   } catch (error) {
-//     throw new Error(`DAO Error: ${error.message}`);
-//   }
-// };
 
-const removePaperFromDossier = async (
-  dossierId,
-  papierId,
-  entityId,
-  entityType
-) => {
-  try {
-    // Find and remove the paper from the DossierAdministratif
-    const dossier = await DossierAdministratif.findById(dossierId);
-    if (!dossier) {
-      throw new Error("Dossier not found");
-    }
-
-    // Remove the paper from the papers array in DossierAdministratif
-    dossier.papers = dossier.papers.filter(
-      (paper) => paper.papier_administratif.toString() !== papierId
-    );
-    await dossier.save();
-
-    // Check if entityType is "personnel" or "enseignant"
-    let entityModel;
-    if (entityType === "personnel") {
-      entityModel = PersonnelModel;
-    } else if (entityType === "enseignant") {
-      entityModel = EnseignantModel;
-    } else {
-      throw new Error("Invalid entity type");
-    }
-
-    // Find the entity (personnel or enseignant) and remove the paper from their papers array
-    const entity = await entityModel.findById(entityId);
-    if (!entity) {
-      throw new Error(
-        `${entityType.charAt(0).toUpperCase() + entityType.slice(1)} not found`
-      );
-    }
-
-    // Filter out the paper from the entity's papers array
-    entity.papers = entity.papers.filter(
-      (paper) => paper.toString() !== dossierId
-    );
-    await entity.save();
-
-    return dossier;
-  } catch (error) {
-    throw new Error(`DAO Error: ${error.message}`);
-  }
-};
 
 
 const updateDossiersAdministratif = async (id, updateData) => {
@@ -107,9 +44,72 @@ const updateDossiersAdministratif = async (id, updateData) => {
   }
 };
 
+
+const removeSpecificPaperFromDossier= async (dossierId, userId, userType, paperDetails) =>{
+  const query = {
+      _id: dossierId,
+      [userType]: userId,
+  };
+  const update = {
+      $pull: {
+          papers: {
+           'papier_administratif': paperDetails.papier_administratif,
+              annee: paperDetails.annee,  
+              remarques: paperDetails.remarques,
+              file: paperDetails.file
+          }
+      }
+  };
+  return await DossierAdministratif.findOneAndUpdate(query, update, { new: true });
+}
+
+const getDossierById = async (dossierId) => {
+  try {
+    return await DossierAdministratif.findById(dossierId)
+      .populate('enseignant')
+      .populate('personnel');
+  } catch (error) {
+    console.error("Error fetching dossier by ID:", error);
+    throw error;
+  }
+};
+
+const archiveDossierAdministratif = async (dossierId) => {
+  try {
+    const archivedDossier = await DossierAdministratif.findByIdAndUpdate(
+      dossierId,
+      { isArchived: true },
+      { new: true }
+    );
+    return archivedDossier;
+  } catch (error) {
+    console.error("Error archiving dossier:", error);
+    throw error;
+  }
+};
+
+
+const restoreDossierAdministratif = async (dossierId) => {
+  try {
+    const restoredDossier = await DossierAdministratif.findByIdAndUpdate(
+      dossierId,
+      { isArchived: false },
+      { new: true }
+    );
+    return restoredDossier;
+  } catch (error) {
+    console.error("Error restoring dossier:", error);
+    throw error;
+  }
+};
+
+
 module.exports = {
   addDossierAdministratif,
   getDossiersAdministratifs,
-  removePaperFromDossier,
+  removeSpecificPaperFromDossier,
   updateDossiersAdministratif,
+  archiveDossierAdministratif,
+  getDossierById,
+  restoreDossierAdministratif
 };

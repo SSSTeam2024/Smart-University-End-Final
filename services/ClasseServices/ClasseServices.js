@@ -1,6 +1,7 @@
 const classeDao = require("../../dao/ClasseDao/ClasseDao");
 const Classe = require("../../model/ClasseModels/ClasseModels");
 const Matiere = require("../../model/MatiereModel/MatiereModel");
+const seanceService = require("../../services/SeanceServices/SeanceServices");
 
 const createClasse = async (classeData) => {
   try {
@@ -94,6 +95,21 @@ async function getAssignedMatieres(classeId) {
   }
 }
 
+const getClassesByTeacherId = async (idTeacher, semestre) => {
+  let sessions = await seanceService.getSeancesByTeacher(idTeacher, semestre);
+  let classes = sessions.map((s) => s.classe);
+
+  const uniqueClasses = classes.reduce((accumulator, current) => {
+    // If the id is not already in the accumulator Set, add it
+    if (!accumulator.some((item) => item._id === current._id)) {
+      accumulator.push(current);
+    }
+    return accumulator;
+  }, []);
+
+  return uniqueClasses;
+};
+
 module.exports = {
   createClasse,
   updateClasse,
@@ -102,4 +118,5 @@ module.exports = {
   deleteClasseById,
   assignMatieresToClasse,
   getAssignedMatieres,
+  getClassesByTeacherId,
 };

@@ -2,35 +2,25 @@ const GradePersonnelService = require("../../services/GradePersonnelServices/Gra
 
 const addGradePersonnel = async (req, res) => {
   try {
-    const { value_grade_personnel, grade_ar, grade_fr } = req.body;
+    const { grade_ar, grade_fr } = req.body;
 
     const gradePersonnel = await GradePersonnelService.registerGradePersonnel({
-      value_grade_personnel,
       grade_ar,
       grade_fr,
     });
     res.json(gradePersonnel);
   } catch (error) {
     console.error(error);
-    if (error.code === 11000) { 
-      res.status(400).send('Value must be unique.');
-    } else {
-      res.status(500).send(error.message);
-    }
   }
 };
-
-
 
 const updateGradePersonnelById = async (req, res) => {
   try {
     const GradePersonnelId = req.params.id;
-    const { value_grade_personnel, grade_ar, grade_fr } = req.body;
+    const { grade_ar, grade_fr } = req.body;
 
     const updatedGradePersonnel =
       await GradePersonnelService.updateGradePersonnelDao(GradePersonnelId, {
-        value_grade_personnel
-          ,
         grade_ar,
         grade_fr,
       });

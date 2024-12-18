@@ -15,27 +15,37 @@ const addPapierAdministratif = async (req, res) => {
   }
 };
 
-
-
-
 const updatePapierAdministratiftById = async (req, res) => {
+  console.log("body request",req.body)
   try {
-    const papierAdministratifId = req.params.id;
-    const { files_papier_administratif} = req.body;
+    const { _id, files_papier_administratif } = req.body;
 
-    const updatedPapierAdministratif = await papierAdministratifService.updatePapierAdministratif(papierAdministratifId, {
-      files_papier_administratif
-    });
+    // Validate that files_papier_administratif is defined and is an array
+    if (!Array.isArray(files_papier_administratif) || files_papier_administratif.length === 0) {
+      return res.status(400).send("files_papier_administratif must be a non-empty array.");
+    }
+
+    // Update only the relevant fields from 'files_papier_administratif'
+    const updateData = {
+      nom_ar: files_papier_administratif[0].nom_ar, // Access safely after the check
+      nom_fr: files_papier_administratif[0].nom_fr,
+      category: files_papier_administratif[0].category,
+    };
+
+    const updatedPapierAdministratif = await papierAdministratifService.updatePapierAdministratif(_id, updateData);
 
     if (!updatedPapierAdministratif) {
       return res.status(404).send("Papier Administratif not found!");
     }
+    
     res.json(updatedPapierAdministratif);
   } catch (error) {
     console.error(error);
     res.status(500).send(error.message);
   }
 };
+
+
 
 const getPapierAdministratifById = async (req, res) => {
   try {

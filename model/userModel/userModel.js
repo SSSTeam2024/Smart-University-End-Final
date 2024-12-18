@@ -2,19 +2,17 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-  name: String,
-  email: String,
+  personnelId: { type: Schema.Types.ObjectId, ref: 'Personnel', required: false },
+  enseignantId: { type: Schema.Types.ObjectId, ref: 'Enseignant', required: false },
   login: String,
-  role_id: String,
-  departement_id: String,
+  service: String,
   password: String,
   api_token: String,
-  photo: String,
   app_name: String,
   status: String,
   permissions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Permission' }],
-  updatedAt: { type: Date, default: Date.now }
-});
+  // updatedAt: { type: Date, default: Date.now }
+},{ timestamps: true });
 
 // Automatically update the `updatedAt` field on save
 userSchema.pre('save', function(next) {

@@ -40,12 +40,37 @@ const actualiteRoutes = require ("./ActualiteRoutes/ActualiteRoutes")
 const papierAdministratif =require("./PapierAdministratifRoutes/PapierAdministratifRoutes");
 
 const dossierAdministratif = require("./DossierAdministratifRoutes/DossierAdministratifRoutes")
+const leaveBalance = require("./CongéRoutes/LeaveBalanceRoutes")
+const leaveType = require("./CongéRoutes/LeaveTypeRoutes")
+const demandeConge = require("./CongéRoutes/demandeCongeRoutes")
+
+const ficheVoeuxRoutes = require("./FicheVoeuxRoutes/FicheVoeuxRoutes");
+
+const seanceRoutes = require("./SeanceRoutes/SeanceRoutes");
+
+const disponibiliteSalleRoutes = require("./DisponibiliteSalleRoutes/DisponibiliteSalleRoutes");
+
+const timeTableParams = require("./TimeTableParamsRoutes/TimeTableParamsRoutes");
+
+const typeSeance = require("./TypeSeanceRoutes/TypeSeanceRoutes");
+
+const classPeriod = require("./ClassEmploiPeriodiqueRoutes/ClassEmploiPeriodiqueRoutes");
+const teacherPeriod = require("./TeacherPeriodRoutes/TeacherPeriodRoutes");
+
+const rattrapageRoutes = require("./RattrapageRoutes/RattrapageRoutes");
+
+
+// gestion des conges
+router.use("/LeaveBalance", leaveBalance);
+router.use("/LeaveType", leaveType);
+router.use("/demandeConge", demandeConge)
+
 
 router.use("/event", eventRoutes);
 router.use("/user-permissions", userPermissionsRoutes);
 router.use("/user", userRoutes);
 router.use('/enseignant',enseignantRoutes);
-router.use("/etudiant", etudiantRoutes);
+
 router.use('/personnel',personnelRoutes);
 
 
@@ -60,6 +85,7 @@ router.use('/grade-enseignant',gradeEnseignantRoutes);
 router.use('/specialite-enseignant',specialiteEnseignantRoutes);
 
 // etudiant
+router.use("/etudiant", etudiantRoutes);
 router.use('/etat-etudiant',etatEtudiantRoutes);
 router.use('/type-inscription-etudiant',typeInscriptionEtudiantRoutes);
 
@@ -95,18 +121,37 @@ router.use("/template-body", templateBodyRoutes)
 router.use("/short-code", shortCodeRoutes)
 router.use("/variable-globale", variableGlobaleRoutes)
 // Avis etudiant // enseignant / personnel
-
 router.use("/avis-etudiant", avisEtudiantRoutes)
 router.use("/avis-enseignant", avisEnseignantRoutes)
 router.use("/avis-personnel", avisPersonnelRoutes)
-
 // actualite
 router.use("/actualite", actualiteRoutes)
-
 //papier administratif 
 router.use('/papierAdministratif',papierAdministratif);
-
 //dossier administratif 
 router.use('/dossierAdministratif',dossierAdministratif);
+
+//rattrapage
+router.use("/rattrapage", rattrapageRoutes);
+
+//class period
+router.use("/class-period", classPeriod);
+
+//teacher period
+router.use("/teacher-period", teacherPeriod);
+
+//typeSeance
+router.use("/type-seance", typeSeance);
+
+//Time Table Params
+router.use("/timeTableParams", timeTableParams);
+
+//fiche voeux
+router.use("/fiche-voeux", ficheVoeuxRoutes);
+//Seance
+router.use("/seance", seanceRoutes);
+
+//disponibilite
+router.use("/disponibilite-salle", disponibiliteSalleRoutes);
 
 module.exports = router;
