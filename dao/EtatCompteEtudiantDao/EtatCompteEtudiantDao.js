@@ -1,4 +1,4 @@
-const etatEtudiant= require("../../model/EtatCompteEtudiantModel/EtatCompteEtudiantModel");
+const etatEtudiant= require("../../model/etatCompteEtudiantModel/EtatCompteEtudiantModel");
 
 const createEtatEtudiant = async (etat_enseignant) => {
   return await etatEtudiant.create(etat_enseignant);

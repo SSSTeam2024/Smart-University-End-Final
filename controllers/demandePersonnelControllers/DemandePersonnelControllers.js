@@ -1,4 +1,4 @@
-const demandePersonnelService = require('../../services/DemandePersonnelServices/DemandePersonnelServices');
+const demandePersonnelService = require('../../services/demandePersonnelServices/demandePersonnelServices');
 
 const createDemandePersonnel = async (req, res) => {
   try {

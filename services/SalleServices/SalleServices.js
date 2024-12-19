@@ -1,5 +1,5 @@
 const salleDao = require("../../dao/SalleDao/SalleDao");
-const DepartementModel = require("../../model/DepartementModel/DepartementModel");
+const DepartementModel = require("../../model/departementModel/DepartementModel");
 const SalleDisponibiliteService = require("../../services/SalleDisponibiliteServices/SalleDisponibiliteServices");
 const seanceDao = require("../../dao/SeanceDao/SeanceDao");
 const classEmploiPeriodiqueDao = require("../../dao/ClassEmploiPeriodiqueDao/ClassEmploiPeriodiqueDao");

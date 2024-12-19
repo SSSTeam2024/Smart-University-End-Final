@@ -1,4 +1,4 @@
-const DepartementModel = require("../../model/DepartementModel/DepartementModel");
+const DepartementModel = require("../../model/departementModel/DepartementModel");
 const salleModel = require("../../model/SallesModel/SallesModel")
 
 const createSalle = async (salle) => {

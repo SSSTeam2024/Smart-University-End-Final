@@ -1,6 +1,6 @@
 const NiveauClasseModel = require("../../model/NiveauClasseModel/NiveauClasseModel");
 const sectionClasse = require("../../model/SectionClasseModel/SectionClasseModel");
-const DepartementClasse =require("../../model/DepartementModel/DepartementModel");
+const DepartementClasse =require("../../model/departementModel/DepartementModel");
 const createSectionClasse = async (section) => {
   try {
     return await sectionClasse.create(section);

@@ -1,4 +1,4 @@
-const etatPersonnel = require("../../model/EtatPersonnelModel/EtatPersonnel");
+const etatPersonnel = require("../../model/etatPersonnelModel/EtatPersonnel");
 
 const createEtatPersonnel = async (etat_personnel) => {
   return await etatPersonnel.create(etat_personnel);
