@@ -173,7 +173,62 @@ const fetchAllTeachersPeriods = async () => {
     );
   }
 };
+const getTeachersGroupedByGrade = async () => {
+  try {
+    const teachersByGrade = await enseignantModel.aggregate([
+      // Join the Grade collection
+      {
+        $lookup: {
+          from: "gradeenseignants", // Collection name for Grade
+          localField: "grade", // Field in the enseignant collection
+          foreignField: "_id", // Field in the grade collection
+          as: "GradeDetails", // Output array field
+        },
+      },
+      // Unwind the GradeDetails array
+      {
+        $unwind: {
+          path: "$GradeDetails",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      // Group enseignants by grade
+      {
+        $group: {
+          _id: "$GradeDetails._id", // Group by grade's ID
+          gradeLabel: { $first: "$GradeDetails" }, // grade's name
+          teachers: {
+            $push: {
+              id: "$_id",
+              fullName: { $concat: ["$prenom_fr", " ", "$nom_fr"] },
+            },
+          },
+        },
+      },
+      // // Optionally sort by author's name
+      // {
+      //   $sort: { gradeLabel: 1 },
+      // },
+      {
+        $project: {
+          _id: 1,
+          gradeLabel: 1,
+          teachers: {
+            $filter: {
+              input: "$teachers", // Filter to remove null posts
+              as: "teacher",
+              cond: { $ne: ["$$teacher.id", null] },
+            },
+          },
+        },
+      },
+    ]);
 
+    return teachersByGrade;
+  } catch (error) {
+    console.error("Error fetching", error);
+  }
+};
 module.exports = {
   createEnseignant,
   getEnseignants,
@@ -182,4 +237,5 @@ module.exports = {
   getEnseignantById,
   assignPapierToTeacher,
   fetchAllTeachersPeriods,
+  getTeachersGroupedByGrade,
 };

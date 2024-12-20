@@ -17,5 +17,5 @@ router.post(
 );
 
 router.get("/charges-periodic", enseignantController.fetchAllTeachersPeriods);
-
+router.get("/get-enseignants-grouped-by-grade",enseignantController.getTeachersGroupedByGrade);
 module.exports = router;
