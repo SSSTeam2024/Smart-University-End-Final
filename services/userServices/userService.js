@@ -48,6 +48,7 @@ const loginUser = async (login, password) => {
   const user = await userDao.findUserByLogin(login);
 
   if (!user) {
+    
     throw new Error("user not found");
   }
 
