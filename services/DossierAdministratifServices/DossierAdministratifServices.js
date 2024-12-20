@@ -104,9 +104,50 @@ const getDossierAdministratifsDao = async () => {
     throw error;
   }
 };
+const archiveDossierAdministratif = async (dossierId) => {
+  try {
+    const dossier = await dossierAdministratifDao.getDossierById(dossierId);
+
+    if (!dossier) {
+      throw new Error("Dossier not found");
+    }
+    let type;
+    if (dossier.enseignant) {
+      type = 'enseignant';
+    } else if (dossier.personnel) {
+      type = 'personnel';
+    } else {
+      throw new Error("Invalid dossier type");
+    }
+    const archivedDossier = await dossierAdministratifDao.archiveDossierAdministratif(dossierId);
+
+    return {
+      archivedDossier,
+      type,
+    };
+  } catch (error) {
+    console.error("Error in archiving dossier service:", error);
+    throw error;
+  }
+};
+const restoreDossierAdministratifService = async (dossierId) => {
+  try {
+    const restoredDossier = await dossierAdministratifDao.restoreDossierAdministratif(dossierId);
+    if (!restoredDossier) {
+      throw new Error('Dossier not found');
+    }
+    return restoredDossier;
+  } catch (error) {
+    console.error("Error in service restoring dossier:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   addDossierAdministratif,
   getDossierAdministratifsDao,
   removePaperFromDossier,
-  updateDossierAdministratif
+  updateDossierAdministratif,
+  restoreDossierAdministratifService,
+  archiveDossierAdministratif
 };

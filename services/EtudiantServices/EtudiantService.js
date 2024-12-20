@@ -70,6 +70,7 @@ const getTypeInscriptionByIdStudent = async (studentId) => {
     throw error;
   }
 };
+
 module.exports = {
   getEtudiants,
   getEtudiantById,

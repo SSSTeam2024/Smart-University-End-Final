@@ -9,5 +9,5 @@ router.post('/get-etudiant', etudiantController.getStudentById);
 
 router.delete('/delete-etudiant', etudiantController.deleteEtudiant);
 router.put('/update-etudiant', etudiantController.updateStudent)
-
+router.get('/get-etudiant/:id', etudiantController.getEtudiantById);
 module.exports = router;
