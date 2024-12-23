@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post('/create-personnel', personnelController.addPersonnel);
 router.get('/get-all-personnel', personnelController.getPersonnels);
-router.put('/update-personnel/:id', personnelController.updatePersonnelById);
+router.put('/update-personnel', personnelController.updatePersonnelById);
 router.get('/get-personnel/:id', personnelController.deletePersonnelById);
 router.delete('/delete-personnel/:id', personnelController.deletePersonnelById);
 

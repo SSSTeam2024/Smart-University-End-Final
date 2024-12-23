@@ -21,15 +21,15 @@ async function saveMediaToServer(documents, existingFiles) {
     let counter = 0;
     for (const file of documents) {
       // If the file already exists, you may update it instead
-      if (existingFiles.includes(file.name)) {
-        // Logic to update the existing file
-        console.log(`File ${file.name} exists, updating...`);
-      } else {
+      // if (existingFiles.includes(file.name)) {
+      //   // Logic to update the existing file
+      //   console.log(`File ${file.name} exists, updating...`);
+      // } else {
         // Save new file
         await saveFile(file.base64String, file.name, file.path);
         counter++;
         console.log(`File number ${counter} saved`);
-      }
+      // }
     }
     if (counter === documents.length) return true;
   } catch (error) {
