@@ -4,6 +4,7 @@ const Etudiant = require("../../model/EtudiantModel/EtudiantModel");
 const fs = require("fs");
 const path = require("path");
 const TypeInscriptionEtudiant = require("../../model/TypeInscriptionEtudiantModel/TypeInscriptionEtudiantModel");
+const generateCode = require("../../utils/generateCode");
 
 const addStudent = async (req, res) => {
   try {
@@ -46,7 +47,8 @@ const addStudent = async (req, res) => {
       groupe_classe,
       PhotoProfilFileExtension,
       PhotoProfilFileBase64String,
-      files,
+      files = [],
+      code_acces,
     } = req.body;
 
     const face1CINPath = "files/etudiantFiles/Face1CIN/";
@@ -133,7 +135,7 @@ const addStudent = async (req, res) => {
         path: filePath,
       });
     }
-
+    const code = generateCode.generateCompositeCode();
     const etudiant = await studentService.registerEtudiant(
       {
         nom_fr,
@@ -171,6 +173,7 @@ const addStudent = async (req, res) => {
         fiche_paiement,
         photo_profil,
         files: documents.map((doc) => doc.name),
+        code_acces: code,
       },
       documents
     );
@@ -195,7 +198,7 @@ const getStudentById = async (req, res) => {
   try {
     const student = await studentService.getEtudiantById(req.body._id);
     if (!student) {
-      return res.status(404).json({ message: 'student not found' });
+      return res.status(404).json({ message: "student not found" });
     }
     res.status(200).json(student);
   } catch (error) {
@@ -208,9 +211,7 @@ const deleteEtudiant = async (req, res) => {
   try {
     const etudiantId = req.body._id;
 
-    const deletedEtudiant = await studentService.deleteEtudiant(
-      etudiantId
-    );
+    const deletedEtudiant = await studentService.deleteEtudiant(etudiantId);
 
     if (!deletedEtudiant) {
       return res.status(404).send("Etudiant not found");
@@ -222,13 +223,16 @@ const deleteEtudiant = async (req, res) => {
   }
 };
 
-
 const updateStudent = async (req, res) => {
-  const requestId = new Date().toISOString() + Math.random().toString(36).substring(2, 15); // Unique request identifier
+  const requestId =
+    new Date().toISOString() + Math.random().toString(36).substring(2, 15); // Unique request identifier
 
   try {
-    console.log(`[${requestId}] Received request to update student with ID:`, req.body.id);
-    
+    console.log(
+      `[${requestId}] Received request to update student with ID:`,
+      req.body.id
+    );
+
     // Destructure the request body
     const {
       id,
@@ -269,7 +273,7 @@ const updateStudent = async (req, res) => {
       Face2CINFileBase64String,
       Face2CINFileExtension,
       FichePaiementFileBase64String,
-      FichePaiementFileExtension
+      FichePaiementFileExtension,
     } = req.body;
 
     // Define file paths
@@ -284,13 +288,15 @@ const updateStudent = async (req, res) => {
         console.log(`[${requestId}] File extension is missing for ${name}.`);
         throw new Error(`File extension is missing for ${name}.`);
       }
-      return `${Date.now()}_${Math.random().toString(36).substring(2, 15)}_${name}.${extension}`;
+      return `${Date.now()}_${Math.random()
+        .toString(36)
+        .substring(2, 15)}_${name}.${extension}`;
     };
 
     // Helper function to save files
     const saveFile = (base64String, filePath, fileName) => {
       if (base64String) {
-        const buffer = Buffer.from(base64String, 'base64');
+        const buffer = Buffer.from(base64String, "base64");
         const fullPath = `${filePath}${fileName}`;
         fs.writeFileSync(fullPath, buffer); // Save the file
         console.log(`[${requestId}] File saved at: ${fullPath}`);
@@ -302,22 +308,38 @@ const updateStudent = async (req, res) => {
     // Prepare documents array
     const documents = [];
     if (Face1CINFileBase64String && Face1CINFileExtension) {
-      const face1CINName = generateUniqueFilename(Face1CINFileExtension, "face_1_CIN");
+      const face1CINName = generateUniqueFilename(
+        Face1CINFileExtension,
+        "face_1_CIN"
+      );
       saveFile(Face1CINFileBase64String, face1CINPath, face1CINName);
       documents.push({ name: face1CINName });
     }
     if (Face2CINFileBase64String && Face2CINFileExtension) {
-      const face2CINName = generateUniqueFilename(Face2CINFileExtension, "face_2_CIN");
+      const face2CINName = generateUniqueFilename(
+        Face2CINFileExtension,
+        "face_2_CIN"
+      );
       saveFile(Face2CINFileBase64String, face2CINPath, face2CINName);
       documents.push({ name: face2CINName });
     }
     if (FichePaiementFileBase64String && FichePaiementFileExtension) {
-      const fichePaiementName = generateUniqueFilename(FichePaiementFileExtension, "fiche_paiement");
-      saveFile(FichePaiementFileBase64String, fichePaiementPath, fichePaiementName);
+      const fichePaiementName = generateUniqueFilename(
+        FichePaiementFileExtension,
+        "fiche_paiement"
+      );
+      saveFile(
+        FichePaiementFileBase64String,
+        fichePaiementPath,
+        fichePaiementName
+      );
       documents.push({ name: fichePaiementName });
     }
     if (PhotoProfilFileBase64String && PhotoProfilFileExtension) {
-      const photoProfilName = generateUniqueFilename(PhotoProfilFileExtension, "photo_profil");
+      const photoProfilName = generateUniqueFilename(
+        PhotoProfilFileExtension,
+        "photo_profil"
+      );
       saveFile(PhotoProfilFileBase64String, photoProfilPath, photoProfilName);
       documents.push({ name: photoProfilName });
     }
@@ -361,13 +383,18 @@ const updateStudent = async (req, res) => {
       documents.forEach((doc) => {
         if (doc.name.includes("face_1_CIN")) updateFields.face_1_CIN = doc.name;
         if (doc.name.includes("face_2_CIN")) updateFields.face_2_CIN = doc.name;
-        if (doc.name.includes("fiche_paiement")) updateFields.fiche_paiement = doc.name;
-        if (doc.name.includes("photo_profil")) updateFields.photo_profil = doc.name;
+        if (doc.name.includes("fiche_paiement"))
+          updateFields.fiche_paiement = doc.name;
+        if (doc.name.includes("photo_profil"))
+          updateFields.photo_profil = doc.name;
       });
     }
 
     // Update student in the database
-    const updatedEtudiant = await studentService.updateEtudiant(id, updateFields);
+    const updatedEtudiant = await studentService.updateEtudiant(
+      id,
+      updateFields
+    );
 
     if (!updatedEtudiant) {
       console.log(`[${requestId}] Etudiant not found!`);
@@ -384,13 +411,15 @@ const updateStudent = async (req, res) => {
 
 const getTypeInscriptionByIdStudent = async (req, res) => {
   try {
-    const { studentId } = req.body; 
+    const { studentId } = req.body;
 
     if (!studentId) {
       return res.status(400).send("Student ID is required");
     }
 
-    const typeInscription = await studentService.getTypeInscriptionByIdStudent(studentId);
+    const typeInscription = await studentService.getTypeInscriptionByIdStudent(
+      studentId
+    );
 
     if (!typeInscription) {
       return res.status(404).send("Type inscription not found for the student");
@@ -403,11 +432,33 @@ const getTypeInscriptionByIdStudent = async (req, res) => {
   }
 };
 
+const updateGroupeClasse = async (req, res) => {
+  try {
+    const { studentIds, groupeClasseId } = req.body;
+
+    if (!studentIds || !groupeClasseId) {
+      return res
+        .status(400)
+        .json({ error: "studentIds and groupeClasseId are required." });
+    }
+
+    const result = await studentService.updateGroupeClasse(
+      studentIds,
+      groupeClasseId
+    );
+    res.json({ message: "groupe_classe updated successfully", result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   addStudent,
   getAllStudents,
   getStudentById,
   deleteEtudiant,
   updateStudent,
-  getTypeInscriptionByIdStudent
+  getTypeInscriptionByIdStudent,
+  updateGroupeClasse,
 };
