@@ -9,7 +9,6 @@ const getEtatsEnseignant = async () => {
   return result;
 };
 
-
 const updateEtatEnseignant = async (id, updateData) => {
   return await etatEnseignant.findByIdAndUpdate(id, updateData, { new: true });
 };
@@ -22,12 +21,10 @@ const getEtatEnseignantById = async (id) => {
   return await etatEnseignant.findById(id);
 };
 
-
 module.exports = {
-    createEtatEnseignant,
-    getEtatsEnseignant,
-    updateEtatEnseignant,
-    deleteEtatEnseignant,
-    getEtatEnseignantById,
-
+  createEtatEnseignant,
+  getEtatsEnseignant,
+  updateEtatEnseignant,
+  deleteEtatEnseignant,
+  getEtatEnseignantById,
 };
