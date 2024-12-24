@@ -453,6 +453,22 @@ const updateGroupeClasse = async (req, res) => {
   }
 };
 
+const getEtudiantById = async (req, res) => {
+  try {
+    const etudiantId = req.params.id;
+
+    const getEtudiant = await studentService.getEtudiantById(etudiantId);
+
+    if (!getEtudiant) {
+      return res.status(404).send("Etudiant not found");
+    }
+    res.json(getEtudiant);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   addStudent,
   getAllStudents,
@@ -461,4 +477,5 @@ module.exports = {
   updateStudent,
   getTypeInscriptionByIdStudent,
   updateGroupeClasse,
+  getEtudiantById
 };

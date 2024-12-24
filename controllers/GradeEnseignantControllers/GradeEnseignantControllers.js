@@ -2,32 +2,31 @@ const gradeEnseignantService = require("../../services/GradeEnseignantServices/G
 
 const addGradeEnseignant = async (req, res) => {
   try {
-    const { value_grade_enseignant, grade_ar, grade_fr } = req.body;
+    const { grade_ar, grade_fr, charge_horaire } = req.body;
 
-    const gradeEnseignant = await gradeEnseignantService.registerGradeEnseignant({
-        value_grade_enseignant,
-      grade_ar,
-      grade_fr,
-    });
+    const gradeEnseignant =
+      await gradeEnseignantService.registerGradeEnseignant({
+        grade_ar,
+        grade_fr,
+        charge_horaire,
+      });
     res.json(gradeEnseignant);
   } catch (error) {
     console.error(error);
-    if (error.code === 11000) { 
-      res.status(400).send('Value must be unique.');
-    } else {
-      res.status(500).send(error.message);
-    }
   }
 };
 
 const updateGradeEnseignantById = async (req, res) => {
   try {
     const gradeEnseignantId = req.params.id;
-    const { value_grade_enseignant, grade_ar, grade_fr } = req.body;
+    const { grade_ar, grade_fr, charge_horaire } = req.body;
 
-    const updatedGradeEnseignant = await gradeEnseignantService.updateGradeEnseignantDao(gradeEnseignantId, {
-        value_grade_enseignant, grade_ar, grade_fr
-    });
+    const updatedGradeEnseignant =
+      await gradeEnseignantService.updateGradeEnseignantDao(gradeEnseignantId, {
+        grade_ar,
+        grade_fr,
+        charge_horaire,
+      });
 
     if (!updatedGradeEnseignant) {
       return res.status(404).send("Grade Enseignant not found!");
@@ -43,7 +42,8 @@ const getGradeEnseignantById = async (req, res) => {
   try {
     const gradeEnseignantId = req.params.id;
 
-    const getGradeEnseignant= await gradeEnseignantService.getGradeEnseignantDaoById(gradeEnseignantId);
+    const getGradeEnseignant =
+      await gradeEnseignantService.getGradeEnseignantDaoById(gradeEnseignantId);
 
     if (!getGradeEnseignant) {
       return res.status(404).send("Grade Enseignant not found");
@@ -56,7 +56,8 @@ const getGradeEnseignantById = async (req, res) => {
 };
 const getAllGradeEnseignant = async (req, res) => {
   try {
-    const gradeEnseignants = await gradeEnseignantService.getGradesEnseignantDao();
+    const gradeEnseignants =
+      await gradeEnseignantService.getGradesEnseignantDao();
     res.json(gradeEnseignants);
   } catch (error) {
     console.error(error);
@@ -68,7 +69,8 @@ const deleteGradeEnseignantById = async (req, res) => {
   try {
     const gradeEnseignantId = req.params.id;
 
-    const deletedGradeEnseignant = await gradeEnseignantService.deleteGradeEnseignantDao(gradeEnseignantId);
+    const deletedGradeEnseignant =
+      await gradeEnseignantService.deleteGradeEnseignantDao(gradeEnseignantId);
 
     if (!deletedGradeEnseignant) {
       return res.status(404).send("Grade Enseignant not found");
@@ -79,14 +81,12 @@ const deleteGradeEnseignantById = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
-// 
+//
 
 module.exports = {
   deleteGradeEnseignantById,
   getAllGradeEnseignant,
   getGradeEnseignantById,
   updateGradeEnseignantById,
-  addGradeEnseignant
-
-
+  addGradeEnseignant,
 };

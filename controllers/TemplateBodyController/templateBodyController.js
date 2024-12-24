@@ -6,14 +6,18 @@ const addTemplateBody = async (req, res) => {
         title,
         body,
         langue,
-        intended_for
+        intended_for,
+        isArray,
+        arraysNumber
     } = req.body;
 
     const templateBody = await templateBodyService.createTemplateBody({
         title,
         body,
         langue,
-        intended_for
+        intended_for,
+        isArray,
+        arraysNumber
     });
 
     res.json(templateBody);

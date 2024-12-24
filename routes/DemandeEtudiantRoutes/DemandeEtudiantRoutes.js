@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const demandeEtudiantController = require('../../controllers/DemandeEtudiantControllers/DemandeEtudiantControllers');
 
-// Create a new reclamation
+// Create a new demand
 router.post('/add-demande-etudiant', demandeEtudiantController.createDemandeEtudiant);
 
 // Get all demandeEtudiants

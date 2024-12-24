@@ -4,7 +4,7 @@ const papierAdministratifController = require('../../controllers/PapierAdministr
 const router = express.Router();
 
 router.post('/create-papier-administratif', papierAdministratifController.addPapierAdministratif);
-router.put('/update-papier-administratif/:id', papierAdministratifController.updatePapierAdministratiftById);
+router.put('/update-papier-administratif', papierAdministratifController.updatePapierAdministratiftById);
 router.get('/get-all-papier-administratif', papierAdministratifController.getPapierAdministratifs);
 router.delete('/delete-papier-administratif/:id', papierAdministratifController.deletePapierAdministratif);
 module.exports = router;

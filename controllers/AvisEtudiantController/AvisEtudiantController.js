@@ -80,18 +80,81 @@ const getAvisEtudiantById = async (req, res) => {
   }
 };
 
+// const updateAvisEtudiant = async (req, res) => {
+//   try {
+//     const updatedAvisEtudiant = await avisEtudiantService.updateAvisEtudiant(req.params.id, req.body);
+//     if (!updatedAvisEtudiant) {
+//       return res.status(404).json({ message: 'AvisEtudiant not found' });
+//     }
+//     res.status(200).json(updatedAvisEtudiant);
+//   } catch (error) {
+//     console.error("Error updating AvisEtudiant:", error);
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+
+
 const updateAvisEtudiant = async (req, res) => {
   try {
-    const updatedAvisEtudiant = await avisEtudiantService.updateAvisEtudiant(req.params.id, req.body);
+    // Ensure ID is passed in the body
+    const { _id, title, description, auteurId, groupe_classe=[], lien, pdfBase64String, pdfExtension, galleryBase64Strings=[], galleryExtensions=[], date_avis } = req.body;
+
+    // Validate if ID is present
+    if (!_id) {
+      return res.status(400).json({ message: 'ID is required' });
+    }
+
+    // Paths for files and images
+    const pdfPath = "files/avisEtudiantFiles/pdf/";
+    const galleryPath = "files/avisEtudiantFiles/photo/";
+
+    // Generate filenames for PDF and images
+    const pdfFilename = globalFunctions.generateUniqueFilename(pdfExtension, 'avisEtudiantPDF');
+    const galleryFilenames = galleryExtensions.map((ext, index) => 
+      globalFunctions.generateUniqueFilename(ext, `avisEtudiantPHOTO_${index}`)
+    );
+
+    let documents = [
+      {
+        base64String: pdfBase64String,
+        name: pdfFilename,
+        extension: pdfExtension,
+        path: pdfPath
+      },
+      ...galleryBase64Strings.map((base64String, index) => ({
+        base64String: base64String,
+        extension: galleryExtensions[index],
+        name: galleryFilenames[index],
+        path: galleryPath
+      }))
+    ];
+
+    // Update the AvisEtudiant using the service
+    const updatedAvisEtudiant = await avisEtudiantService.updateAvisEtudiant(id, {
+      title,
+      description,
+      auteurId,
+      groupe_classe,
+      lien,
+      pdf: pdfFilename,
+      gallery: galleryFilenames,
+      date_avis
+    }, documents);
+
+    // Check if the update was successful
     if (!updatedAvisEtudiant) {
       return res.status(404).json({ message: 'AvisEtudiant not found' });
     }
+
+    // Respond with the updated data
     res.status(200).json(updatedAvisEtudiant);
   } catch (error) {
     console.error("Error updating AvisEtudiant:", error);
     res.status(500).json({ message: error.message });
   }
 };
+
 
 const deleteAvisEtudiant = async (req, res) => {
   try {

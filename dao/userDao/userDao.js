@@ -2,7 +2,12 @@ const User = require('../../model/userModel/userModel');
 
 
 const createUser = async (userData) => {
+  try {
     return await User.create(userData);
+  } catch (error) {
+    console.error("Error creating User:", error);
+    throw error;
+  }
 };
 
 const findUserByLogin = async (login) => {
@@ -13,11 +18,11 @@ const findUserByLogin = async (login) => {
 const findUserByToken = async (token) => {
     let api_token = token;
     // console.log("Token DAO", api_token)
-    return await User.findOne({ api_token }).populate("permissions");
+    return await User.findOne({ api_token }).populate("permissions").populate("personnelId").populate("enseignantId");
   };
 // get all Users
 const getAllUsers = async () => {
-    return await User.find({});
+    return await User.find({}).populate("enseignantId").populate("personnelId");
   };
   const updateJwtToken = async (id, token) => {
     return await User.findByIdAndUpdate({ _id:id }, {
@@ -36,7 +41,7 @@ const deleteUser = async (id) => {
 };
 
 const getUserById = async (_id) => {
-  return await User.findById(_id).populate('permissions').exec();
+  return await User.findById(_id).populate('permissions').populate("enseignantId").populate("personnelId").exec();
 };
 
 const getUserByEmail = async (email) => {

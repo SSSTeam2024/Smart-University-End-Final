@@ -1,13 +1,35 @@
 const avisEtudiantDao = require('../../dao/AvisEtudiantDao/AvisEtudiantDao');
 const fs = require("fs").promises;
 
-async function saveMediaToServer(documents) {
+// async function saveMediaToServer(documents) {
+//   try {
+//     let counter = 0;
+//     for (const file of documents) {
+//       await saveFile(file.base64String, file.name, file.path);
+//       counter++;
+//       console.log(`File number ${counter} saved`);
+//     }
+//     if (counter === documents.length) return true;
+//   } catch (error) {
+//     console.error("Error saving media files:", error);
+//     throw error;
+//   }
+// }
+
+async function saveMediaToServer(documents, existingFiles) {
   try {
     let counter = 0;
     for (const file of documents) {
-      await saveFile(file.base64String, file.name, file.path);
-      counter++;
-      console.log(`File number ${counter} saved`);
+      // If the file already exists, you may update it instead
+      // if (existingFiles.includes(file.name)) {
+      //   // Logic to update the existing file
+      //   console.log(`File ${file.name} exists, updating...`);
+      // } else {
+        // Save new file
+        await saveFile(file.base64String, file.name, file.path);
+        counter++;
+        console.log(`File number ${counter} saved`);
+      // }
     }
     if (counter === documents.length) return true;
   } catch (error) {
@@ -49,8 +71,26 @@ const getAvisEtudiantById = async (id) => {
   return avisEtudiantDao.getAvisEtudiantById(id);
 };
 
-const updateAvisEtudiant = async (id, updateData) => {
-  return avisEtudiantDao.updateAvisEtudiant(id, updateData);
+// const updateAvisEtudiant = async (id, updateData) => {
+//   return avisEtudiantDao.updateAvisEtudiant(id, updateData);
+// };
+
+const updateAvisEtudiant = async (id, updateData, documents) => {
+  try {
+    // Save the new media files to the server
+    if (documents && documents.length > 0) {
+      const saveResult = await saveMediaToServer(documents);
+      if (!saveResult) {
+        throw new Error("Not all files were saved successfully.");
+      }
+    }
+
+    // Update the Actualite in the database with new data
+    return await avisEtudiantDao.updateAvisEtudiant(id, updateData);
+  } catch (error) {
+    console.error("Error updating Actualite:", error);
+    throw error;
+  }
 };
 
 const deleteAvisEtudiant = async (id) => {

@@ -2,18 +2,19 @@ const posteEnseignantService = require("../../services/PosteEnseignantServices/P
 
 const createPosteEnseignant = async (req, res) => {
   try {
-    const { value_poste_enseignant, poste_ar, poste_fr } = req.body;
+    const { poste_ar, poste_fr } = req.body;
 
-    const postetEnseignant = await posteEnseignantService.createPosteEnseignant({
-        value_poste_enseignant,
-      poste_ar,
-       poste_fr
-    });
+    const postetEnseignant = await posteEnseignantService.createPosteEnseignant(
+      {
+        poste_ar,
+        poste_fr,
+      }
+    );
     res.json(postetEnseignant);
   } catch (error) {
     console.error(error);
-    if (error.code === 11000) { 
-      res.status(400).send('Value must be unique.');
+    if (error.code === 11000) {
+      res.status(400).send("Value must be unique.");
     } else {
       res.status(500).send(error.message);
     }
@@ -23,11 +24,13 @@ const createPosteEnseignant = async (req, res) => {
 const updatePosteEnseignantById = async (req, res) => {
   try {
     const posteEnseignantId = req.params.id;
-    const { value_poste_enseignant, poste_ar, poste_fr} = req.body;
+    const { poste_ar, poste_fr } = req.body;
 
-    const updatedPosteEnseignant = await posteEnseignantService.updatePosteEnseignantDao(posteEnseignantId, {
-        value_poste_enseignant,poste_ar, poste_fr
-    });
+    const updatedPosteEnseignant =
+      await posteEnseignantService.updatePosteEnseignantDao(posteEnseignantId, {
+        poste_ar,
+        poste_fr,
+      });
 
     if (!updatedPosteEnseignant) {
       return res.status(404).send("Poste Enseignant not found!");
@@ -43,7 +46,8 @@ const getPosteEnseignantById = async (req, res) => {
   try {
     const posteEnseignantId = req.params.id;
 
-    const getPosteEnseignant= await posteEnseignantService.getPosteEnseignantDaoById(posteEnseignantId);
+    const getPosteEnseignant =
+      await posteEnseignantService.getPosteEnseignantDaoById(posteEnseignantId);
 
     if (!getPosteEnseignant) {
       return res.status(404).send("Poste Enseignant not found");
@@ -57,7 +61,8 @@ const getPosteEnseignantById = async (req, res) => {
 
 const getAllPostesEnseignant = async (req, res) => {
   try {
-    const posteEnseignants = await posteEnseignantService.getPostesEnseignantDao()
+    const posteEnseignants =
+      await posteEnseignantService.getPostesEnseignantDao();
     res.json(posteEnseignants);
   } catch (error) {
     console.error(error);
@@ -69,7 +74,8 @@ const deletePosteEnseignantById = async (req, res) => {
   try {
     const posteEnseignantId = req.params.id;
 
-    const deletedPosteEnseignant = await posteEnseignantService.deletePosteEnseignantDao(posteEnseignantId);
+    const deletedPosteEnseignant =
+      await posteEnseignantService.deletePosteEnseignantDao(posteEnseignantId);
 
     if (!deletedPosteEnseignant) {
       return res.status(404).send("Poste Enseignant not found");
@@ -80,14 +86,11 @@ const deletePosteEnseignantById = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
-// 
 
 module.exports = {
-    deletePosteEnseignantById,
-    getAllPostesEnseignant,
-    getPosteEnseignantById,
-    createPosteEnseignant,
-    updatePosteEnseignantById
-
-
+  deletePosteEnseignantById,
+  getAllPostesEnseignant,
+  getPosteEnseignantById,
+  createPosteEnseignant,
+  updatePosteEnseignantById,
 };

@@ -1,4 +1,4 @@
-const demandeEnseignantService = require('../../services/DemandeEnseignantServices/DemandeEnseignantServices');
+const demandeEnseignantService = require('../../services/demandeEnseignantServices/demandeEnseignantServices');
 
 const createDemandeEnseignant = async (req, res) => {
   try {

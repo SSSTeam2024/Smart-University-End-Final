@@ -87,15 +87,7 @@ const updateDossierAdministratif = async (id, updateData, documents) => {
   }
 };
 
-const removePaperFromDossier = async (dossierId, papierId, entityId, entityType) => {
-  try {
-    // Call DAO to remove the paper from the dossier and entity (personnel/enseignant)
-    const updatedDossier = await dossierAdministratifDao.removePaperFromDossier(dossierId, papierId, entityId, entityType);
-    return updatedDossier;
-  } catch (error) {
-    throw new Error(`Service Error: ${error.message}`);
-  }
-};
+
 const getDossierAdministratifsDao = async () => {
   try {
     return await dossierAdministratifDao.getDossiersAdministratifs();
@@ -104,9 +96,64 @@ const getDossierAdministratifsDao = async () => {
     throw error;
   }
 };
+const removeSpecificPaperFromDossierService=async (dossierId, userId, userType, paperDetails) =>{
+
+  if (userType !== 'enseignant' && userType !== 'personnel') {
+      throw new Error('Invalid user type');
+  }
+  const updatedDossier = await dossierAdministratifDao.removeSpecificPaperFromDossier(dossierId, userId, userType, paperDetails);
+
+  if (!updatedDossier) {
+      throw new Error('Dossier not found or unable to remove the specified paper');
+  }
+
+  return updatedDossier;
+}
+
+const archiveDossierAdministratif = async (dossierId) => {
+  try {
+    const dossier = await dossierAdministratifDao.getDossierById(dossierId);
+
+    if (!dossier) {
+      throw new Error("Dossier not found");
+    }
+    let type;
+    if (dossier.enseignant) {
+      type = 'enseignant';
+    } else if (dossier.personnel) {
+      type = 'personnel';
+    } else {
+      throw new Error("Invalid dossier type");
+    }
+    const archivedDossier = await dossierAdministratifDao.archiveDossierAdministratif(dossierId);
+
+    return {
+      archivedDossier,
+      type,
+    };
+  } catch (error) {
+    console.error("Error in archiving dossier service:", error);
+    throw error;
+  }
+};
+const restoreDossierAdministratifService = async (dossierId) => {
+  try {
+    const restoredDossier = await dossierAdministratifDao.restoreDossierAdministratif(dossierId);
+    if (!restoredDossier) {
+      throw new Error('Dossier not found');
+    }
+    return restoredDossier;
+  } catch (error) {
+    console.error("Error in service restoring dossier:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   addDossierAdministratif,
   getDossierAdministratifsDao,
-  removePaperFromDossier,
-  updateDossierAdministratif
+  removeSpecificPaperFromDossierService,
+  updateDossierAdministratif,
+  restoreDossierAdministratifService,
+  archiveDossierAdministratif
 };

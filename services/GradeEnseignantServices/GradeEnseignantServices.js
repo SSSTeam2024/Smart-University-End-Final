@@ -1,7 +1,6 @@
 const gradeEnseignantDao = require("../../dao/GradeEnseignantDao/GradeEnseignantDao");
 
 const registerGradeEnseignant = async (userData) => {
- 
   return await gradeEnseignantDao.createGradeEnseignant(userData);
 };
 
@@ -10,7 +9,7 @@ const updateGradeEnseignantDao = async (id, updateData) => {
 };
 
 const getGradeEnseignantDaoById = async (id) => {
-  return await gradeEnseignantDao.getGradeEnseignantById(id)
+  return await gradeEnseignantDao.getGradeEnseignantById(id);
 };
 
 const getGradesEnseignantDao = async () => {
@@ -19,16 +18,13 @@ const getGradesEnseignantDao = async () => {
 };
 
 const deleteGradeEnseignantDao = async (id) => {
-  return await gradeEnseignantDao.deleteGradeEnseignant(id)
+  return await gradeEnseignantDao.deleteGradeEnseignant(id);
 };
 
-
-
 module.exports = {
-    registerGradeEnseignant,
-    deleteGradeEnseignantDao,
-    getGradesEnseignantDao,
-    getGradeEnseignantDaoById,
-    updateGradeEnseignantDao,
-
+  registerGradeEnseignant,
+  deleteGradeEnseignantDao,
+  getGradesEnseignantDao,
+  getGradeEnseignantDaoById,
+  updateGradeEnseignantDao,
 };

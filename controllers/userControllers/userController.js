@@ -13,42 +13,28 @@ exports.getAllUsers = async (req, res) => {
 exports.createUser = async (req, res) => {
   try {
     const {
-      name,
-      email,
+      personnelId,
+      enseignantId,
       login,
-      role_id,
-      departement_id,
+      service,
       password,
-      app_name,
-      photoBase64String,
-      photoExtension,
       api_token,
-      status
+      app_name,
+      status,
+      permissions
     } = req.body;
-    const photoPath = "files/userFiles";
-    let photo = globalFunctions.generateUniqueFilename(
-      photoExtension,
-      "photoUser"
-    );
-    let document = {
-      base64String: photoBase64String,
-      extension: photoExtension,
-      name: photo,
-      path: photoPath,
-    };
+  
     let user = await userService.createUser({
-      name,
-      email,
+      personnelId,
+      enseignantId,
       login,
-      role_id,
-      departement_id,
+      service,
       password,
       api_token,
-      photo,
       app_name,
-      api_token,
-      status
-    }, [document]);
+      status,
+      permissions
+    });
     res.json(user);
   } catch (error) {
     res.status(500).send(error.message);
@@ -76,25 +62,6 @@ exports.loginUser = async (req, res) => {
     res.status(401).send(error.message);
   }
 };
-
-// exports.getUserByToken = async (req, res) => {
-//   try {
-//     const api_token = req.body.api_token;
-
-//     console.log(`api_token: ${api_token}`);
-//     const user = await userService.getUserByToken(api_token);
-//     if (!user) {
-//       console.log(`token controller: ${api_token}`);
-//       return res.status(404).send('User not found');
-//     }
-
-//     console.log(`User: ${user}`);
-//     res.json({ user });
-//   } catch (error) {
-//     console.error(`Get user by token error controller: ${error.message}`);
-//     res.status(500).send(error.message);
-//   }
-// };
 exports.getUserByToken = async (req, res) => {
   try {
       // const authHeader = req.headers['authorization'];

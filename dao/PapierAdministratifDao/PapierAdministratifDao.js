@@ -1,5 +1,6 @@
 const PapierAdministratif = require('../../model/PapierAdministratif/PapierAdministratifModel');
 
+
 const addPapierAdministratif = async (papier_administratif) => {
   try {
     const papier = await PapierAdministratif.create(papier_administratif);
@@ -10,15 +11,13 @@ const addPapierAdministratif = async (papier_administratif) => {
 };
 
 
-
-
 const getPapierAdministratifs = async () => {
   const result = await PapierAdministratif.find();
   return result;
 };
 
 
-const updatePapierAdministratif = async (id, updateData) => {
+const  updatePapierAdministratif = async (id, updateData) => {
   return await PapierAdministratif.findByIdAndUpdate(id, updateData, { new: true });
 };
 

@@ -1,6 +1,6 @@
 const sectionClasseDao = require("../../dao/SectionClasseDao/SectionClasseDao");
 const niveauClasse = require ("../../model/NiveauClasseModel/NiveauClasseModel");
-const DepartementClasse = require ("../../model/DepartementModel/DepartementModel")
+const DepartementClasse = require ("../../model/departementModel/DepartementModel")
 const SectionClasse =require ("../../model/SectionClasseModel/SectionClasseModel")
 // const registerSectionClasse = async (userData) => {
  
