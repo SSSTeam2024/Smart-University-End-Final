@@ -9,11 +9,11 @@ router.post('/add-avis-enseignant', avisEnseignantController.createAvisEnseignan
 router.get('/get-all-avis-enseignants', avisEnseignantController.getAllAvisEnseignants);
 
 
-router.get('/get-avis-enseignant/:id', avisEnseignantController.getAvisEnseignantById);
+router.post('/get-avis-enseignant', avisEnseignantController.getAvisEnseignantById);
 
 
-router.put('/edit-avis-enseignant/:id', avisEnseignantController.updateAvisEnseignant);
+router.put('/edit-avis-enseignant', avisEnseignantController.updateAvisEnseignant);
 
-router.delete('/delete-avis-enseignant/:id', avisEnseignantController.deleteAvisEnseignant);
+router.delete('/delete-avis-enseignant', avisEnseignantController.deleteAvisEnseignant);
 
 module.exports = router;
