@@ -2,18 +2,14 @@ const templateService = require("../../services/TemplateServices/templateService
 
 const addTemplate = async (req, res) => {
   try {
-    const {
-        id_variable_globale,
-        id_template_body,
-        id_student,
-        langue
-    } = req.body;
+    const { id_variable_globale, id_template_body, id_student, langue } =
+      req.body;
 
     const template = await templateService.createTemplate({
-        id_variable_globale,
-        id_template_body,
-        id_student,
-        langue
+      id_variable_globale,
+      id_template_body,
+      id_student,
+      langue,
     });
 
     res.json(template);
@@ -34,6 +30,6 @@ const getAllTemplates = async (req, res) => {
 };
 
 module.exports = {
-    addTemplate,
-    getAllTemplates,
+  addTemplate,
+  getAllTemplates,
 };
