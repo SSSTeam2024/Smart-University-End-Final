@@ -49,8 +49,22 @@ const getAvisEnseignantById = async (id) => {
   return avisEnseignantDao.getAvisEnseignantById(id);
 };
 
-const updateAvisEnseignant = async (id, updateData) => {
-  return avisEnseignantDao.updateAvisEnseignant(id, updateData);
+const updateAvisEnseignant = async (id, updateData, documents) => {
+  try {
+    // Save the new media files to the server
+    if (documents && documents.length > 0) {
+      const saveResult = await saveMediaToServer(documents);
+      if (!saveResult) {
+        throw new Error("Not all files were saved successfully.");
+      }
+    }
+
+    // Update the Actualite in the database with new data
+    return await avisEnseignantDao.updateAvisEnseignant(id, updateData);
+  } catch (error) {
+    console.error("Error updating Avis Enseignant ", error);
+    throw error;
+  }
 };
 
 const deleteAvisEnseignant = async (id) => {
