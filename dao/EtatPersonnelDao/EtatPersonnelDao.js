@@ -20,12 +20,10 @@ const getEtatPersonnelById = async (id) => {
   return await etatPersonnel.findById(id);
 };
 
-
 module.exports = {
-    createEtatPersonnel,
-    getEtatsPersonnel,
-    updateEtatPersonnel,
-    deleteEtatPersonnel,
-    getEtatPersonnelById,
-
+  createEtatPersonnel,
+  getEtatsPersonnel,
+  updateEtatPersonnel,
+  deleteEtatPersonnel,
+  getEtatPersonnelById,
 };
