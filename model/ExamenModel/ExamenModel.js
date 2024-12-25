@@ -6,16 +6,48 @@ const examenSchema = new mongoose.Schema(
     semestre: String,
     session: String,
     type_examen: String,
-    heure_debut: String,
-    heure_fin: String,
     period: String,
-    group_surveillants: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "Enseignant" },
+
+    group_enseignant: {
+      enseignant: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Enseignant",
+          default: null,
+        },
+      ],
+      date: String,
+    },
+
+    epreuve: [
+      {
+        group_surveillants: [
+          {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Enseignant",
+            default: null,
+          },
+        ],
+        date: String,
+        heure_debut: String,
+        heure_fin: String,
+        salle: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Salle",
+          default: null,
+        },
+        matiere: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Matiere",
+          default: null,
+        },
+        classe: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Classe",
+          default: null,
+        },
+      },
     ],
-    salle: { type: mongoose.Schema.Types.ObjectId, ref: "Salle" },
-    matiere: { type: mongoose.Schema.Types.ObjectId, ref: "Matiere" },
-    enseignant: [{ type: mongoose.Schema.Types.ObjectId, ref: "Enseignant" }],
-    classe: { type: mongoose.Schema.Types.ObjectId, ref: "Classe" },
   },
   { timestamps: true }
 );

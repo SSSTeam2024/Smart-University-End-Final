@@ -7,14 +7,9 @@ const createExamen = async (req, res) => {
       semestre,
       session,
       type_examen,
-      heure_debut,
-      heure_fin,
       period,
-      group_surveillants,
-      salle,
-      matiere,
-      enseignant,
-      classe,
+      group_enseignant,
+      epreuve,
     } = req.body;
 
     const examen = await examenService.createExamen({
@@ -22,14 +17,9 @@ const createExamen = async (req, res) => {
       semestre,
       session,
       type_examen,
-      heure_debut,
-      heure_fin,
       period,
-      group_surveillants,
-      salle,
-      matiere,
-      enseignant,
-      classe,
+      group_enseignant,
+      epreuve,
     });
     res.json(examen);
   } catch (error) {
@@ -45,14 +35,9 @@ const updateExamenById = async (req, res) => {
       semestre,
       session,
       type_examen,
-      heure_debut,
-      heure_fin,
       period,
-      group_surveillants,
-      salle,
-      matiere,
       enseignant,
-      classe,
+      epreuve,
     } = req.body;
 
     const updatedExamen = await examenService.updateExamen(examenId, {
@@ -60,14 +45,9 @@ const updateExamenById = async (req, res) => {
       semestre,
       session,
       type_examen,
-      heure_debut,
-      heure_fin,
       period,
-      group_surveillants,
-      salle,
-      matiere,
       enseignant,
-      classe,
+      epreuve,
     });
 
     if (!updatedExamen) {
