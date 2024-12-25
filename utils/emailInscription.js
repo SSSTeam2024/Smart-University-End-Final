@@ -18,17 +18,13 @@ const emailTemplates = {
       Nous avons le plaisir de vous informer que votre inscription a été effectuée avec succès. Vous êtes désormais officiellement inscrit et pouvez accéder à votre compte 
       via notre application mobile.
       </p>
-<p>
-Voici vos identifiants de connexion :
-</p>
-<span>Code d'accès : <span style="font-size: 17px"> <strong>` +
-    code_etudiant +
-    `</strong></span></span>
 <p>Pour commencer :</p>
 <ul>
 <li>Téléchargez notre application mobile depuis [Lien Google Store]</li>
 <li>Ouvrez l'application et cliquez sur « Connexion ».</li>
-<li>Entrez votre email et votre code d'accès pour accéder à votre compte.</li>
+<li>Entrez votre c.i.n et votre code d'accès: <span style="font-size: 17px"> <strong>` +
+    code_etudiant +
+    `</strong></span> pour accéder à votre compte.</li>
 </ul>
 <p>Si vous rencontrez des problèmes ou si vous avez besoin d'aide, n'hésitez pas à nous contacter à [E-mail d'assistance] ou [Numéro de téléphone d'assistance].</p>
 
