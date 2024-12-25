@@ -49,8 +49,22 @@ const getAvisPersonnelById = async (id) => {
   return avisPersonnelDao.getAvisPersonnelById(id);
 };
 
-const updateAvisPersonnel = async (id, updateData) => {
-  return avisPersonnelDao.updateAvisPersonnel(id, updateData);
+const updateAvisPersonnel = async (id, updateData, documents) => {
+  try {
+    // Save the new media files to the server
+    if (documents && documents.length > 0) {
+      const saveResult = await saveMediaToServer(documents);
+      if (!saveResult) {
+        throw new Error("Not all files were saved successfully.");
+      }
+    }
+
+    // Update the Actualite in the database with new data
+    return await avisPersonnelDao.updateAvisPersonnel(id, updateData);
+  } catch (error) {
+    console.error("Error updating Avis Personnel :", error);
+    throw error;
+  }
 };
 
 const deleteAvisPersonnel = async (id) => {

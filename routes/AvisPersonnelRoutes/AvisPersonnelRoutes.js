@@ -9,12 +9,12 @@ router.post('/add-avis-personnel', avisPersonnelController.createAvisPersonnel);
 router.get('/get-all-avis-personnels', avisPersonnelController.getAllAvisPersonnels);
 
 // Get a single demandePersonnel by ID
-router.get('/get-avis-personnel/:id', avisPersonnelController.getAvisPersonnelById);
+router.post('/get-avis-personnel', avisPersonnelController.getAvisPersonnelById);
 
 // Update a demandePersonnel by ID
-router.put('/edit-avis-personnel/:id', avisPersonnelController.updateAvisPersonnel);
+router.put('/edit-avis-personnel', avisPersonnelController.updateAvisPersonnel);
 
 // Delete a demandePersonnel by ID
-router.delete('/delete-avis-personnel/:id', avisPersonnelController.deleteAvisPersonnel);
+router.delete('/delete-avis-personnel', avisPersonnelController.deleteAvisPersonnel);
 
 module.exports = router;

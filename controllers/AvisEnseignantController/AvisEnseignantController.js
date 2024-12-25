@@ -69,7 +69,7 @@ const getAllAvisEnseignants = async (req, res) => {
 
 const getAvisEnseignantById = async (req, res) => {
   try {
-    const avisEnseignant = await avisEnseignantService.getAvisEnseignantById(req.params.id);
+    const avisEnseignant = await avisEnseignantService.getAvisEnseignantById(req.body._id);
     if (!avisEnseignant) {
       return res.status(404).json({ message: 'AvisEnseignant not found' });
     }
@@ -82,20 +82,77 @@ const getAvisEnseignantById = async (req, res) => {
 
 const updateAvisEnseignant = async (req, res) => {
   try {
-    const updatedAvisEnseignant = await avisEnseignantService.updateAvisEnseignant(req.params.id, req.body);
-    if (!updatedAvisEnseignant) {
-      return res.status(404).json({ message: 'AvisEnseignant not found' });
-    }
-    res.status(200).json(updatedAvisEnseignant);
+      const {
+          _id,
+          title,
+      description,
+      auteurId,
+      departement=[],
+      lien,
+      pdfBase64String,
+      pdfExtension,
+      galleryBase64Strings=[],
+      galleryExtensions=[],
+      date_avis
+      } = req.body;
+
+      const pdfPath = "files/avisEnseignantFiles/pdf/";
+      const galleryPath = "files/avisEnseignantFiles/photo/";
+
+      let documents = [];
+      
+      if (pdfBase64String && pdfExtension) {
+          const pdfFilename = globalFunctions.generateUniqueFilename(pdfExtension, 'AvisEnseignantPDF');
+          documents.push({
+              base64String: pdfBase64String,
+              name: pdfFilename,
+              extension: pdfExtension,
+              path: pdfPath
+          });
+      }
+
+      if (galleryBase64Strings.length > 0 && galleryExtensions.length > 0) {
+          const galleryFilenames = galleryExtensions.map((ext, index) => 
+              globalFunctions.generateUniqueFilename(ext, `AvisEnseignantPHOTO_${index}`)
+          );
+
+          galleryBase64Strings.forEach((base64String, index) => {
+              documents.push({
+                  base64String: base64String,
+                  extension: galleryExtensions[index],
+                  name: galleryFilenames[index],
+                  path: galleryPath
+              });
+          });
+      }
+
+      const updatedAvisEnseignant = await avisEnseignantService.updateAvisEnseignant(_id, {
+          title,
+          description,
+          category,
+          departement:[],
+          auteurId,
+          address,
+          lien,
+          pdf: documents.find(doc => doc.path === pdfPath)?.name,
+          gallery: documents.filter(doc => doc.path === galleryPath).map(doc => doc.name),
+          date_avis
+      }, documents);
+
+      if (!updatedAvisEnseignant) {
+          return res.status(404).json({ message: 'Avis Enseignant not found' });
+      }
+
+      res.status(200).json(updatedAvisEnseignant);
   } catch (error) {
-    console.error("Error updating AvisEnseignant:", error);
-    res.status(500).json({ message: error.message });
+      console.error("Error updating Avis Enseignant :", error);
+      res.status(500).json({ message: error.message });
   }
 };
 
 const deleteAvisEnseignant = async (req, res) => {
   try {
-    const deletedAvisEnseignant = await avisEnseignantService.deleteAvisEnseignant(req.params.id);
+    const deletedAvisEnseignant = await avisEnseignantService.deleteAvisEnseignant(req.body._id);
     if (!deletedAvisEnseignant) {
       return res.status(404).json({ message: 'AvisEnseignant not found' });
     }
