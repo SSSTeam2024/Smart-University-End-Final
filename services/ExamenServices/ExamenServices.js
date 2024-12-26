@@ -22,10 +22,15 @@ const deleteExamen = async (id) => {
   return await examenDao.deleteExamen(id);
 };
 
+const getExamensBySemesterAndRegime = async (semester, regime) => {
+  return await examenDao.getExamensBySemesterAndRegime(semester, regime);
+};
+
 module.exports = {
   deleteExamen,
   getAllExamens,
   getExamenById,
   createExamen,
   updateExamen,
+  getExamensBySemesterAndRegime,
 };

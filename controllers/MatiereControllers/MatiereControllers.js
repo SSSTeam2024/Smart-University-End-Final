@@ -2,10 +2,24 @@ const matiereService = require("../../services/MatiereServices/MatiereServices")
 
 const addMatiere = async (req, res) => {
   try {
-    const { code_matiere, matiere, type, semestre, volume, nbr_elimination } = req.body;
+    const {
+      code_matiere,
+      matiere,
+      type,
+      semestre,
+      volume,
+      nbr_elimination,
+      regime_matiere,
+    } = req.body;
 
     const matiereJson = await matiereService.registerMatiere({
-        code_matiere, matiere, type, semestre, volume, nbr_elimination 
+      code_matiere,
+      matiere,
+      type,
+      semestre,
+      volume,
+      nbr_elimination,
+      regime_matiere,
     });
     res.json(matiereJson);
   } catch (error) {
@@ -16,10 +30,24 @@ const addMatiere = async (req, res) => {
 const updateMatiereById = async (req, res) => {
   try {
     const matiereId = req.params.id;
-    const { code_matiere, matiere, type, semestre, volume, nbr_elimination } = req.body;
+    const {
+      code_matiere,
+      matiere,
+      type,
+      semestre,
+      volume,
+      nbr_elimination,
+      regime_matiere,
+    } = req.body;
 
-    const updatedMatiere= await matiereService.updateMatiereDao(matiereId, {
-        code_matiere, matiere, type, semestre, volume, nbr_elimination
+    const updatedMatiere = await matiereService.updateMatiereDao(matiereId, {
+      code_matiere,
+      matiere,
+      type,
+      semestre,
+      volume,
+      nbr_elimination,
+      regime_matiere,
     });
 
     if (!updatedMatiere) {
@@ -36,7 +64,7 @@ const getMatiereById = async (req, res) => {
   try {
     const matiereId = req.params.id;
 
-    const getMatiere= await matiereService.getMatiereDaoById(matiereId);
+    const getMatiere = await matiereService.getMatiereDaoById(matiereId);
 
     if (!getMatiere) {
       return res.status(404).send("Matiere not found");
@@ -72,14 +100,12 @@ const deleteMatiereById = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
-// 
+//
 
 module.exports = {
-    deleteMatiereById,
-    getAllMatieres,
-    getMatiereById,
-    updateMatiereById,
-    addMatiere
-
-
+  deleteMatiereById,
+  getAllMatieres,
+  getMatiereById,
+  updateMatiereById,
+  addMatiere,
 };

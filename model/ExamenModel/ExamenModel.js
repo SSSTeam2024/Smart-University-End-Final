@@ -28,6 +28,14 @@ const examenSchema = new mongoose.Schema(
             default: null,
           },
         ],
+        group_responsables: [
+          {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Enseignant",
+            default: null,
+          },
+        ],
+        nbr_copie: String,
         date: String,
         heure_debut: String,
         heure_fin: String,

@@ -21,6 +21,7 @@ const getExamens = async () => {
       .populate("epreuve.classe")
       .populate({
         path: "epreuve.group_surveillants",
+        path: "epreuve.group_responsables",
       });
   } catch (error) {
     console.error("Error fetching Examens:", error);
@@ -40,6 +41,7 @@ const updateExamen = async (id, updateData) => {
       .populate("epreuve.classe")
       .populate({
         path: "epreuve.group_surveillants",
+        path: "epreuve.group_responsables",
       });
   } catch (error) {
     console.error("Error updating Examen:", error);
@@ -68,10 +70,39 @@ const getExamenById = async (id) => {
       .populate("epreuve.classe")
       .populate({
         path: "epreuve.group_surveillants",
+        path: "epreuve.group_responsables",
       });
   } catch (error) {
     console.error("Error fetching Examen by ID:", error);
     throw error;
+  }
+};
+
+const getExamensBySemesterAndRegime = async (semester, regime) => {
+  try {
+    const examens = await examenModel
+      .find({ semestre: semester })
+      .populate({
+        path: "epreuve.matiere",
+        match: { regime_matiere: regime },
+        populate: { path: "classes", model: "Classe" },
+      })
+      .populate("epreuve.salle")
+      .populate("epreuve.classe")
+      .populate("group_enseignant.enseignant");
+    console.log("Examens after population:", examens);
+
+    const filteredExamens = examens.filter((examen) =>
+      examen.epreuve.some(
+        (e) => e.matiere && e.matiere.regime_matiere === regime
+      )
+    );
+
+    console.log("Filtered Examens:", filteredExamens);
+
+    return filteredExamens;
+  } catch (error) {
+    throw new Error(`Failed to fetch examens: ${error.message}`);
   }
 };
 
@@ -81,4 +112,5 @@ module.exports = {
   updateExamen,
   deleteExamen,
   getExamenById,
+  getExamensBySemesterAndRegime,
 };

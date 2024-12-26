@@ -8,5 +8,9 @@ router.put("/update-examen/:id", examenController.updateExamenById);
 router.get("/get-examen/:id", examenController.getExamenById);
 router.get("/get-all-examen", examenController.getExamens);
 router.delete("/delete-examen/:id", examenController.deleteExamenById);
+router.post(
+  "/get-examen-by-regime-semestre",
+  examenController.getExamensBySemesterAndRegime
+);
 
 module.exports = router;

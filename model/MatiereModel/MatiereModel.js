@@ -1,19 +1,20 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const matiereSchema = new mongoose.Schema({
-  code_matiere: String,
-  matiere: String,
-  type: String,
-  semestre: {
-    type:String,
-    default:'S1'
+const matiereSchema = new mongoose.Schema(
+  {
+    code_matiere: String,
+    regime_matiere: String,
+    matiere: String,
+    type: String,
+    semestre: {
+      type: String,
+      default: "S1",
+    },
+    volume: String,
+    nbr_elimination: String,
+    classes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Classe" }],
   },
-  volume: String,
-  nbr_elimination: String,
-  classes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Classe' }]
+  { timestamps: true }
+);
 
- 
-},
-{ timestamps: true });
-
-module.exports = mongoose.model('Matiere', matiereSchema);
+module.exports = mongoose.model("Matiere", matiereSchema);

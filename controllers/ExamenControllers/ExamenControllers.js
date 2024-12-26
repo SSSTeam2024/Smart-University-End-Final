@@ -102,10 +102,28 @@ const deleteExamenById = async (req, res) => {
   }
 };
 
+const getExamensBySemesterAndRegime = async (req, res) => {
+  try {
+    const { semester, regime } = req.body;
+
+    // Call the service function
+    const examens = await examenService.getExamensBySemesterAndRegime(
+      semester,
+      regime
+    );
+
+    // Send the response
+    res.status(200).json({ success: true, data: examens });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   deleteExamenById,
   getExamens,
   getExamenById,
   updateExamenById,
   createExamen,
+  getExamensBySemesterAndRegime,
 };
