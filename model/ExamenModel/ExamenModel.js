@@ -7,18 +7,18 @@ const examenSchema = new mongoose.Schema(
     session: String,
     type_examen: String,
     period: String,
-
-    group_enseignant: {
-      enseignant: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Enseignant",
-          default: null,
-        },
-      ],
-      date: String,
-    },
-
+    group_enseignant: [
+      {
+        enseignant: [
+          {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Enseignant",
+            default: null,
+          },
+        ],
+        date: String,
+      },
+    ],
     epreuve: [
       {
         group_surveillants: [
