@@ -8,20 +8,19 @@ const createExamen = async (examen) => {
     throw error;
   }
 };
-
 const getExamens = async () => {
   try {
     return await examenModel
       .find()
-      .populate("group_enseignant.enseignant")
+      .populate("group_enseignant.enseignant") // Populate group_enseignant
+      .populate("epreuve.salle") // Populate salle
+      .populate("epreuve.matiere") // Populate matiere
+      .populate("epreuve.classe") // Populate classe
       .populate({
-        path: "epreuve.salle",
+        path: "epreuve.group_surveillants", // Correctly populate group_surveillants
       })
-      .populate("epreuve.matiere")
-      .populate("epreuve.classe")
       .populate({
-        path: "epreuve.group_surveillants",
-        path: "epreuve.group_responsables",
+        path: "epreuve.group_responsables", // Correctly populate group_responsables
       });
   } catch (error) {
     console.error("Error fetching Examens:", error);
