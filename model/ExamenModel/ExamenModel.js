@@ -16,7 +16,7 @@ const examenSchema = new mongoose.Schema(
             default: null,
           },
         ],
-        date: String,
+        date: [String],
       },
     ],
     epreuve: [
