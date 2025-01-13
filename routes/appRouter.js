@@ -61,6 +61,9 @@ const rattrapageRoutes = require("./RattrapageRoutes/RattrapageRoutes");
 
 const examenRoutes = require("./ExamenRoutes/ExamenRoutes");
 
+//! Notes Examen
+const notesExamenRoutes = require("./NotesExamenRoutes/notesExamenRoutes");
+
 // gestion des conges
 router.use("/examen", examenRoutes);
 
@@ -153,5 +156,8 @@ router.use("/seance", seanceRoutes);
 
 //disponibilite
 router.use("/disponibilite-salle", disponibiliteSalleRoutes);
+
+//Notes Examen
+router.use("/notes", notesExamenRoutes);
 
 module.exports = router;
