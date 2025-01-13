@@ -10,9 +10,24 @@ const getAllDemandePersonnels = async () => {
   return DemandePersonnel.find()
   .populate({
     path: "personnelId",
-    populate: {
-      path: "poste"
-    },
+    populate:[
+      {
+        path: "poste"
+      },
+      {
+        path: "etat_compte"
+
+      },
+      {
+        path: "grade"
+      },
+      {
+        path: "service"
+      },
+      {
+        path: "categorie"
+      }
+    ] ,
     options: { strictPopulate: false },
   })
   .populate("piece_demande");

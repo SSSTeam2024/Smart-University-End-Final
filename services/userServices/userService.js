@@ -40,7 +40,12 @@ const fs = require("fs");
 //   });
 // }
 const createUser = async (userData)=> {
-  return userDao.createUser(userData)
+  console.log("user data",userData)
+  const hashedPassword = await bcrypt.hash(userData.password, 10);
+    return await userDao.createUser({
+      ...userData,
+      password: hashedPassword,
+    });
 }
 
 // login service acccount

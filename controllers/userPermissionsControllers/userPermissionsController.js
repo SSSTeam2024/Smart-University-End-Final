@@ -12,6 +12,17 @@ const createPermission = async (req, res) => {
     res.status(500).json({ error: 'Failed to create permission' });
   }
 };
+const createPermissions = async (req, res) => {
+  const { permissions } = req.body;
+
+  try {
+    const result = await userPermissionsService.createPermissions(permissions);
+    res.status(201).json(result);
+  } catch (err) {
+    console.error('Error creating permission:', err);
+    res.status(500).json({ error: 'Failed to create permission' });
+  }
+};
 
 const getAllPermissions = async (req, res) => {
   try {
@@ -112,5 +123,6 @@ module.exports = {
   deletePermissions,
   updatePermissionsForUser,
   updatePermissionsForUserHistory,
-getUserPermissionHistory
+getUserPermissionHistory,
+createPermissions
 };

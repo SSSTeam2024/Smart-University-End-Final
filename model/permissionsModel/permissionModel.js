@@ -6,6 +6,7 @@ const permissionSchema = new Schema({
   path: { type: String, required: true },
   section: { type: String, required: true },
   sub_section: { type: String, required: true },
+  documentEdition: { type: String, required: true }
 });
 
 module.exports = mongoose.model('Permission', permissionSchema);

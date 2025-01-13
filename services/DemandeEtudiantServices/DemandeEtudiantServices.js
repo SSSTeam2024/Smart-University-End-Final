@@ -2,7 +2,7 @@ const demandeEtudiantDao = require('../../dao/DemandeEtudiantDao/DemandeEtudiant
 
 
 const createDemandeEtudiant = async (demandeEtudiantData) => {
-  return demandeEtudiantDao.createDemandeEtudiant(demandeEtudiantData);
+  return await demandeEtudiantDao.createDemandeEtudiant(demandeEtudiantData);
 };
 
 const getAllDemandeEtudiants = async () => {
