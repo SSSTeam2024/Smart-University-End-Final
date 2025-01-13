@@ -105,6 +105,10 @@ const updateGroupeClasse = async (studentIds, groupeClasseId) => {
   return result;
 };
 
+const getEtudiantsByIdClasse = async (classeId) => {
+  return etudiantDao.getEtudiantsByIdClasse(classeId);
+};
+
 module.exports = {
   getEtudiants,
   getEtudiantById,
@@ -113,4 +117,5 @@ module.exports = {
   updateEtudiant,
   getTypeInscriptionByIdStudent,
   updateGroupeClasse,
+  getEtudiantsByIdClasse,
 };

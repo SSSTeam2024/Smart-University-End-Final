@@ -16,7 +16,7 @@ const examenSchema = new mongoose.Schema(
             default: null,
           },
         ],
-        date: String,
+        date: [String],
       },
     ],
     epreuve: [
@@ -39,6 +39,11 @@ const examenSchema = new mongoose.Schema(
         date: String,
         heure_debut: String,
         heure_fin: String,
+        epreuveStatus: String,
+        nbrePresent: String,
+        nbreAbsent: String,
+        nbreExclus: String,
+        epreuveNotes: String,
         salle: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Salle",

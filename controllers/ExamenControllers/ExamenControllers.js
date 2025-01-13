@@ -119,6 +119,34 @@ const getExamensBySemesterAndRegime = async (req, res) => {
   }
 };
 
+const editCalendrierExamens = async (req, res) => {
+  try {
+    const {
+      id_Calendrier,
+      epreuveId,
+      epreuve_status,
+      nbre_present,
+      nbre_absent,
+      nbre_exclus,
+      notes,
+    } = req.body;
+    console.log("req body", req.body);
+    const sentResult = await examenService.editCalendrierExamens({
+      id_Calendrier,
+      epreuveId,
+      epreuve_status,
+      nbre_present,
+      nbre_absent,
+      nbre_exclus,
+      notes,
+    });
+    res.json({ success: sentResult });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   deleteExamenById,
   getExamens,
@@ -126,4 +154,5 @@ module.exports = {
   updateExamenById,
   createExamen,
   getExamensBySemesterAndRegime,
+  editCalendrierExamens,
 };

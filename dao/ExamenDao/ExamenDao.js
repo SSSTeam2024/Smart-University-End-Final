@@ -105,6 +105,48 @@ const getExamensBySemesterAndRegime = async (semester, regime) => {
   }
 };
 
+const editCalendrierExamens = async (
+  id_Calendrier,
+  epreuveId,
+  epreuve_status,
+  nbre_present,
+  nbre_absent,
+  nbre_exclus,
+  notes
+) => {
+  try {
+    const document = await examenModel.findOne({
+      _id: id_Calendrier,
+      "epreuve._id": epreuveId,
+    });
+
+    if (!document) {
+      console.error(
+        "No document found with the given id_Calendrier and epreuveId"
+      );
+      return null;
+    }
+
+    const updatedCalendar = await examenModel.findOneAndUpdate(
+      { _id: id_Calendrier, "epreuve._id": epreuveId },
+      {
+        $set: {
+          "epreuve.$.epreuveStatus": epreuve_status,
+          "epreuve.$.nbrePresent": nbre_present,
+          "epreuve.$.nbreAbsent": nbre_absent,
+          "epreuve.$.nbreExclus": nbre_exclus,
+          "epreuve.$.epreuveNotes": notes,
+        },
+      },
+      { new: true }
+    );
+
+    return updatedCalendar;
+  } catch (error) {
+    throw new Error("Failed to update calendar: " + error.message);
+  }
+};
+
 module.exports = {
   createExamen,
   getExamens,
@@ -112,4 +154,5 @@ module.exports = {
   deleteExamen,
   getExamenById,
   getExamensBySemesterAndRegime,
+  editCalendrierExamens,
 };

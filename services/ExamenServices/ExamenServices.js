@@ -26,6 +26,26 @@ const getExamensBySemesterAndRegime = async (semester, regime) => {
   return await examenDao.getExamensBySemesterAndRegime(semester, regime);
 };
 
+const editCalendrierExamens = async (editData) => {
+  let id_Calendrier = editData.id_Calendrier;
+  let epreuveId = editData.epreuveId;
+  let epreuve_status = editData.epreuve_status;
+  let nbre_present = editData.nbre_present;
+  let nbre_absent = editData.nbre_absent;
+  let nbre_exclus = editData.nbre_exclus;
+  let notes = editData.notes;
+  await examenDao.editCalendrierExamens(
+    id_Calendrier,
+    epreuveId,
+    epreuve_status,
+    nbre_present,
+    nbre_absent,
+    nbre_exclus,
+    notes
+  );
+  return "Success Edit Calendar!!";
+};
+
 module.exports = {
   deleteExamen,
   getAllExamens,
@@ -33,4 +53,5 @@ module.exports = {
   createExamen,
   updateExamen,
   getExamensBySemesterAndRegime,
+  editCalendrierExamens,
 };

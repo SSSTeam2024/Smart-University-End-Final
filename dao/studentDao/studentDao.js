@@ -98,6 +98,17 @@ const updateGroupeClasse = async (studentIds, groupeClasseId) => {
   }
 };
 
+const getEtudiantsByIdClasse = async (classeId) => {
+  try {
+    const etudiants = await etudiantModel.find({
+      groupe_classe: classeId,
+    });
+    return etudiants;
+  } catch (error) {
+    console.error("Error while getting studiants for this classe id");
+    throw error;
+  }
+};
 module.exports = {
   createEudiant,
   getEtudiantById,
@@ -105,4 +116,5 @@ module.exports = {
   deleteEtudiant,
   updateEtudiant,
   updateGroupeClasse,
+  getEtudiantsByIdClasse,
 };

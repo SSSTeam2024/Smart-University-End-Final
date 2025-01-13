@@ -12,5 +12,6 @@ router.post(
   "/get-examen-by-regime-semestre",
   examenController.getExamensBySemesterAndRegime
 );
+router.post("/EpeditreuveData", examenController.editCalendrierExamens);
 
 module.exports = router;
