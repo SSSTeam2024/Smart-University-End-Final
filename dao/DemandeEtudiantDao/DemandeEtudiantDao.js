@@ -38,12 +38,19 @@ const generatePDF = async (demandeEtudiant) => {
 const getAllDemandeEtudiants = async () => {
   return DemandeEtudiant.find().populate({
     path: "studentId",
-    populate: {
+    populate: [{
       path: "groupe_classe",
       populate: {
         path: "departement",
       },
     },
+    {
+      path: "etat_compte",
+    },
+    {
+      path: "type_inscription",
+    }
+  ],
   }).populate("piece_demande")
 };
 

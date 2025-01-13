@@ -5,13 +5,13 @@ const userSchema = new Schema({
   personnelId: { type: Schema.Types.ObjectId, ref: 'Personnel', required: false },
   enseignantId: { type: Schema.Types.ObjectId, ref: 'Enseignant', required: false },
   login: String,
-  service: String,
+  service: { type: Schema.Types.ObjectId, ref: 'VirtualService', required: false },
   password: String,
   api_token: String,
   app_name: String,
   status: String,
-  permissions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Permission' }],
-  // updatedAt: { type: Date, default: Date.now }
+  permissions: [{ type: Schema.Types.ObjectId, ref: 'Permission'}],
+  documentEdition: String
 },{ timestamps: true });
 
 // Automatically update the `updatedAt` field on save

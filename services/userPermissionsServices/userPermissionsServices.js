@@ -7,6 +7,10 @@ const createPermission = async (name, path, section, sub_section) => {
   const permissionData = { name, path, section, sub_section };
   return await permissionsDao.createPermission(permissionData);
 };
+const createPermissions = async (permissionsData) => {
+  
+  return await permissionsDao.createPermissions(permissionsData);
+};
 const getAllPermissions = async ()=>{
   return await permissionsDao.getAllPermissions()
 }
@@ -71,4 +75,6 @@ module.exports={createPermission,
   getPermissionsByUserId,
   updatePermissionsForUser,
   updatePermissionsForUserHistory,
-getUserPermissionHistory}
+getUserPermissionHistory,
+createPermissions
+}

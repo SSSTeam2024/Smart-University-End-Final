@@ -22,7 +22,7 @@ const findUserByToken = async (token) => {
   };
 // get all Users
 const getAllUsers = async () => {
-    return await User.find({}).populate("enseignantId").populate("personnelId");
+    return await User.find({}).populate("enseignantId").populate("personnelId").populate("service").populate("permissions");
   };
   const updateJwtToken = async (id, token) => {
     return await User.findByIdAndUpdate({ _id:id }, {
