@@ -61,16 +61,13 @@ const rattrapageRoutes = require("./RattrapageRoutes/RattrapageRoutes");
 
 const examenRoutes = require("./ExamenRoutes/ExamenRoutes");
 
-<<<<<<< HEAD
 //! Notes Examen
 const notesExamenRoutes = require("./NotesExamenRoutes/notesExamenRoutes");
-=======
 const virtualServiceRoutes = require("./VirtualServiceRoutes/VirtualServiceRoutes");
 
-const deplacementRoutes = require("./DeplacementRoutes/DeplacementRoutes")
+const deplacementRoutes = require("./DeplacementRoutes/DeplacementRoutes");
 
-const noteProRoutes = require("./NoteProRoutes/NoteProRoutes")
->>>>>>> e2980a280959922e240b1fe7fd3f7fb1da9e45a1
+const noteProRoutes = require("./NoteProRoutes/NoteProRoutes");
 
 // gestion des conges
 router.use("/examen", examenRoutes);
@@ -167,10 +164,10 @@ router.use("/seance", seanceRoutes);
 //disponibilite
 router.use("/disponibilite-salle", disponibiliteSalleRoutes);
 //deplacement
-router.use("/deplacement",deplacementRoutes);
+router.use("/deplacement", deplacementRoutes);
 
 //notes pro
-router.use("/note-pro",noteProRoutes);
+router.use("/note-pro", noteProRoutes);
 
 //Notes Examen
 router.use("/notes", notesExamenRoutes);
