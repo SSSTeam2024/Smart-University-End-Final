@@ -15,7 +15,8 @@ const registerEtudiant = async (userData, documents) => {
         userData.email,
         userData.prenom_fr,
         userData.nom_fr,
-        userData.code_acces
+        userData.code_acces,
+        userData.num_CIN
       );
       await emailService.sendEmail(email);
       return newEtudiant;
@@ -50,12 +51,15 @@ async function saveFile(base64String, fileName, file_path) {
   });
 }
 
-function prepareEmailInscription(email, prenom, nom, code) {
+function prepareEmailInscription(email, prenom, nom, code, cin) {
   let recipient = email;
+  let pwd = String(cin).split("").reverse().join("");
   let emailBody = emailStructure.emailTemplates.email_inscription(
     prenom,
     nom,
-    code
+    code,
+    pwd,
+    cin
   );
   let emailSubject = "Confirmation d'inscription et code d'accès";
   let fullEmailObject = {
@@ -109,6 +113,14 @@ const getEtudiantsByIdClasse = async (classeId) => {
   return etudiantDao.getEtudiantsByIdClasse(classeId);
 };
 
+const getEtudiantByCin = async (cin_etudiant) => {
+  return etudiantDao.getEtudiantByCIN(cin_etudiant);
+};
+
+const getEtudiatByCinAndCode = async (cin_etudiant, codesecret) => {
+  return etudiantDao.getEtudiantByCinAndCode(cin_etudiant, codesecret);
+};
+
 module.exports = {
   getEtudiants,
   getEtudiantById,
@@ -118,4 +130,6 @@ module.exports = {
   getTypeInscriptionByIdStudent,
   updateGroupeClasse,
   getEtudiantsByIdClasse,
+  getEtudiantByCin,
+  getEtudiatByCinAndCode,
 };

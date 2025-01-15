@@ -44,6 +44,7 @@ const etudiantSchema = new mongoose.Schema(
     niveau_scolaire: String,
     annee_scolaire: String,
     code_acces: String,
+    verified: String,
     type_inscription: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "TypeInscriptionEtudiant",

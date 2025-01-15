@@ -1,40 +1,128 @@
 const emailTemplates = {
-  email_inscription: (prenom_etudiant, nom_etudiant, code_etudiant) =>
+  email_inscription: (
+    prenom_etudiant,
+    nom_etudiant,
+    code_etudiant,
+    pwd_etudiant,
+    cin_etudiant
+  ) =>
     `
-      <html>
-    <body
-      style="
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-          Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
-          sans-serif;
-      "
-    >
-      <h3>Cher ` +
+      <!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Confirmation d'inscription</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f8f8f8;
+        font-family: Arial, sans-serif;
+      }
+      table {
+        width: 100%;
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #ffffff;
+        border-collapse: collapse;
+        border: 1px solid #e0e0e0;
+      }
+      td {
+        padding: 20px;
+        text-align: left;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #333333;
+      }
+      h2, h3, h5 {
+        margin: 0;
+        color: #333333;
+      }
+      h2 {
+        font-size: 24px;
+        text-align: center;
+      }
+      a {
+        color: #007bff;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .header {
+        text-align: center;
+        padding: 20px 0;
+        background-color: #f0f0f0;
+      }
+      .header img {
+        max-height: 50px;
+      }
+      .footer {
+        font-size: 12px;
+        text-align: center;
+        color: #777777;
+        padding: 20px 0;
+        background-color: #f0f0f0;
+      }
+    </style>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <td class="header">
+          <img src="https://example.com/logo.png" alt="Logo" />
+          <h2>Confirmation d'inscription</h2>
+          <p style="color: #666; font-size: 12px;">DECEMBER 2024</p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <h5>Bonjour ` +
     prenom_etudiant +
-    ` ` +
     nom_etudiant +
-    `,</h3>
-      <p>
-      Nous avons le plaisir de vous informer que votre inscription a été effectuée avec succès. Vous êtes désormais officiellement inscrit et pouvez accéder à votre compte 
-      via notre application mobile.
-      </p>
-<p>Pour commencer :</p>
-<ul>
-<li>Téléchargez notre application mobile depuis [Lien Google Store]</li>
-<li>Ouvrez l'application et cliquez sur « Connexion ».</li>
-<li>Entrez votre c.i.n et votre code d'accès: <span style="font-size: 17px"> <strong>` +
-    code_etudiant +
-    `</strong></span> pour accéder à votre compte.</li>
-</ul>
-<p>Si vous rencontrez des problèmes ou si vous avez besoin d'aide, n'hésitez pas à nous contacter à [E-mail d'assistance] ou [Numéro de téléphone d'assistance].</p>
-
-<p>Nous vous souhaitons une merveilleuse expérience avec nous !</p>
-
-<p>Cordialement,</p>
-<p>[Nom de votre organisation]</p>
-<p>[Coordonnées]</p>
-    </body>
-  </html>
+    `,</h5>
+          <p>
+            Nous avons le plaisir de vous informer que votre inscription a été
+            effectuée avec succès. Vous êtes désormais officiellement inscrit et
+            pouvez accéder à votre compte via notre application mobile.
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <h3>Téléchargez notre application mobile</h3>
+          <p>
+            <a href="https://play.google.com">Lien Google Store</a><br />
+            <a href="https://apps.apple.com">Lien App Store</a><br />
+            <a href="https://example.com/app.apk">Lien APK</a>
+          </p>
+          <img src="https://example.com/app-preview.png" alt="Aperçu de l'application" style="max-width: 100%; height: auto;" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <h3>Ouvrez l'application et cliquez sur « Connexion »</h3>
+          <p>
+            <strong>Entrez votre C.I.N :</strong> 9122<br />
+            <strong>Entrez votre mot de passe :</strong> 2219<br />
+            <strong>Entrez votre code d'accès :</strong> 0Jc
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td class="footer">
+          Si vous rencontrez des problèmes ou si vous avez besoin d'aide, contactez-nous à
+          <a href="mailto:support@example.com">support@example.com</a> ou au
+          <strong>+33 1 23 45 67 89</strong>.
+          <br />
+          Cordialement,<br />
+          [Nom de votre organisation]
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
       `,
 };
 

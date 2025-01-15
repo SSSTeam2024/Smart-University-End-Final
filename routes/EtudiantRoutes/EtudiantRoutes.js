@@ -14,4 +14,9 @@ router.get(
   "/get-etudiant-by-idclasse/:id",
   etudiantController.getEtudiantsByIdClasse
 );
+router.get("/get-etudiant-by-cin/:id", etudiantController.getEtudiantByCin);
+router.post(
+  "/get-etudiant-by-cin-and-code",
+  etudiantController.getEtudiantByCinAndCode
+);
 module.exports = router;

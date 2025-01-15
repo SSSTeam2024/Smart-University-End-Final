@@ -485,6 +485,39 @@ const getEtudiantsByIdClasse = async (req, res) => {
   }
 };
 
+const getEtudiantByCin = async (req, res) => {
+  try {
+    const cin_etudiant = req.params.id;
+    const etudiant = await studentService.getEtudiantByCin(cin_etudiant);
+
+    if (!etudiant) {
+      return res.status(404).send("Aucun Etudiant avec cette C.I.N");
+    }
+    res.json(etudiant);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+};
+
+const getEtudiantByCinAndCode = async (req, res) => {
+  try {
+    const { cin_etudiant, codesecret } = req.body;
+    const etudiant = await studentService.getEtudiatByCinAndCode(
+      cin_etudiant,
+      codesecret
+    );
+
+    if (!etudiant) {
+      return res.status(404).send("Aucun Etudiant avec C.I.N et code donné");
+    }
+    res.json(etudiant);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   addStudent,
   getAllStudents,
@@ -495,4 +528,6 @@ module.exports = {
   updateGroupeClasse,
   getEtudiantById,
   getEtudiantsByIdClasse,
+  getEtudiantByCin,
+  getEtudiantByCinAndCode,
 };
