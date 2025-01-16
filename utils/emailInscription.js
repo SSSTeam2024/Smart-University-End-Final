@@ -111,11 +111,6 @@ const emailTemplates = {
             <a href="https://apps.apple.com">Lien App Store</a><br />
             <a href="https://example.com/app.apk">Lien APK</a>
           </p>
-          <img src="https://api.university.smartschools.tn/files/logo/student-app-login-screen.png" alt="Aperçu de l'application" style="max-width: 100%; height: auto;" />
-        </td>
-      </tr>
-      <tr>
-        <td>
           <h3>Ouvrez l'application et cliquez sur « Connexion »</h3>
           <p>
             <strong>Entrez votre C.I.N :</strong> ` +
@@ -128,16 +123,17 @@ const emailTemplates = {
     code_etudiant +
     `
           </p>
+          <img src="https://api.university.smartschools.tn/files/logo/student-app-login-screen.png" alt="Aperçu de l'application" style="max-width: 100%; height: auto;" />
         </td>
       </tr>
       <tr>
         <td class="footer">
           Si vous rencontrez des problèmes ou si vous avez besoin d'aide, contactez-nous à
-          <a href="mailto:support@example.com">support@example.com</a> ou au
-          <strong>+33 1 23 45 67 89</strong>.
+          <a href="mailto:contact@sss.com.tn">contact@sss.com.tn</a> ou au
+          <strong>00 (216) 52 910 006</strong>.
           <br />
           Cordialement,<br />
-          [Nom de votre organisation]
+          <a href="https://sss.com.tn/">
         </td>
       </tr>
     </table>
