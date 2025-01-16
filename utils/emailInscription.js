@@ -71,14 +71,24 @@ const emailTemplates = {
   <body>
     <table>
       <tr>
-        <td class="header">
-          <img src="https://example.com/logo.png" alt="Logo" />
-          <h2>Confirmation d'inscription</h2>
-          <p style="color: #666; font-size: 12px;">` +
+  <td class="header">
+    <table style="width: 100%; border-collapse: collapse;">
+      <tr>
+        <td style="text-align: left; vertical-align: middle; width: 20%;">
+          <img src="https://api.university.smartschools.tn/files/logo/logo.png" alt="Logo" style="max-height: 50px;" />
+        </td>
+        <td style="text-align: center; vertical-align: middle; width: 60%;">
+          <h2 style="margin: 0;">Confirmation d'inscription</h2>
+        </td>
+        <td style="text-align: right; vertical-align: middle; width: 20%;">
+          <p style="margin: 0; color: #666; font-size: 12px;">` +
     date +
     `</p>
         </td>
       </tr>
+    </table>
+  </td>
+</tr>
       <tr>
         <td>
           <h5>Bonjour ` +
@@ -101,7 +111,7 @@ const emailTemplates = {
             <a href="https://apps.apple.com">Lien App Store</a><br />
             <a href="https://example.com/app.apk">Lien APK</a>
           </p>
-          <img src="https://example.com/app-preview.png" alt="Aperçu de l'application" style="max-width: 100%; height: auto;" />
+          <img src="https://api.university.smartschools.tn/files/logo/student-app-login-screen.png" alt="Aperçu de l'application" style="max-width: 100%; height: auto;" />
         </td>
       </tr>
       <tr>

@@ -22,13 +22,13 @@ const sendEmail = async (email) => {
         to: email.to, //email.to, "fourati.oussama9@gmail.com"
         subject: email.subject,
         html: email.body,
-        attachments: [
-          {
-            filename: "logo.jpg",
-            path: path.join(__dirname, "../../files/logo/", "logo.png"), // Adjust the file path based on your actual image location
-            cid: "unique-image-id", // Unique ID for referencing the image in the HTML content
-          },
-        ],
+        // attachments: [
+        //   {
+        //     filename: "logo.jpg",
+        //     path: path.join(__dirname, "../../files/logo/", "logo.png"), // Adjust the file path based on your actual image location
+        //     cid: "unique-image-id", // Unique ID for referencing the image in the HTML content
+        //   },
+        // ],
       };
 
       // Send email
