@@ -49,6 +49,19 @@ const addStudent = async (req, res) => {
       PhotoProfilFileBase64String,
       files = [],
       code_acces,
+      password,
+      //! TO Verify if we keep these fields or not !!
+      num_inscri,
+      Niveau_Fr,
+      DIPLOME,
+      Spécialité,
+      Groupe,
+      Cycle,
+      Ann_Univ,
+      Modele_Carte,
+      NiveauAr,
+      DiplomeAr,
+      SpecialiteAr,
     } = req.body;
 
     const face1CINPath = "files/etudiantFiles/Face1CIN/";
@@ -76,14 +89,14 @@ const addStudent = async (req, res) => {
       "photo_profil"
     );
 
-    const typeInscription = await TypeInscriptionEtudiant.findById(
-      type_inscription
-    );
-    if (!typeInscription) {
-      return res.status(404).json({ error: "Type inscription not found" });
-    }
+    // const typeInscription = await TypeInscriptionEtudiant.findById(
+    //   type_inscription
+    // );
+    // if (!typeInscription) {
+    //   return res.status(404).json({ error: "Type inscription not found" });
+    // }
 
-    const filesTypeInscription = typeInscription.files_type_inscription;
+    // const filesTypeInscription = typeInscription.files_type_inscription;
 
     let documents = [
       {
@@ -136,6 +149,7 @@ const addStudent = async (req, res) => {
       });
     }
     const code = generateCode.generateCompositeCode();
+    let pwd = String(num_CIN).split("").reverse().join("");
     const etudiant = await studentService.registerEtudiant(
       {
         nom_fr,
@@ -174,6 +188,19 @@ const addStudent = async (req, res) => {
         photo_profil,
         files: documents.map((doc) => doc.name),
         code_acces: code,
+        password: pwd,
+        //! TO Verify if we keep these fields or not !!
+        num_inscri,
+        Niveau_Fr,
+        DIPLOME,
+        Spécialité,
+        Groupe,
+        Cycle,
+        Ann_Univ,
+        Modele_Carte,
+        NiveauAr,
+        DiplomeAr,
+        SpecialiteAr,
       },
       documents
     );
@@ -518,6 +545,37 @@ const getEtudiantByCinAndCode = async (req, res) => {
   }
 };
 
+const getEtudiantByToken = async (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(401).send("Token missing");
+    }
+
+    const etudiant = await studentService.getEtudiantByToken(token);
+    if (!etudiant) {
+      return res.status(404).send("Etudiant not found");
+    }
+
+    res.json(etudiant);
+  } catch (error) {
+    console.error(`Get etudiant by token error controller: ${error.message}`);
+    res.status(500).send(error.message);
+  }
+};
+
+const login = async (req, res) => {
+  try {
+    const { cin, password } = req.body;
+
+    const etudiant = await studentService.login(cin, password);
+
+    res.json({ message: "Login successful", etudiant });
+  } catch (error) {
+    res.status(401).send(error.message);
+  }
+};
+
 module.exports = {
   addStudent,
   getAllStudents,
@@ -530,4 +588,6 @@ module.exports = {
   getEtudiantsByIdClasse,
   getEtudiantByCin,
   getEtudiantByCinAndCode,
+  getEtudiantByToken,
+  login,
 };

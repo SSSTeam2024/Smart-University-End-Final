@@ -56,6 +56,20 @@ const etudiantSchema = new mongoose.Schema(
         fileName: String,
       },
     ],
+    api_token: String,
+    password: String,
+    //! TO Verify if we keep these fields or not !!
+    num_inscri: String,
+    Niveau_Fr: String,
+    DIPLOME: String,
+    Spécialité: String,
+    Groupe: String,
+    Cycle: String,
+    Ann_Univ: String,
+    Modele_Carte: String,
+    NiveauAr: String,
+    DiplomeAr: String,
+    SpecialiteAr: String,
   },
   { timestamps: true }
 );

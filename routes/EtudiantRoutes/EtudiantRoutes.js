@@ -19,4 +19,7 @@ router.post(
   "/get-etudiant-by-cin-and-code",
   etudiantController.getEtudiantByCinAndCode
 );
+router.post("/login-etudiant", etudiantController.login);
+router.post("/get-etudiant-by-token", etudiantController.getEtudiantByToken);
+
 module.exports = router;

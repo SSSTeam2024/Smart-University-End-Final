@@ -4,7 +4,8 @@ const emailTemplates = {
     nom_etudiant,
     code_etudiant,
     pwd_etudiant,
-    cin_etudiant
+    cin_etudiant,
+    date
   ) =>
     `
       <!DOCTYPE html>
@@ -73,13 +74,16 @@ const emailTemplates = {
         <td class="header">
           <img src="https://example.com/logo.png" alt="Logo" />
           <h2>Confirmation d'inscription</h2>
-          <p style="color: #666; font-size: 12px;">DECEMBER 2024</p>
+          <p style="color: #666; font-size: 12px;">` +
+    date +
+    `</p>
         </td>
       </tr>
       <tr>
         <td>
           <h5>Bonjour ` +
     prenom_etudiant +
+    " " +
     nom_etudiant +
     `,</h5>
           <p>
@@ -104,9 +108,15 @@ const emailTemplates = {
         <td>
           <h3>Ouvrez l'application et cliquez sur « Connexion »</h3>
           <p>
-            <strong>Entrez votre C.I.N :</strong> 9122<br />
-            <strong>Entrez votre mot de passe :</strong> 2219<br />
-            <strong>Entrez votre code d'accès :</strong> 0Jc
+            <strong>Entrez votre C.I.N :</strong> ` +
+    cin_etudiant +
+    `<br />
+            <strong>Entrez votre mot de passe :</strong> ` +
+    pwd_etudiant +
+    `<br />
+            <strong>Entrez votre code d'accès :</strong> ` +
+    code_etudiant +
+    `
           </p>
         </td>
       </tr>

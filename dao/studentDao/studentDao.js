@@ -112,7 +112,7 @@ const getEtudiantsByIdClasse = async (classeId) => {
 
 const getEtudiantByCIN = async (cin_etudiant) => {
   try {
-    const etudiant = await etudiantModel.find({
+    const etudiant = await etudiantModel.findOne({
       num_CIN: cin_etudiant,
     });
     return etudiant;
@@ -141,6 +141,22 @@ const getEtudiantByCinAndCode = async (cin_etudiant, codesecret) => {
   }
 };
 
+const findEtudiantByToken = async (token) => {
+  let api_token = token;
+  return await etudiantModel.findOne({ api_token });
+};
+
+const updateJwtToken = async (id, token) => {
+  return await etudiantModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      $set: {
+        api_token: token,
+      },
+    }
+  );
+};
+
 module.exports = {
   createEudiant,
   getEtudiantById,
@@ -151,4 +167,6 @@ module.exports = {
   getEtudiantsByIdClasse,
   getEtudiantByCIN,
   getEtudiantByCinAndCode,
+  findEtudiantByToken,
+  updateJwtToken,
 };
