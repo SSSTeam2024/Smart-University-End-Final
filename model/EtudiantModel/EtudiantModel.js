@@ -51,7 +51,7 @@ const etudiantSchema = new mongoose.Schema(
     },
     files: [
       {
-        type: String,
+        file_type: String,
         fileName: String,
       },
     ],

@@ -61,7 +61,22 @@ const rattrapageRoutes = require("./RattrapageRoutes/RattrapageRoutes");
 
 const examenRoutes = require("./ExamenRoutes/ExamenRoutes");
 
-// gestion des conges
+const domaineClasseRoutes = require("./DomaineClasseRoutes/DomaineClasseRoutes");
+const mentionClasseRoutes = require("./MentionClasseRoutes/MentionClasseRoutes");
+
+const typeParcoursRoutes = require("./TypeParcoursRoutes/TypeParcoursRoutes");
+
+const parcoursRoutes = require("./ParcoursRoutes/ParcoursRoutes");
+const moduleParcoursRoutes = require("./ModuleParcoursRoutes/ModuleParcoursRoutes");
+
+router.use("/type-parcours", typeParcoursRoutes);
+
+router.use("/parcours", parcoursRoutes);
+
+router.use("/module-parcours", moduleParcoursRoutes);
+
+router.use("/domaine-classe", domaineClasseRoutes);
+router.use("/mention-classe", mentionClasseRoutes);
 router.use("/examen", examenRoutes);
 
 router.use("/LeaveBalance", leaveBalance);
