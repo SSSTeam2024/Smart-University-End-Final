@@ -10,9 +10,17 @@ const getAllDemandeEnseignants = async () => {
   return DemandeEnseignant.find()
     .populate({
       path: "enseignantId",
-      populate: {
-        path: "poste"
-      },
+      populate: [{
+        path: "poste",
+      },{
+        path: "etat_compte",
+      },{
+        path: "specilaite"
+      },{
+        path: "departements"
+      },{
+        path: "grade"
+      }],
       options: { strictPopulate: false },
     })
     .populate('piece_demande');

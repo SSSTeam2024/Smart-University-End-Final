@@ -5,6 +5,7 @@ const userPermissionsController = require('../../controllers/userPermissionsCont
 // router.post('/get-all-user-permissions', userPermissionsController.getAllPermissionsByUserId);
 // router.post('/assign-user-permissions', userPermissionsController.assignUserPermissions);
 router.post('/add-permission', userPermissionsController.createPermission)
+router.post('/add-permissions', userPermissionsController.createPermissions)
 router.get('/get-permissions', userPermissionsController.getAllPermissions)
 router.post('/assign-user-permissions', userPermissionsController.assignPermissionsToUser)
 router.post('/delete-user-permissions', userPermissionsController.deletePermissions);

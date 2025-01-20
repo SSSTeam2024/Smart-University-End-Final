@@ -109,6 +109,54 @@ const getEtudiantsByIdClasse = async (classeId) => {
     throw error;
   }
 };
+
+const getEtudiantByCIN = async (cin_etudiant) => {
+  try {
+    const etudiant = await etudiantModel.findOne({
+      num_CIN: cin_etudiant,
+    });
+    return etudiant;
+  } catch (error) {
+    console.error("Error while getting student by cin");
+    throw error;
+  }
+};
+
+const getEtudiantByCinAndCode = async (cin_etudiant, codesecret) => {
+  try {
+    const etudiant = await etudiantModel.findOne({
+      num_CIN: cin_etudiant,
+      code_acces: codesecret,
+    });
+    if (etudiant) {
+      etudiant.verified = "yes";
+      await etudiant.save();
+      return etudiant;
+    } else {
+      console.log("No Student found with these Cin and Code");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error while getting student by cin and code");
+  }
+};
+
+const findEtudiantByToken = async (token) => {
+  let api_token = token;
+  return await etudiantModel.findOne({ api_token });
+};
+
+const updateJwtToken = async (id, token) => {
+  return await etudiantModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      $set: {
+        api_token: token,
+      },
+    }
+  );
+};
+
 module.exports = {
   createEudiant,
   getEtudiantById,
@@ -117,4 +165,8 @@ module.exports = {
   updateEtudiant,
   updateGroupeClasse,
   getEtudiantsByIdClasse,
+  getEtudiantByCIN,
+  getEtudiantByCinAndCode,
+  findEtudiantByToken,
+  updateJwtToken,
 };

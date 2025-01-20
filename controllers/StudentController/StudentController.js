@@ -51,8 +51,6 @@ const addStudent = async (req, res) => {
       code_acces,
     } = req.body;
 
-    console.log("files req.body", files);
-
     const face1CINPath = "files/etudiantFiles/Face1CIN/";
     const face2CINPath = "files/etudiantFiles/Face2CIN/";
     const fichePaiementPath = "files/etudiantFiles/FichePaiement/";
@@ -137,51 +135,50 @@ const addStudent = async (req, res) => {
         path: filePath,
       });
     }
-
     const code = generateCode.generateCompositeCode();
-    // const etudiant = await studentService.registerEtudiant(
-    //   {
-    //     nom_fr,
-    //     nom_ar,
-    //     prenom_fr,
-    //     prenom_ar,
-    //     lieu_naissance_ar,
-    //     lieu_naissance_fr,
-    //     date_naissance,
-    //     nationalite,
-    //     sexe,
-    //     etat_civil,
-    //     num_CIN,
-    //     state,
-    //     dependence,
-    //     code_postale,
-    //     adress_ar,
-    //     adress_fr,
-    //     num_phone,
-    //     email,
-    //     nom_pere,
-    //     job_pere,
-    //     nom_mere,
-    //     num_phone_tuteur,
-    //     moyen,
-    //     session,
-    //     filiere,
-    //     niveau_scolaire,
-    //     annee_scolaire,
-    //     type_inscription,
-    //     etat_compte,
-    //     groupe_classe,
-    //     face_1_CIN,
-    //     face_2_CIN,
-    //     fiche_paiement,
-    //     photo_profil,
-    //     files: documents.map((doc) => doc.name),
-    //     code_acces: code,
-    //   },
-    //   documents
-    // );
+    const etudiant = await studentService.registerEtudiant(
+      {
+        nom_fr,
+        nom_ar,
+        prenom_fr,
+        prenom_ar,
+        lieu_naissance_ar,
+        lieu_naissance_fr,
+        date_naissance,
+        nationalite,
+        sexe,
+        etat_civil,
+        num_CIN,
+        state,
+        dependence,
+        code_postale,
+        adress_ar,
+        adress_fr,
+        num_phone,
+        email,
+        nom_pere,
+        job_pere,
+        nom_mere,
+        num_phone_tuteur,
+        moyen,
+        session,
+        filiere,
+        niveau_scolaire,
+        annee_scolaire,
+        type_inscription,
+        etat_compte,
+        groupe_classe,
+        face_1_CIN,
+        face_2_CIN,
+        fiche_paiement,
+        photo_profil,
+        files: documents.map((doc) => doc.name),
+        code_acces: code,
+      },
+      documents
+    );
 
-    // res.json(etudiant);
+    res.json(etudiant);
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");

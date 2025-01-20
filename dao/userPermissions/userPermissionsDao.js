@@ -9,6 +9,31 @@ const createPermission = async (permissionData) => {
   }
   return await Permission.create(permissionData);
 };
+
+
+const createPermissions = async (permissionsData) => {
+  if (!Array.isArray(permissionsData) || permissionsData.length === 0) {
+    throw new Error('Invalid permissions data. Must be a non-empty array.');
+  }
+
+  // Validate each permission object
+  const invalidPermissions = permissionsData.filter(
+    (permission) =>
+      typeof permission !== 'object' ||
+      !permission.name ||
+      !permission.path ||
+      !permission.section ||
+      !permission.sub_section
+  );
+
+  if (invalidPermissions.length > 0) {
+    throw new Error('Some permissions data are invalid.');
+  }
+
+  // Insert all permissions in one query
+  return await Permission.insertMany(permissionsData);
+};
+
 const getAllPermissions = async () => {
   return await Permission.find({});
 };
@@ -198,6 +223,7 @@ module.exports = {
   deletePermissionsFromUser,
   updatePermissionsForUser,
   updatePermissionsForUserHistory, 
-  fetchUserPermissionHistory
+  fetchUserPermissionHistory,
+  createPermissions
 
 };
