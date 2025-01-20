@@ -485,6 +485,70 @@ const getEtudiantsByIdClasse = async (req, res) => {
   }
 };
 
+const getEtudiantByCin = async (req, res) => {
+  try {
+    const cin_etudiant = req.params.id;
+    const etudiant = await studentService.getEtudiantByCin(cin_etudiant);
+
+    if (!etudiant) {
+      return res.status(404).send("Aucun Etudiant avec cette C.I.N");
+    }
+    res.json(etudiant);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+};
+
+const getEtudiantByCinAndCode = async (req, res) => {
+  try {
+    const { cin_etudiant, codesecret } = req.body;
+    const etudiant = await studentService.getEtudiatByCinAndCode(
+      cin_etudiant,
+      codesecret
+    );
+
+    if (!etudiant) {
+      return res.status(404).send("Aucun Etudiant avec C.I.N et code donné");
+    }
+    res.json(etudiant);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+};
+
+const getEtudiantByToken = async (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(401).send("Token missing");
+    }
+
+    const etudiant = await studentService.getEtudiantByToken(token);
+    if (!etudiant) {
+      return res.status(404).send("Etudiant not found");
+    }
+
+    res.json(etudiant);
+  } catch (error) {
+    console.error(`Get etudiant by token error controller: ${error.message}`);
+    res.status(500).send(error.message);
+  }
+};
+
+const login = async (req, res) => {
+  try {
+    const { cin, password } = req.body;
+
+    const etudiant = await studentService.login(cin, password);
+
+    res.json({ message: "Login successful", etudiant });
+  } catch (error) {
+    res.status(401).send(error.message);
+  }
+};
+
 module.exports = {
   addStudent,
   getAllStudents,
@@ -495,4 +559,8 @@ module.exports = {
   updateGroupeClasse,
   getEtudiantById,
   getEtudiantsByIdClasse,
+  getEtudiantByCin,
+  getEtudiantByCinAndCode,
+  getEtudiantByToken,
+  login,
 };
