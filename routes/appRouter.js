@@ -61,6 +61,22 @@ const rattrapageRoutes = require("./RattrapageRoutes/RattrapageRoutes");
 
 const examenRoutes = require("./ExamenRoutes/ExamenRoutes");
 
+const domaineClasseRoutes = require("./DomaineClasseRoutes/DomaineClasseRoutes");
+const mentionClasseRoutes = require("./MentionClasseRoutes/MentionClasseRoutes");
+
+const typeParcoursRoutes = require("./TypeParcoursRoutes/TypeParcoursRoutes");
+
+const parcoursRoutes = require("./ParcoursRoutes/ParcoursRoutes");
+const moduleParcoursRoutes = require("./ModuleParcoursRoutes/ModuleParcoursRoutes");
+
+router.use("/type-parcours", typeParcoursRoutes);
+
+router.use("/parcours", parcoursRoutes);
+
+router.use("/module-parcours", moduleParcoursRoutes);
+
+router.use("/domaine-classe", domaineClasseRoutes);
+router.use("/mention-classe", mentionClasseRoutes);
 //! Notes Examen
 const notesExamenRoutes = require("./NotesExamenRoutes/notesExamenRoutes");
 const virtualServiceRoutes = require("./VirtualServiceRoutes/VirtualServiceRoutes");

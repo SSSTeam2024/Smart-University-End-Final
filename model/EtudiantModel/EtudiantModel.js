@@ -44,6 +44,7 @@ const etudiantSchema = new mongoose.Schema(
     niveau_scolaire: String,
     annee_scolaire: String,
     code_acces: String,
+    verified: String,
     type_inscription: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "TypeInscriptionEtudiant",
@@ -51,10 +52,24 @@ const etudiantSchema = new mongoose.Schema(
     },
     files: [
       {
-        type: String,
+        file_type: String,
         fileName: String,
       },
     ],
+    api_token: String,
+    password: String,
+    //! TO Verify if we keep these fields or not !!
+    num_inscri: String,
+    Niveau_Fr: String,
+    DIPLOME: String,
+    Spécialité: String,
+    Groupe: String,
+    Cycle: String,
+    Ann_Univ: String,
+    Modele_Carte: String,
+    NiveauAr: String,
+    DiplomeAr: String,
+    SpecialiteAr: String,
   },
   { timestamps: true }
 );
