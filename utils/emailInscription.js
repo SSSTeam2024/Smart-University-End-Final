@@ -8,7 +8,7 @@ const emailTemplates = {
     date
   ) =>
     `
-      <!DOCTYPE html>
+     <!DOCTYPE html>
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
@@ -105,27 +105,36 @@ const emailTemplates = {
       </tr>
       <tr>
         <td>
-          <h3>Téléchargez notre application mobile</h3>
-          <p>
-            <a href="https://play.google.com">Lien Google Store</a><br />
-            <a href="https://apps.apple.com">Lien App Store</a><br />
-            <a href="https://example.com/app.apk">Lien APK</a>
-          </p>
-          <h3>Ouvrez l'application et cliquez sur « Connexion »</h3>
-          <p>
-            <strong>Entrez votre C.I.N :</strong> ` +
+          <table style="width: 100%; border: 0;">
+            <tr>
+              <td style="width: 50%; padding-right: 0px; vertical-align: top;">
+                <h3>Téléchargez notre application mobile</h3>
+                <p>
+                  <a href="https://play.google.com">Lien Google Store</a><br />
+                  <a href="https://apps.apple.com">Lien App Store</a><br />
+                  <a href="https://example.com/app.apk">Lien APK</a>
+                </p>
+                <h3>Ouvrez l'application et cliquez sur « Connexion »</h3>
+                <p>
+                  <strong>Entrez votre C.I.N :</strong> ` +
     cin_etudiant +
     `<br />
-            <strong>Entrez votre mot de passe :</strong> ` +
+                  <strong>Entrez votre mot de passe :</strong> ` +
     pwd_etudiant +
     `<br />
-            <strong>Entrez votre code d'accès :</strong> ` +
+                  <strong>Entrez votre code d'accès :</strong> ` +
     code_etudiant +
     `
-          </p>
-          <img src="https://api.university.smartschools.tn/files/logo/student-app-login-screen.png" alt="Aperçu de l'application" style="max-width: 100%; height: auto;" />
+                </p>
+              </td>
+              <td style="width: 50%; text-align: right; vertical-align: top;">
+                <img src="https://api.university.smartschools.tn/files/logo/student-app-login-screen.png" alt="Aperçu de l'application" style="max-width: 100%; height: auto; border: 1px solid #e0e0e0; border-radius: 5px;" />
+              </td>
+            </tr>
+          </table>
         </td>
       </tr>
+      
       <tr>
         <td class="footer">
           Si vous rencontrez des problèmes ou si vous avez besoin d'aide, contactez-nous à
