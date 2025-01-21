@@ -89,6 +89,12 @@ const addStudent = async (req, res) => {
       "photo_profil"
     );
 
+    const typeInscription = await TypeInscriptionEtudiant.findById(
+      type_inscription
+    );
+    if (!typeInscription) {
+      return res.status(404).json({ error: "Type inscription not found" });
+    }
     // const typeInscription = await TypeInscriptionEtudiant.findById(
     //   type_inscription
     // );
@@ -96,7 +102,10 @@ const addStudent = async (req, res) => {
     //   return res.status(404).json({ error: "Type inscription not found" });
     // }
 
+    const filesTypeInscription = typeInscription.files_type_inscription;
     // const filesTypeInscription = typeInscription.files_type_inscription;
+
+    subscriptionFiles = [];
 
     let documents = [
       {
@@ -141,6 +150,11 @@ const addStudent = async (req, res) => {
         fileTypeNameFr
       );
 
+      subscriptionFiles.push({
+        fileType: fileTypeNameFr,
+        name: fileFullPath,
+      });
+
       documents.push({
         base64String,
         extension: fileExtension,
@@ -148,6 +162,14 @@ const addStudent = async (req, res) => {
         path: filePath,
       });
     }
+
+    const filesArray = subscriptionFiles.map((file) => {
+      return {
+        file_type: file.fileType,
+        fileName: file.name,
+      };
+    });
+
     const code = generateCode.generateCompositeCode();
     let pwd = String(num_CIN).split("").reverse().join("");
     const etudiant = await studentService.registerEtudiant(
@@ -186,7 +208,7 @@ const addStudent = async (req, res) => {
         face_2_CIN,
         fiche_paiement,
         photo_profil,
-        files: documents.map((doc) => doc.name),
+        files: filesArray,
         code_acces: code,
         password: pwd,
         //! TO Verify if we keep these fields or not !!
@@ -551,31 +573,25 @@ const getEtudiantByToken = async (req, res) => {
     if (!token) {
       return res.status(401).send("Token missing");
     }
-
     const etudiant = await studentService.getEtudiantByToken(token);
     if (!etudiant) {
       return res.status(404).send("Etudiant not found");
     }
-
     res.json(etudiant);
   } catch (error) {
     console.error(`Get etudiant by token error controller: ${error.message}`);
     res.status(500).send(error.message);
   }
 };
-
 const login = async (req, res) => {
   try {
     const { cin, password } = req.body;
-
     const etudiant = await studentService.login(cin, password);
-
     res.json({ message: "Login successful", etudiant });
   } catch (error) {
     res.status(401).send(error.message);
   }
 };
-
 module.exports = {
   addStudent,
   getAllStudents,

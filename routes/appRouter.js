@@ -61,12 +61,28 @@ const rattrapageRoutes = require("./RattrapageRoutes/RattrapageRoutes");
 
 const examenRoutes = require("./ExamenRoutes/ExamenRoutes");
 
+const domaineClasseRoutes = require("./DomaineClasseRoutes/DomaineClasseRoutes");
+const mentionClasseRoutes = require("./MentionClasseRoutes/MentionClasseRoutes");
+
+const typeParcoursRoutes = require("./TypeParcoursRoutes/TypeParcoursRoutes");
+
+const parcoursRoutes = require("./ParcoursRoutes/ParcoursRoutes");
+const moduleParcoursRoutes = require("./ModuleParcoursRoutes/ModuleParcoursRoutes");
+
+router.use("/type-parcours", typeParcoursRoutes);
+
+router.use("/parcours", parcoursRoutes);
+
+router.use("/module-parcours", moduleParcoursRoutes);
+
+router.use("/domaine-classe", domaineClasseRoutes);
+router.use("/mention-classe", mentionClasseRoutes);
 //! Notes Examen
 const notesExamenRoutes = require("./NotesExamenRoutes/notesExamenRoutes");
 const virtualServiceRoutes = require("./VirtualServiceRoutes/VirtualServiceRoutes");
 
 const deplacementRoutes = require("./DeplacementRoutes/DeplacementRoutes");
-
+const missionRoutes = require("./MissionRoutes/MissionRoutes");
 const noteProRoutes = require("./NoteProRoutes/NoteProRoutes");
 
 // gestion des conges
@@ -165,6 +181,8 @@ router.use("/seance", seanceRoutes);
 router.use("/disponibilite-salle", disponibiliteSalleRoutes);
 //deplacement
 router.use("/deplacement", deplacementRoutes);
+//deplacement
+router.use("/mission", missionRoutes);
 
 //notes pro
 router.use("/note-pro", noteProRoutes);

@@ -9,6 +9,7 @@ const jwt = require("jsonwebtoken");
 
 const registerEtudiant = async (userData, documents) => {
   try {
+    console.log(documents);
     const saveResult = await saveDocumentToServer(documents);
     if (saveResult) {
       const hashedPassword = await bcrypt.hash(userData.password, 10);
