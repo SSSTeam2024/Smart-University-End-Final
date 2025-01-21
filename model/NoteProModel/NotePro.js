@@ -15,6 +15,6 @@ const NoteProSchema = new Schema({
 }, 
 { timestamps: true });
 
-NoteProSchema.index({ personnel: 1, note_finale: 1, annee: 1 }, { unique: true });
+// NoteProSchema.index({ personnel: 1, note_finale: 1, annee: 1 }, { unique: true });
 
 module.exports = mongoose.model('NotePro', NoteProSchema);

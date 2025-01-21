@@ -66,7 +66,7 @@ const notesExamenRoutes = require("./NotesExamenRoutes/notesExamenRoutes");
 const virtualServiceRoutes = require("./VirtualServiceRoutes/VirtualServiceRoutes");
 
 const deplacementRoutes = require("./DeplacementRoutes/DeplacementRoutes");
-
+const missionRoutes = require("./MissionRoutes/MissionRoutes");
 const noteProRoutes = require("./NoteProRoutes/NoteProRoutes");
 
 // gestion des conges
@@ -165,6 +165,8 @@ router.use("/seance", seanceRoutes);
 router.use("/disponibilite-salle", disponibiliteSalleRoutes);
 //deplacement
 router.use("/deplacement", deplacementRoutes);
+//deplacement
+router.use("/mission", missionRoutes);
 
 //notes pro
 router.use("/note-pro", noteProRoutes);
