@@ -2,7 +2,13 @@ const noteProDao = require("../../dao/NoteProDao/NoteProDao");
 
 const createNotePro = async (noteProData) => {
   try {
-    return await noteProDao.createNotePro(noteProData);
+    console.log(noteProData);
+    let results = [];
+    for (const notes of noteProData.notes) {
+     let result = await noteProDao.createNotePro(notes);
+     results.push(result);
+    }
+    return results;
   } catch (error) {
     console.error("Error creating NotePro:", error);
     throw error;
@@ -15,6 +21,10 @@ const getAllNotesPro = async () => {
 
 const getNoteProById = async (id) => {
   return noteProDao.getNoteProById(id);
+};
+
+const getNoteProByYear = async (annee) => {
+  return noteProDao.getNoteProByYear(annee);
 };
 
 const updateNotePro = async (id, updateData, documents) => {
@@ -36,4 +46,5 @@ module.exports = {
   getNoteProById,
   updateNotePro,
   deleteNotePro,
+  getNoteProByYear
 };

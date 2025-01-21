@@ -4,27 +4,11 @@ const noteProService = require('../../services/NoteProServices/NoteProService');
 const createNotePro = async (req, res) => {
   try {
     const {
-      personnel,
-      note1,
-      note2,
-      note3,
-      note4,
-      note5,
-      note_finale,
-      annee,
-      observation
+      notes
     } = req.body;
 
    let NotePro = await noteProService.createNotePro({
-    personnel,
-    note1,
-    note2,
-    note3,
-    note4,
-    note5,
-    note_finale,
-    annee,
-    observation
+    notes
       });
  
 
@@ -48,6 +32,20 @@ const getAllNotesPro = async (req, res) => {
 const getNoteProById = async (req, res) => {
   try {
     const notePro = await noteProService.getNoteProById(req.body._id);
+    if (!notePro) {
+      return res.status(404).json({ message: 'notePro not found' });
+    }
+    res.status(200).json(notePro);
+  } catch (error) {
+    console.error("Error fetching notePro by ID:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getNoteProByYear = async (req, res) => {
+  try {
+    const { annee } = req.body;
+    const notePro = await noteProService.getNoteProByYear(annee);
     if (!notePro) {
       return res.status(404).json({ message: 'notePro not found' });
     }
@@ -115,5 +113,6 @@ module.exports = {
   getAllNotesPro,
   getNoteProById,
   updateNotePro,
-  deleteNotePro
+  deleteNotePro,
+  getNoteProByYear
 };

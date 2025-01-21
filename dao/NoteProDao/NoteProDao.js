@@ -13,6 +13,13 @@ const getNoteProById = async (id) => {
   return NotePro.findById(id);
 };
 
+const getNoteProByYear = async (annee) => {
+   const query = {
+    annee: annee,
+    };
+    return await NotePro.find(query);
+};
+
 const updateNotePro = async (id, updateData) => {
   return NotePro.findByIdAndUpdate(id, updateData, { new: true });
 };
@@ -26,5 +33,5 @@ module.exports = {
   getAllNotesPro,
   getNoteProById,
   updateNotePro,
-  // deleteDeplacement
+  getNoteProByYear
 };
