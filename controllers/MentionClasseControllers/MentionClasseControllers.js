@@ -69,9 +69,40 @@ const deleteMentionClasseById = async (req, res) => {
   }
 };
 
+const getMentionByValue = async (req, res) => {
+  try {
+    const { name_mention_fr, name_mention_ar } = req.body;
+    console.log(req.body);
+    if (!name_mention_fr || !name_mention_ar) {
+      return res
+        .status(400)
+        .json({ message: "name_mention_fr and name_mention_ar are required" });
+    }
+
+    const mentionValue = await MentionService.getMentionByValue({
+      name_mention_fr,
+      name_mention_ar,
+    });
+
+    if (!mentionValue) {
+      return res.json(null);
+    }
+
+    res.json({
+      id: mentionValue._id,
+      name_mention_fr: mentionValue.name_mention_fr,
+      name_mention_ar: mentionValue.name_mention_ar,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createMentionClasse,
   updateMentionClasseById,
   getAllMentionClasse,
   deleteMentionClasseById,
+  getMentionByValue,
 };

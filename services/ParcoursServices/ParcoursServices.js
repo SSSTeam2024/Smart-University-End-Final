@@ -23,9 +23,14 @@ const deleteParcours = async (id) => {
   return await parcoursDao.deleteParcours(id);
 };
 
+const getParcourByValue = async ({ nom_parcours, code_parcours }) => {
+  return await parcoursDao.getParcoursByValue(nom_parcours, code_parcours);
+};
+
 module.exports = {
   deleteParcours,
   getAllParcours,
   updateParcours,
   createParcours,
+  getParcourByValue,
 };

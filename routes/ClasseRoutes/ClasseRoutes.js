@@ -18,4 +18,5 @@ router.delete(
 );
 router.get("/:classeId/matieres", classeController.getAssignedMatieres);
 router.post("/get-classes-by-teacher", classeController.getAllClassesByTeacher);
+router.post("/get-classe-by-value", classeController.getClasseByValue);
 module.exports = router;

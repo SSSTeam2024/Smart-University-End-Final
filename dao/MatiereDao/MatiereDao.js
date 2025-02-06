@@ -1,4 +1,4 @@
-const matiereModel = require("../../model/MatiereModel/MatiereModel")
+const matiereModel = require("../../model/MatiereModel/MatiereModel");
 
 const createMatiere = async (matiere) => {
   try {
@@ -11,7 +11,7 @@ const createMatiere = async (matiere) => {
 
 const getMatieres = async () => {
   try {
-    return await matiereModel.find().populate('classes');
+    return await matiereModel.find().populate("classes");
   } catch (error) {
     console.error("Error fetching matieres:", error);
     throw error;
@@ -20,7 +20,9 @@ const getMatieres = async () => {
 
 const updateMatiere = async (id, updateData) => {
   try {
-    return await matiereModel.findByIdAndUpdate(id, updateData, { new: true }).populate('classes');
+    return await matiereModel
+      .findByIdAndUpdate(id, updateData, { new: true })
+      .populate("classes");
   } catch (error) {
     console.error("Error updating matiere:", error);
     throw error;
@@ -38,19 +40,22 @@ const deleteMatiere = async (id) => {
 
 const getMatiereById = async (id) => {
   try {
-    return await matiereModel.findById(id).populate('classes');
+    return await matiereModel.findById(id).populate("classes");
   } catch (error) {
     console.error("Error fetching matiere by ID:", error);
     throw error;
   }
 };
 
+const getMatiereByCodeMatiere = async (code_matiere) => {
+  return await matiereModel.findOne({ code_matiere });
+};
 
 module.exports = {
-    createMatiere,
-    getMatieres,
-    updateMatiere,
-    deleteMatiere,
-    getMatiereById,
-
+  createMatiere,
+  getMatieres,
+  updateMatiere,
+  deleteMatiere,
+  getMatiereById,
+  getMatiereByCodeMatiere,
 };

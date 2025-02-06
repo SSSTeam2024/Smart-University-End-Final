@@ -86,11 +86,40 @@ const deletePosteEnseignantById = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+const getPosteByValue = async (req, res) => {
+  try {
+    const { poste_fr, poste_ar } = req.body;
 
+    if (!poste_fr || !poste_ar) {
+      return res
+        .status(400)
+        .json({ message: "poste_fr and poste_ar are required" });
+    }
+
+    const posteValue = await posteEnseignantService.getPosteByValue({
+      poste_fr,
+      poste_ar,
+    });
+
+    if (!posteValue) {
+      return res.json(null);
+    }
+
+    res.json({
+      id: posteValue._id,
+      poste_fr: posteValue.poste_fr,
+      poste_ar: posteValue.poste_ar,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
 module.exports = {
   deletePosteEnseignantById,
   getAllPostesEnseignant,
   getPosteEnseignantById,
   createPosteEnseignant,
   updatePosteEnseignantById,
+  getPosteByValue,
 };

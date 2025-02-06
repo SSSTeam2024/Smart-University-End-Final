@@ -20,16 +20,36 @@ const personnelSchema = new mongoose.Schema(
     etat_compte: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "EtatPersonnel",
+      default: null,
     },
-    poste: { type: mongoose.Schema.Types.ObjectId, ref: "PostePersonnel" },
-    grade: { type: mongoose.Schema.Types.ObjectId, ref: "GradePersonnel" },
+    poste: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "PostePersonnel",
+      default: null,
+    },
+    grade: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "GradePersonnel",
+      default: null,
+    },
     categorie: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "CategoriePersonnel",
+      default: null,
     },
-    service: { type: mongoose.Schema.Types.ObjectId, ref: "ServicePersonnel" },
-  
-    papers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'DossierAdministratif' }],
+    service: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ServicePersonnel",
+      default: null,
+    },
+
+    papers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "DossierAdministratif",
+        default: null,
+      },
+    ],
 
     date_affectation: String,
     compte_courant: String,
@@ -48,7 +68,7 @@ const personnelSchema = new mongoose.Schema(
     nom_conjoint: String,
     job_conjoint: String,
     nombre_fils: String,
-    category: [String], 
+    category: [String],
   },
   { timestamps: true }
 );

@@ -69,7 +69,10 @@ const typeParcoursRoutes = require("./TypeParcoursRoutes/TypeParcoursRoutes");
 const parcoursRoutes = require("./ParcoursRoutes/ParcoursRoutes");
 const moduleParcoursRoutes = require("./ModuleParcoursRoutes/ModuleParcoursRoutes");
 
+const cycleRoutes = require("./CycleRoutes/CycleRoutes");
+
 router.use("/type-parcours", typeParcoursRoutes);
+router.use("/cycle", cycleRoutes);
 
 router.use("/parcours", parcoursRoutes);
 

@@ -62,6 +62,33 @@ const addStudent = async (req, res) => {
       NiveauAr,
       DiplomeAr,
       SpecialiteAr,
+      etat_compte_Ar,
+      type_inscription_ar,
+      nbre_enfants,
+      etablissement_conjoint,
+      profesion_Conjoint,
+      prenom_conjoint,
+      Cycle_Ar,
+      ville,
+      pays_bac,
+      mention,
+      situation_militaire,
+      tel_parents,
+      pays_parents,
+      gouvernorat_parents,
+      code_postale_parents,
+      adresse_parents,
+      etat_mere,
+      etablissement_mere,
+      profession_mere,
+      prenom_mere,
+      etat_pere,
+      prenom_pere,
+      pays,
+      gouvernorat,
+      matricule_number,
+      passeport_number,
+      cnss_number,
     } = req.body;
 
     const face1CINPath = "files/etudiantFiles/Face1CIN/";
@@ -88,22 +115,6 @@ const addStudent = async (req, res) => {
       PhotoProfilFileExtension,
       "photo_profil"
     );
-
-    const typeInscription = await TypeInscriptionEtudiant.findById(
-      type_inscription
-    );
-    if (!typeInscription) {
-      return res.status(404).json({ error: "Type inscription not found" });
-    }
-    // const typeInscription = await TypeInscriptionEtudiant.findById(
-    //   type_inscription
-    // );
-    // if (!typeInscription) {
-    //   return res.status(404).json({ error: "Type inscription not found" });
-    // }
-
-    const filesTypeInscription = typeInscription.files_type_inscription;
-    // const filesTypeInscription = typeInscription.files_type_inscription;
 
     subscriptionFiles = [];
 
@@ -223,6 +234,33 @@ const addStudent = async (req, res) => {
         NiveauAr,
         DiplomeAr,
         SpecialiteAr,
+        etat_compte_Ar,
+        type_inscription_ar,
+        nbre_enfants,
+        etablissement_conjoint,
+        profesion_Conjoint,
+        prenom_conjoint,
+        Cycle_Ar,
+        ville,
+        pays_bac,
+        mention,
+        situation_militaire,
+        tel_parents,
+        pays_parents,
+        gouvernorat_parents,
+        code_postale_parents,
+        adresse_parents,
+        etat_mere,
+        etablissement_mere,
+        profession_mere,
+        prenom_mere,
+        etat_pere,
+        prenom_pere,
+        pays,
+        gouvernorat,
+        matricule_number,
+        passeport_number,
+        cnss_number,
       },
       documents
     );
@@ -323,6 +361,33 @@ const updateStudent = async (req, res) => {
       Face2CINFileExtension,
       FichePaiementFileBase64String,
       FichePaiementFileExtension,
+      etat_compte_Ar,
+      type_inscription_ar,
+      nbre_enfants,
+      etablissement_conjoint,
+      profesion_Conjoint,
+      prenom_conjoint,
+      Cycle_Ar,
+      ville,
+      pays_bac,
+      mention,
+      situation_militaire,
+      tel_parents,
+      pays_parents,
+      gouvernorat_parents,
+      code_postale_parents,
+      adresse_parents,
+      etat_mere,
+      etablissement_mere,
+      profession_mere,
+      prenom_mere,
+      etat_pere,
+      prenom_pere,
+      pays,
+      gouvernorat,
+      matricule_number,
+      passeport_number,
+      cnss_number,
     } = req.body;
 
     // Define file paths
@@ -425,6 +490,33 @@ const updateStudent = async (req, res) => {
       type_inscription,
       etat_compte,
       groupe_classe,
+      etat_compte_Ar,
+      type_inscription_ar,
+      nbre_enfants,
+      etablissement_conjoint,
+      profesion_Conjoint,
+      prenom_conjoint,
+      Cycle_Ar,
+      ville,
+      pays_bac,
+      mention,
+      situation_militaire,
+      tel_parents,
+      pays_parents,
+      gouvernorat_parents,
+      code_postale_parents,
+      adresse_parents,
+      etat_mere,
+      etablissement_mere,
+      profession_mere,
+      prenom_mere,
+      etat_pere,
+      prenom_pere,
+      pays,
+      gouvernorat,
+      matricule_number,
+      passeport_number,
+      cnss_number,
     };
 
     // Conditionally add file paths to update object

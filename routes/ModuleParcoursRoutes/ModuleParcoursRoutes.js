@@ -19,5 +19,6 @@ router.delete(
   "/delete-module-parcours/:id",
   moduleParcoursController.deleteModuleParcours
 );
+router.post("/get-module-by-code", moduleParcoursController.getModuleByCode);
 
 module.exports = router;

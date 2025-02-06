@@ -69,9 +69,40 @@ const deleteTypeParcours = async (req, res) => {
   }
 };
 
+const getTypeParcoursByValue = async (req, res) => {
+  try {
+    const { name_type_parcours_fr, name_type_parcours_ar } = req.body;
+    console.log(req.body);
+    if (!name_type_parcours_fr || !name_type_parcours_ar) {
+      return res.status(400).json({
+        message: "name_type_parcours_fr and name_type_parcours_ar are required",
+      });
+    }
+
+    const typeParcoursValue = await typeParcoursService.getTypeParcoursByValue({
+      name_type_parcours_fr,
+      name_type_parcours_ar,
+    });
+
+    if (!typeParcoursValue) {
+      return res.json(null);
+    }
+
+    res.json({
+      id: typeParcoursValue._id,
+      name_type_parcours_fr: typeParcoursValue.name_type_parcours_fr,
+      name_type_parcours_ar: typeParcoursValue.name_type_parcours_ar,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   deleteTypeParcours,
   getTypesParcours,
   updateTypeParcours,
   createTypeParcours,
+  getTypeParcoursByValue,
 };

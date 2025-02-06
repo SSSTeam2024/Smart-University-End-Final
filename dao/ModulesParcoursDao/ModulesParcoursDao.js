@@ -35,9 +35,28 @@ const deleteModuleParcours = async (id) => {
   return await moduleParcours.findByIdAndDelete(id);
 };
 
+// add matiere to module
+const addMatiereToModule = async (moduleId, matiereId) => {
+  try {
+    return await moduleParcours.findByIdAndUpdate(
+      moduleId,
+      { $push: { matieres: matiereId } },
+      { new: true }
+    );
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getModuleeByCode = async (code_Ue) => {
+  return await moduleParcours.findOne({ code_Ue });
+};
+
 module.exports = {
   deleteModuleParcours,
   updateModuleParcours,
   getAllModulesParcours,
   createModuleParcours,
+  addMatiereToModule,
+  getModuleeByCode,
 };

@@ -94,9 +94,36 @@ const deleteModuleParcours = async (req, res) => {
   }
 };
 
+const getModuleByCode = async (req, res) => {
+  try {
+    const { code_Ue } = req.body;
+
+    if (!code_Ue) {
+      return res.status(400).json({ message: "code_Ue is required" });
+    }
+
+    const moduleByCode = await moduleParcoursService.getModuleByCode({
+      code_Ue,
+    });
+
+    if (!moduleByCode) {
+      return res.json(null);
+    }
+
+    res.json({
+      id: moduleByCode._id,
+      code_Ue: moduleByCode.code_Ue,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getAllModulesParcours,
   deleteModuleParcours,
   updateModuleParcours,
   createModuleParcours,
+  getModuleByCode,
 };

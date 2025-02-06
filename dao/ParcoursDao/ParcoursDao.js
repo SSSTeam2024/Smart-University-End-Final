@@ -45,10 +45,15 @@ const addModuleToParcours = async (parcoursId, moduleId) => {
   }
 };
 
+const getParcoursByValue = async (nom_parcours, code_parcours) => {
+  return await Parcours.findOne({ nom_parcours, code_parcours });
+};
+
 module.exports = {
   createParcours,
   getAllParcours,
   updateParcours,
   deleteParcours,
   addModuleToParcours,
+  getParcoursByValue,
 };

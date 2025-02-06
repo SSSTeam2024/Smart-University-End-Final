@@ -23,9 +23,20 @@ const deleteTypeParcours = async (id) => {
   return await typeParcoursao.deleteTypeParcours(id);
 };
 
+const getTypeParcoursByValue = async ({
+  name_type_parcours_ar,
+  name_type_parcours_fr,
+}) => {
+  return await typeParcoursao.getTypeParcoursByValue(
+    name_type_parcours_ar,
+    name_type_parcours_fr
+  );
+};
+
 module.exports = {
   deleteTypeParcours,
   getTypeParcours,
   updateTypeParcours,
   createTypeParcours,
+  getTypeParcoursByValue,
 };

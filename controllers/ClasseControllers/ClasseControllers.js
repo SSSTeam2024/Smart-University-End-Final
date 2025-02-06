@@ -143,6 +143,36 @@ const getAllClassesByTeacher = async (req, res) => {
   }
 };
 
+const getClasseByValue = async (req, res) => {
+  try {
+    const { nom_classe_ar, nom_classe_fr } = req.body;
+    console.log(req.body);
+    if (!nom_classe_ar || !nom_classe_fr) {
+      return res
+        .status(400)
+        .json({ message: "nom_classe_ar and nom_classe_fr are required" });
+    }
+
+    const classeValue = await classeService.getClasseByValue({
+      nom_classe_ar,
+      nom_classe_fr,
+    });
+
+    if (!classeValue) {
+      return res.json(null);
+    }
+
+    res.json({
+      id: classeValue._id,
+      nom_classe_ar: classeValue.nom_classe_ar,
+      nom_classe_fr: classeValue.nom_classe_fr,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   addClasse,
   updateClasseById,
@@ -153,4 +183,5 @@ module.exports = {
   deleteAssignedMatiereFromClasse,
   getAssignedMatieres,
   getAllClassesByTeacher,
+  getClasseByValue,
 };

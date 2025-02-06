@@ -34,31 +34,29 @@ const getClasses = async () => {
   try {
     const classes = await Classe.find()
       .populate({
-        path: 'niveau_classe',
+        path: "niveau_classe",
         populate: {
-          path: 'sections',
-          model: 'SectionClasse',
+          path: "sections",
+          model: "SectionClasse",
           populate: {
-            path: 'departements',
-            model: 'Departement',
+            path: "departements",
+            model: "Departement",
             populate: {
-              path: 'sections',
-              model: 'SectionClasse'
-            }
-          }
-        }
+              path: "sections",
+              model: "SectionClasse",
+            },
+          },
+        },
       })
-      .populate('departement')
-      .populate('matieres');
+      .populate("departement")
+      .populate("matieres");
 
     return classes;
   } catch (error) {
-    console.error('Error fetching classes:', error);
+    console.error("Error fetching classes:", error);
     throw error;
   }
 };
-
-
 
 const updateClasse = async (id, updateData) => {
   try {
@@ -176,6 +174,10 @@ async function getAssignedMatieres(classeId) {
   }
 }
 
+const getClasseByValue = async (nom_classe_ar, nom_classe_fr) => {
+  return await Classe.findOne({ nom_classe_ar, nom_classe_fr });
+};
+
 module.exports = {
   createClasse,
   getClasses,
@@ -185,4 +187,5 @@ module.exports = {
   assignMatieresToClasse,
   deleteAssignedMatiereFromClasse,
   getAssignedMatieres,
+  getClasseByValue,
 };

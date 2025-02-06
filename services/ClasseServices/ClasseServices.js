@@ -110,6 +110,10 @@ const getClassesByTeacherId = async (idTeacher, semestre) => {
   return uniqueClasses;
 };
 
+const getClasseByValue = async ({ nom_classe_ar, nom_classe_fr }) => {
+  return await classeDao.getClasseByValue(nom_classe_ar, nom_classe_fr);
+};
+
 module.exports = {
   createClasse,
   updateClasse,
@@ -119,4 +123,5 @@ module.exports = {
   assignMatieresToClasse,
   getAssignedMatieres,
   getClassesByTeacherId,
+  getClasseByValue,
 };
