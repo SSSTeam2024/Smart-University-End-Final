@@ -4,6 +4,8 @@ const Schema = mongoose.Schema;
 const variableGlobaleSchema = new Schema({
   directeur_ar: String,
   directeur_fr: String,
+  abreviation: String,
+  annee_universitaire: String,
   secretaire_ar: String,
   secretaire_fr: String,
   signature_directeur: String,
@@ -22,8 +24,15 @@ const variableGlobaleSchema = new Schema({
   gouvernorat_fr: String,
   phone: String,
   fax: String,
-  website: String
-});
-
+  website: String,
+  places: [
+    {
+      longitude: String,
+      latitude: String,
+      placeName: String
+    },
+  ],
+},
+{ timestamps: true });
 
 module.exports = mongoose.model('VariableGlobale', variableGlobaleSchema);
