@@ -70,7 +70,7 @@ mongoose
   .catch((err) => console.log(err));
 
 // Start server
-httpServer.listen(5000, () => {
+httpServer.listen(7000, () => {
   console.log("Backend server is running!");
 });
 

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon app.js",
-    "dev": "npx nodemon app.js"
+    "eniga": "npx nodemon app.js"
   },
   "keywords": [],
   "author": "",
