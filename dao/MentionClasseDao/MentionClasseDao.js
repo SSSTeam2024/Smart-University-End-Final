@@ -29,9 +29,14 @@ const deleteMentionClasse = async (id) => {
   return await MentionClasse.findByIdAndDelete(id);
 };
 
+const getMentionByValue = async (name_mention_ar, name_mention_fr) => {
+  return await MentionClasse.findOne({ name_mention_ar, name_mention_fr });
+};
+
 module.exports = {
   createMentionClasse,
   getMentionsClasse,
   updateMentionClasse,
   deleteMentionClasse,
+  getMentionByValue,
 };

@@ -21,10 +21,15 @@ const getEtatEnseignantById = async (id) => {
   return await etatEnseignant.findById(id);
 };
 
+const getEtatByValue = async (etat_ar, etat_fr) => {
+  return await etatEnseignant.findOne({ etat_ar, etat_fr });
+};
+
 module.exports = {
   createEtatEnseignant,
   getEtatsEnseignant,
   updateEtatEnseignant,
   deleteEtatEnseignant,
   getEtatEnseignantById,
+  getEtatByValue,
 };

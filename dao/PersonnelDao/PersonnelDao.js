@@ -32,12 +32,11 @@ const getPersonnelById = async (id) => {
     .populate("service");
 };
 
-
 const assignPapierToPersonnel = async (personnelId, papierIds) => {
   try {
     const personnel = await personnelModel.findById(personnelId);
     if (!personnel) {
-      throw new Error('Personnel not found');
+      throw new Error("Personnel not found");
     }
     for (const paperId of papierIds) {
       personnel.papers.push(paperId);
@@ -46,7 +45,7 @@ const assignPapierToPersonnel = async (personnelId, papierIds) => {
     await personnel.save();
     return personnel;
   } catch (error) {
-    console.error('Error in assignPapierToPersonnel:', error);
+    console.error("Error in assignPapierToPersonnel:", error);
     throw new Error(`Service Error: DAO Error: ${error.message}`);
   }
 };
@@ -57,6 +56,5 @@ module.exports = {
   updatePersonnel,
   getPersonnelById,
   deletePersonnel,
-  assignPapierToPersonnel
-
+  assignPapierToPersonnel,
 };

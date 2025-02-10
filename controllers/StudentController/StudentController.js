@@ -49,6 +49,46 @@ const addStudent = async (req, res) => {
       PhotoProfilFileBase64String,
       files = [],
       code_acces,
+      password,
+      //! TO Verify if we keep these fields or not !!
+      num_inscri,
+      Niveau_Fr,
+      DIPLOME,
+      Spécialité,
+      Groupe,
+      Cycle,
+      Ann_Univ,
+      Modele_Carte,
+      NiveauAr,
+      DiplomeAr,
+      SpecialiteAr,
+      etat_compte_Ar,
+      type_inscription_ar,
+      nbre_enfants,
+      etablissement_conjoint,
+      profesion_Conjoint,
+      prenom_conjoint,
+      Cycle_Ar,
+      ville,
+      pays_bac,
+      mention,
+      situation_militaire,
+      tel_parents,
+      pays_parents,
+      gouvernorat_parents,
+      code_postale_parents,
+      adresse_parents,
+      etat_mere,
+      etablissement_mere,
+      profession_mere,
+      prenom_mere,
+      etat_pere,
+      prenom_pere,
+      pays,
+      gouvernorat,
+      matricule_number,
+      passeport_number,
+      cnss_number,
     } = req.body;
 
     const face1CINPath = "files/etudiantFiles/Face1CIN/";
@@ -76,14 +116,7 @@ const addStudent = async (req, res) => {
       "photo_profil"
     );
 
-    const typeInscription = await TypeInscriptionEtudiant.findById(
-      type_inscription
-    );
-    if (!typeInscription) {
-      return res.status(404).json({ error: "Type inscription not found" });
-    }
-
-    const filesTypeInscription = typeInscription.files_type_inscription;
+    subscriptionFiles = [];
 
     let documents = [
       {
@@ -128,6 +161,11 @@ const addStudent = async (req, res) => {
         fileTypeNameFr
       );
 
+      subscriptionFiles.push({
+        fileType: fileTypeNameFr,
+        name: fileFullPath,
+      });
+
       documents.push({
         base64String,
         extension: fileExtension,
@@ -135,7 +173,16 @@ const addStudent = async (req, res) => {
         path: filePath,
       });
     }
+
+    const filesArray = subscriptionFiles.map((file) => {
+      return {
+        file_type: file.fileType,
+        fileName: file.name,
+      };
+    });
+
     const code = generateCode.generateCompositeCode();
+    let pwd = String(num_CIN).split("").reverse().join("");
     const etudiant = await studentService.registerEtudiant(
       {
         nom_fr,
@@ -172,8 +219,48 @@ const addStudent = async (req, res) => {
         face_2_CIN,
         fiche_paiement,
         photo_profil,
-        files: documents.map((doc) => doc.name),
+        files: filesArray,
         code_acces: code,
+        password: pwd,
+        //! TO Verify if we keep these fields or not !!
+        num_inscri,
+        Niveau_Fr,
+        DIPLOME,
+        Spécialité,
+        Groupe,
+        Cycle,
+        Ann_Univ,
+        Modele_Carte,
+        NiveauAr,
+        DiplomeAr,
+        SpecialiteAr,
+        etat_compte_Ar,
+        type_inscription_ar,
+        nbre_enfants,
+        etablissement_conjoint,
+        profesion_Conjoint,
+        prenom_conjoint,
+        Cycle_Ar,
+        ville,
+        pays_bac,
+        mention,
+        situation_militaire,
+        tel_parents,
+        pays_parents,
+        gouvernorat_parents,
+        code_postale_parents,
+        adresse_parents,
+        etat_mere,
+        etablissement_mere,
+        profession_mere,
+        prenom_mere,
+        etat_pere,
+        prenom_pere,
+        pays,
+        gouvernorat,
+        matricule_number,
+        passeport_number,
+        cnss_number,
       },
       documents
     );
@@ -274,6 +361,33 @@ const updateStudent = async (req, res) => {
       Face2CINFileExtension,
       FichePaiementFileBase64String,
       FichePaiementFileExtension,
+      etat_compte_Ar,
+      type_inscription_ar,
+      nbre_enfants,
+      etablissement_conjoint,
+      profesion_Conjoint,
+      prenom_conjoint,
+      Cycle_Ar,
+      ville,
+      pays_bac,
+      mention,
+      situation_militaire,
+      tel_parents,
+      pays_parents,
+      gouvernorat_parents,
+      code_postale_parents,
+      adresse_parents,
+      etat_mere,
+      etablissement_mere,
+      profession_mere,
+      prenom_mere,
+      etat_pere,
+      prenom_pere,
+      pays,
+      gouvernorat,
+      matricule_number,
+      passeport_number,
+      cnss_number,
     } = req.body;
 
     // Define file paths
@@ -376,6 +490,33 @@ const updateStudent = async (req, res) => {
       type_inscription,
       etat_compte,
       groupe_classe,
+      etat_compte_Ar,
+      type_inscription_ar,
+      nbre_enfants,
+      etablissement_conjoint,
+      profesion_Conjoint,
+      prenom_conjoint,
+      Cycle_Ar,
+      ville,
+      pays_bac,
+      mention,
+      situation_militaire,
+      tel_parents,
+      pays_parents,
+      gouvernorat_parents,
+      code_postale_parents,
+      adresse_parents,
+      etat_mere,
+      etablissement_mere,
+      profession_mere,
+      prenom_mere,
+      etat_pere,
+      prenom_pere,
+      pays,
+      gouvernorat,
+      matricule_number,
+      passeport_number,
+      cnss_number,
     };
 
     // Conditionally add file paths to update object
@@ -524,31 +665,25 @@ const getEtudiantByToken = async (req, res) => {
     if (!token) {
       return res.status(401).send("Token missing");
     }
-
     const etudiant = await studentService.getEtudiantByToken(token);
     if (!etudiant) {
       return res.status(404).send("Etudiant not found");
     }
-
     res.json(etudiant);
   } catch (error) {
     console.error(`Get etudiant by token error controller: ${error.message}`);
     res.status(500).send(error.message);
   }
 };
-
 const login = async (req, res) => {
   try {
     const { cin, password } = req.body;
-
     const etudiant = await studentService.login(cin, password);
-
     res.json({ message: "Login successful", etudiant });
   } catch (error) {
     res.status(401).send(error.message);
   }
 };
-
 module.exports = {
   addStudent,
   getAllStudents,

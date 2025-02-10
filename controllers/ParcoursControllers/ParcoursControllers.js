@@ -10,6 +10,7 @@ const createParcours = async (req, res) => {
       type_parcours,
       modules,
     } = req.body;
+    console.log("req.body parcours", req.body);
 
     const parcours = await parcoursService.createParcours({
       code_parcours,
@@ -82,9 +83,40 @@ const deleteParcours = async (req, res) => {
   }
 };
 
+const getParcoursByValue = async (req, res) => {
+  try {
+    const { nom_parcours, code_parcours } = req.body;
+
+    if (!nom_parcours || !code_parcours) {
+      return res
+        .status(400)
+        .json({ message: "nom_parcours and code_parcours are required" });
+    }
+
+    const parcoursByValue = await parcoursService.getParcourByValue({
+      nom_parcours,
+      code_parcours,
+    });
+
+    if (!parcoursByValue) {
+      return res.json(null);
+    }
+
+    res.json({
+      id: parcoursByValue._id,
+      nom_parcours: parcoursByValue.nom_parcours,
+      code_parcours: parcoursByValue.code_parcours,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   deleteParcours,
   getAllParcours,
   updateParcours,
   createParcours,
+  getParcoursByValue,
 };

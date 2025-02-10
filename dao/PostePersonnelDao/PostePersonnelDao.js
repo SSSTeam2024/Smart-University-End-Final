@@ -20,12 +20,15 @@ const getPostePersonnelById = async (id) => {
   return await postePersonnel.findById(id);
 };
 
+const getPosteByValue = async (poste_ar, poste_fr) => {
+  return await postePersonnel.findOne({ poste_ar, poste_fr });
+};
 
 module.exports = {
-    createPostePersonnel,
-    getPostesPersonnel,
-    updatePostePersonnel,
-    deletePostePersonnel,
-    getPostePersonnelById,
-
+  createPostePersonnel,
+  getPostesPersonnel,
+  updatePostePersonnel,
+  deletePostePersonnel,
+  getPostePersonnelById,
+  getPosteByValue,
 };

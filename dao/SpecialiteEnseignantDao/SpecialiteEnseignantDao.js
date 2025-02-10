@@ -9,9 +9,10 @@ const getSpecialitesEnseignant = async () => {
   return result;
 };
 
-
 const updateSpecialiteEnseignant = async (id, updateData) => {
-  return await specialiteEnseignant.findByIdAndUpdate(id, updateData, { new: true });
+  return await specialiteEnseignant.findByIdAndUpdate(id, updateData, {
+    new: true,
+  });
 };
 
 const deleteSpecialiteEnseignant = async (id) => {
@@ -21,13 +22,15 @@ const deleteSpecialiteEnseignant = async (id) => {
 const getSpecialiteEnseignantById = async (id) => {
   return await specialiteEnseignant.findById(id);
 };
-
+const getSpecialiteByValue = async (specialite_ar, specialite_fr) => {
+  return await specialiteEnseignant.findOne({ specialite_ar, specialite_fr });
+};
 
 module.exports = {
-    createSpecialiteEnseignant,
-    getSpecialitesEnseignant,
-    deleteSpecialiteEnseignant,
-    getSpecialiteEnseignantById,
-    updateSpecialiteEnseignant,
-
+  createSpecialiteEnseignant,
+  getSpecialitesEnseignant,
+  deleteSpecialiteEnseignant,
+  getSpecialiteEnseignantById,
+  updateSpecialiteEnseignant,
+  getSpecialiteByValue,
 };

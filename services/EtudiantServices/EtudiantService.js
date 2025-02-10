@@ -7,9 +7,65 @@ const emailStructure = require("../../utils/emailInscription");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const registerEtudiant = async (userData, documents) => {
+// const registerEtudiant = async (userData, documents) => {
+//   try {
+//     console.log(documents);
+//     const saveResult = await saveDocumentToServer(documents);
+//     if (saveResult) {
+//       const hashedPassword = await bcrypt.hash(userData.password, 10);
+//       const newEtudiant = await etudiantDao.createEudiant({
+//         ...userData,
+//         password: hashedPassword,
+//       });
+
+//       const email = prepareEmailInscription(
+//         userData.email,
+//         userData.prenom_fr,
+//         userData.nom_fr,
+//         userData.code_acces,
+//         userData.num_CIN,
+//         newEtudiant.createdAt
+//       );
+//       await emailService.sendEmail(email);
+//       return newEtudiant;
+//     } else {
+//       throw new Error("Failed to save documents.");
+//     }
+//   } catch (error) {
+//     console.error("Error registering etudiant:", error);
+//     throw error;
+//   }
+// };
+
+// async function saveDocumentToServer(documents) {
+//   let counter = 0;
+//   for (const file of documents) {
+//     await saveFile(file.base64String, file.name, file.path);
+//     counter++;
+//   }
+//   if (counter == documents.length) return true;
+// }
+
+// async function saveFile(base64String, fileName, file_path) {
+//   const binaryData = Buffer.from(base64String, "base64");
+//   const filePath = file_path + fileName;
+//   await globalFunctions.ensureDirectoryExistence(file_path);
+//   fs.writeFile(filePath, binaryData, "binary", (err) => {
+//     if (err) {
+//       console.error("Error saving the file:", err);
+//     } else {
+//       console.log("File saved successfully!");
+//     }
+//   });
+// }
+const registerEtudiant = async (userData, documents = []) => {
   try {
-    const saveResult = await saveDocumentToServer(documents);
+    let saveResult = true; // Default to true in case no documents are provided
+
+    if (documents.length > 0) {
+      saveResult = await saveDocumentToServer(documents);
+    }
+
     if (saveResult) {
       const hashedPassword = await bcrypt.hash(userData.password, 10);
       const newEtudiant = await etudiantDao.createEudiant({
@@ -37,24 +93,40 @@ const registerEtudiant = async (userData, documents) => {
 };
 
 async function saveDocumentToServer(documents) {
+  if (!documents || documents.length === 0) {
+    console.log("No documents to save.");
+    return true; // Return true since no files need saving
+  }
+
   let counter = 0;
   for (const file of documents) {
     await saveFile(file.base64String, file.name, file.path);
     counter++;
   }
-  if (counter == documents.length) return true;
+
+  return counter === documents.length;
 }
 
 async function saveFile(base64String, fileName, file_path) {
+  if (!base64String) {
+    console.warn(`Skipping file ${fileName}: No base64 data provided.`);
+    return;
+  }
+
   const binaryData = Buffer.from(base64String, "base64");
   const filePath = file_path + fileName;
   await globalFunctions.ensureDirectoryExistence(file_path);
-  fs.writeFile(filePath, binaryData, "binary", (err) => {
-    if (err) {
-      console.error("Error saving the file:", err);
-    } else {
-      console.log("File saved successfully!");
-    }
+
+  return new Promise((resolve, reject) => {
+    fs.writeFile(filePath, binaryData, "binary", (err) => {
+      if (err) {
+        console.error("Error saving the file:", err);
+        reject(err);
+      } else {
+        console.log("File saved successfully!");
+        resolve();
+      }
+    });
   });
 }
 

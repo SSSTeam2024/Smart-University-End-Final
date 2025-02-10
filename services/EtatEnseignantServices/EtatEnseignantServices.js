@@ -1,7 +1,6 @@
 const EtatEnseignantDao = require("../../dao/EtatCompteEnseignantDao/EtatCompteEnseignantDao");
 
 const registerEtatEnseignant = async (userData) => {
- 
   return await EtatEnseignantDao.createEtatEnseignant(userData);
 };
 
@@ -10,7 +9,7 @@ const updateEtatEnseignantDao = async (id, updateData) => {
 };
 
 const getEtatEnseignantDaoById = async (id) => {
-  return await EtatEnseignantDao.getEtatEnseignantById(id)
+  return await EtatEnseignantDao.getEtatEnseignantById(id);
 };
 
 const getEtatsEnseignantDao = async () => {
@@ -19,16 +18,18 @@ const getEtatsEnseignantDao = async () => {
 };
 
 const deleteEtatEnseignantDao = async (id) => {
-  return await EtatEnseignantDao.deleteEtatEnseignant(id)
+  return await EtatEnseignantDao.deleteEtatEnseignant(id);
 };
 
-
+const getEtatCompteByValue = async ({ etat_ar, etat_fr }) => {
+  return await EtatEnseignantDao.getEtatByValue(etat_ar, etat_fr);
+};
 
 module.exports = {
-    registerEtatEnseignant,
-    deleteEtatEnseignantDao,
-    getEtatsEnseignantDao,
-    getEtatEnseignantDaoById,
-    updateEtatEnseignantDao,
-
+  registerEtatEnseignant,
+  deleteEtatEnseignantDao,
+  getEtatsEnseignantDao,
+  getEtatEnseignantDaoById,
+  updateEtatEnseignantDao,
+  getEtatCompteByValue,
 };

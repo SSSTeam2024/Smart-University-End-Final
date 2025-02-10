@@ -92,7 +92,35 @@ const deleteCategoriePersonnelById = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
-//
+const getCategoryByValue = async (req, res) => {
+  try {
+    const { categorie_fr, categorie_ar } = req.body;
+
+    if (!categorie_fr || !categorie_ar) {
+      return res
+        .status(400)
+        .json({ message: "categorie_ar and categorie_fr are required" });
+    }
+
+    const categoryValue = await categoriePersonnelService.getCategoryByValue({
+      categorie_fr,
+      categorie_ar,
+    });
+
+    if (!categoryValue) {
+      return res.json(null);
+    }
+
+    res.json({
+      id: categoryValue._id,
+      categorie_fr: categoryValue.categorie_fr,
+      categorie_ar: categoryValue.categorie_ar,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = {
   deleteCategoriePersonnelById,
@@ -100,4 +128,5 @@ module.exports = {
   getCategoriePersonnelById,
   updateCategoriePersonnelById,
   addCategoriePersonnel,
+  getCategoryByValue,
 };

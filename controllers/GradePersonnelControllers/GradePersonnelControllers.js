@@ -78,7 +78,35 @@ const deleteGradePersonnelById = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
-//
+const getGradeByValue = async (req, res) => {
+  try {
+    const { grade_fr, grade_ar } = req.body;
+
+    if (!grade_fr || !grade_ar) {
+      return res
+        .status(400)
+        .json({ message: "grade_fr and grade_ar are required" });
+    }
+
+    const gradeValue = await GradePersonnelService.getGradeByValue({
+      grade_fr,
+      grade_ar,
+    });
+
+    if (!gradeValue) {
+      return res.json(null);
+    }
+
+    res.json({
+      id: gradeValue._id,
+      grade_fr: gradeValue.grade_fr,
+      grade_ar: gradeValue.grade_ar,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = {
   deleteGradePersonnelById,
@@ -86,4 +114,5 @@ module.exports = {
   getGradePersonnelById,
   updateGradePersonnelById,
   addGradePersonnel,
+  getGradeByValue,
 };

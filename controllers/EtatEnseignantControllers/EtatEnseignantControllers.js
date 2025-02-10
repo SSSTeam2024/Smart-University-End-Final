@@ -77,7 +77,35 @@ const deleteEtatEnseignantById = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
-//
+const getEtatByValue = async (req, res) => {
+  try {
+    const { etat_fr, etat_ar } = req.body;
+    console.log(req.body);
+    if (!etat_fr || !etat_ar) {
+      return res
+        .status(400)
+        .json({ message: "etat_fr and etat_ar are required" });
+    }
+
+    const etatValue = await EtatEnseignantService.getEtatCompteByValue({
+      etat_fr,
+      etat_ar,
+    });
+
+    if (!etatValue) {
+      return res.json(null);
+    }
+
+    res.json({
+      id: etatValue._id,
+      etat_fr: etatValue.etat_fr,
+      etat_ar: etatValue.etat_ar,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = {
   deleteEtatEnseignantById,
@@ -85,4 +113,5 @@ module.exports = {
   getEtatEnseignantById,
   updateEtatEnseignantById,
   addEtatEnseignant,
+  getEtatByValue,
 };
