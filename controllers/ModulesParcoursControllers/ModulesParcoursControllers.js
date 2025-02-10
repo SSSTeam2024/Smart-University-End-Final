@@ -11,8 +11,9 @@ const createModuleParcours = async (req, res) => {
       regime,
       parcours,
       semestre,
+      matiere,
     } = req.body;
-
+    console.log("create model parcours", req.body);
     const moduleParcours = await moduleParcoursService.createModulesParcours({
       code_Ue,
       libelle,
@@ -22,6 +23,7 @@ const createModuleParcours = async (req, res) => {
       regime,
       parcours,
       semestre,
+      matiere,
     });
     res.json(moduleParcours);
   } catch (error) {
@@ -97,7 +99,6 @@ const deleteModuleParcours = async (req, res) => {
 const getModuleByCode = async (req, res) => {
   try {
     const { code_Ue } = req.body;
-
     if (!code_Ue) {
       return res.status(400).json({ message: "code_Ue is required" });
     }

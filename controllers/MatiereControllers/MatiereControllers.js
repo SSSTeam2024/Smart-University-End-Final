@@ -11,7 +11,6 @@ const addMatiere = async (req, res) => {
       coefficient_matiere,
       types,
     } = req.body;
-    console.log("req.body add matiere", req.body);
     // Ensure types is an array
     if (!Array.isArray(types) || types.length === 0) {
       return res

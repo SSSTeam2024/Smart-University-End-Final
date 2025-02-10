@@ -9,8 +9,8 @@ const createParcours = async (req, res) => {
       mention,
       type_parcours,
       modules,
+      semestre,
     } = req.body;
-    console.log("req.body parcours", req.body);
 
     const parcours = await parcoursService.createParcours({
       code_parcours,
@@ -19,6 +19,7 @@ const createParcours = async (req, res) => {
       mention,
       type_parcours,
       modules,
+      semestre,
     });
     res.json(parcours);
   } catch (error) {
@@ -36,6 +37,7 @@ const updateParcours = async (req, res) => {
       mention,
       type_parcours,
       modules,
+      semestre,
     } = req.body;
 
     const updatedParcours = await parcoursService.updateParcours(parcoursId, {
@@ -45,6 +47,7 @@ const updateParcours = async (req, res) => {
       mention,
       type_parcours,
       modules,
+      semestre,
     });
 
     if (!updatedParcours) {
@@ -86,7 +89,6 @@ const deleteParcours = async (req, res) => {
 const getParcoursByValue = async (req, res) => {
   try {
     const { nom_parcours, code_parcours } = req.body;
-
     if (!nom_parcours || !code_parcours) {
       return res
         .status(400)

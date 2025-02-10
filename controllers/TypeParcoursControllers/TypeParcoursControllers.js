@@ -72,7 +72,6 @@ const deleteTypeParcours = async (req, res) => {
 const getTypeParcoursByValue = async (req, res) => {
   try {
     const { name_type_parcours_fr, name_type_parcours_ar } = req.body;
-    console.log(req.body);
     if (!name_type_parcours_fr || !name_type_parcours_ar) {
       return res.status(400).json({
         message: "name_type_parcours_fr and name_type_parcours_ar are required",
