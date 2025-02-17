@@ -36,11 +36,12 @@ const addVariableGlobale = async (req, res) => {
   address_fr,
   phone,
   fax,
-  website
+  website,
+  places 
  
 
     } = req.body;
-
+    console.log("req.body",req.body)
     const signatureDirecteurFilesPath = "files/variableGlobaleFiles/signatureDirecteurFiles/";
     const signatureSecretaireFilesPath = "files/variableGlobaleFiles/signatureSecretaireFiles/";
     const logoEtablissementFilesPath = "files/variableGlobaleFiles/logoEtablissementFiles/";
@@ -111,6 +112,10 @@ const addVariableGlobale = async (req, res) => {
                     })
       }
 
+      if (!Array.isArray(places)) {
+        return res.status(400).json({ message: "Invalid format for places" });
+      }
+  
     const variableGlobale = await variableGlobaleServices.createVariableGlobale({
         directeur_ar,
         directeur_fr,
@@ -134,7 +139,8 @@ const addVariableGlobale = async (req, res) => {
         code_postal,
         phone,
         fax,
-        website
+        website,
+        places
     }, documents);
 
     res.json(variableGlobale);

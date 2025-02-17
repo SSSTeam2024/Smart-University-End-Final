@@ -7,8 +7,8 @@ const addTemplateBody = async (req, res) => {
         body,
         langue,
         intended_for,
-        isArray,
-        arraysNumber
+        has_code,
+        has_number
     } = req.body;
 
     const templateBody = await templateBodyService.createTemplateBody({
@@ -16,8 +16,8 @@ const addTemplateBody = async (req, res) => {
         body,
         langue,
         intended_for,
-        isArray,
-        arraysNumber
+        has_code,
+        has_number
     });
 
     res.json(templateBody);
