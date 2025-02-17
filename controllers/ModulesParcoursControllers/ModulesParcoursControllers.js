@@ -10,10 +10,10 @@ const createModuleParcours = async (req, res) => {
       nature,
       regime,
       parcours,
-      semestre,
+      semestre_module,
       matiere,
     } = req.body;
-    console.log("create model parcours", req.body);
+
     const moduleParcours = await moduleParcoursService.createModulesParcours({
       code_Ue,
       libelle,
@@ -22,9 +22,10 @@ const createModuleParcours = async (req, res) => {
       nature,
       regime,
       parcours,
-      semestre,
+      semestre_module,
       matiere,
     });
+    console.log("create moduleParcours ctrl", moduleParcours);
     res.json(moduleParcours);
   } catch (error) {
     console.error(error);
@@ -43,8 +44,12 @@ const updateModuleParcours = async (req, res) => {
       regime,
       parcours,
       matiere,
-      semestre,
+      semestre_module,
     } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(parcours)) {
+      return res.status(400).json({ message: "Invalid parcours ID" });
+    }
 
     const updatedModuleParcours =
       await moduleParcoursService.updateModuleParcours(moduleParcoursId, {
@@ -56,7 +61,7 @@ const updateModuleParcours = async (req, res) => {
         regime,
         parcours,
         matiere,
-        semestre,
+        semestre_module,
       });
 
     if (!updatedModuleParcours) {

@@ -14,12 +14,16 @@ const getAllParcours = async () => {
       .populate("domaine")
       .populate("type_parcours")
       .populate("mention")
-      .populate("modules");
+      .populate({
+        path: "modules",
+        populate: { path: "matiere" },
+      });
   } catch (error) {
     console.error("Error fetching parcours:", error);
     throw error;
   }
 };
+
 const updateParcours = async (id, updateData) => {
   try {
     return await Parcours.findByIdAndUpdate(id, updateData, { new: true });

@@ -1,7 +1,8 @@
 const etudiantModel = require("../../model/EtudiantModel/EtudiantModel");
 
 const createEudiant = async (etudiant) => {
-  return await etudiantModel.create(etudiant);
+  // return await etudiantModel.create(etudiant);
+  return {};
 };
 const getEtudiantById = async (id) => {
   try {

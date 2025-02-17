@@ -73,15 +73,15 @@ const registerEtudiant = async (userData, documents = []) => {
         password: hashedPassword,
       });
 
-      const email = prepareEmailInscription(
-        userData.email,
-        userData.prenom_fr,
-        userData.nom_fr,
-        userData.code_acces,
-        userData.num_CIN,
-        newEtudiant.createdAt
-      );
-      await emailService.sendEmail(email);
+      // const email = prepareEmailInscription(
+      //   userData.email,
+      //   userData.prenom_fr,
+      //   userData.nom_fr,
+      //   userData.code_acces,
+      //   userData.num_CIN,
+      //   newEtudiant.createdAt
+      // );
+      // await emailService.sendEmail(email);
       return newEtudiant;
     } else {
       throw new Error("Failed to save documents.");

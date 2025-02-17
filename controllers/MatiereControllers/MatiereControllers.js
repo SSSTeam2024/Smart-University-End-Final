@@ -36,8 +36,9 @@ const addMatiere = async (req, res) => {
       )
     );
 
-    // Respond with the created matieres
+    console.log("createdMatieres", createdMatieres);
     res.json(createdMatieres);
+    // console.log("createdMatieres", createdMatieres);
   } catch (error) {
     console.error("Error adding matiere:", error);
     res

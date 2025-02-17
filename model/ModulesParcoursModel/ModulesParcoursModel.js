@@ -8,7 +8,7 @@ const moduleParcoursSchema = new mongoose.Schema(
     coef: String,
     nature: String,
     regime: String,
-    semestre: String,
+    semestre_module: String,
     parcours: { type: mongoose.Schema.Types.ObjectId, ref: "Parcours" },
     matiere: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Matiere", default: null },
