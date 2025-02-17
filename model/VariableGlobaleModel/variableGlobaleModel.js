@@ -27,9 +27,11 @@ const variableGlobaleSchema = new Schema({
   website: String,
   places: [
     {
+      
       longitude: String,
       latitude: String,
-      placeName: String
+      placeName: String,
+      rayon: String
     },
   ],
 },

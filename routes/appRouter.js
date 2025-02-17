@@ -72,6 +72,8 @@ const absencePersonnelRoutes = require("./AbsencePersonnelRoutes/AbsencePersonne
 
 const cycleRoutes = require("./CycleRoutes/CycleRoutes");
 
+const generatedDocRoutes = require("./GeneratedDocRoutes/GeneratedDocRoutes");
+
 router.use("/type-parcours", typeParcoursRoutes);
 router.use("/cycle", cycleRoutes);
 
@@ -196,5 +198,8 @@ router.use("/notes", notesExamenRoutes);
 
 // AbsencePersonnel
 router.use("/absence", absencePersonnelRoutes);
+
+// GeneratedDoc
+router.use("/generated-doc", generatedDocRoutes);
 
 module.exports = router;
