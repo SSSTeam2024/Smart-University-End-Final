@@ -53,6 +53,17 @@ const getParcoursByValue = async (nom_parcours, code_parcours) => {
   return await Parcours.findOne({ nom_parcours, code_parcours });
 };
 
+const getSemestreByParcoursId = async (id) => {
+  try {
+    console.log("id dao", id);
+    const parcours = await Parcours.findById(id).select("semestre_parcours");
+    return parcours ? parcours.semestre_parcours : null;
+  } catch (error) {
+    console.error("Error fetching semestre by parcours ID:", error);
+    return null;
+  }
+};
+
 module.exports = {
   createParcours,
   getAllParcours,
@@ -60,4 +71,5 @@ module.exports = {
   deleteParcours,
   addModuleToParcours,
   getParcoursByValue,
+  getSemestreByParcoursId,
 };

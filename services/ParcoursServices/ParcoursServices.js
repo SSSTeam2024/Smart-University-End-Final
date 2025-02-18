@@ -27,10 +27,26 @@ const getParcourByValue = async ({ nom_parcours, code_parcours }) => {
   return await parcoursDao.getParcoursByValue(nom_parcours, code_parcours);
 };
 
+const getSemestresByParcoursId = async (id) => {
+  console.log("id service", id);
+  try {
+    const semestre = await parcoursDao.getSemestreByParcoursId(id);
+
+    if (!semestre) {
+      throw new Error("semestre not found");
+    }
+
+    return semestre;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 module.exports = {
   deleteParcours,
   getAllParcours,
   updateParcours,
   createParcours,
   getParcourByValue,
+  getSemestresByParcoursId,
 };
