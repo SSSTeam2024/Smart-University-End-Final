@@ -9,7 +9,7 @@ const createParcours = async (req, res) => {
       mention,
       type_parcours,
       modules,
-      semestre,
+      semestre_parcours,
     } = req.body;
 
     const parcours = await parcoursService.createParcours({
@@ -19,9 +19,10 @@ const createParcours = async (req, res) => {
       mention,
       type_parcours,
       modules,
-      semestre,
+      semestre_parcours,
     });
     res.json(parcours);
+    // console.log("parcours", parcours);
   } catch (error) {
     console.error(error);
   }
@@ -37,7 +38,7 @@ const updateParcours = async (req, res) => {
       mention,
       type_parcours,
       modules,
-      semestre,
+      semestre_parcours,
     } = req.body;
 
     const updatedParcours = await parcoursService.updateParcours(parcoursId, {
@@ -47,7 +48,7 @@ const updateParcours = async (req, res) => {
       mention,
       type_parcours,
       modules,
-      semestre,
+      semestre_parcours,
     });
 
     if (!updatedParcours) {
@@ -115,10 +116,22 @@ const getParcoursByValue = async (req, res) => {
   }
 };
 
+const getSemestresByParcoursId = async (req, res) => {
+  const { id } = req.body; // Get parcoursId from request URL
+  console.log("id controller", id);
+  try {
+    const semestres = await parcoursService.getSemestresByParcoursId(id);
+    res.status(200).json(semestres);
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   deleteParcours,
   getAllParcours,
   updateParcours,
   createParcours,
   getParcoursByValue,
+  getSemestresByParcoursId,
 };

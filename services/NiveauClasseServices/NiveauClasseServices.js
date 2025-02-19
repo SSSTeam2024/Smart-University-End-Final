@@ -1,16 +1,47 @@
 const niveauClasseDao = require("../../dao/NiveauClasseDao/NiveauClasseDao");
-const niveauModel = require ("../../model/NiveauClasseModel/NiveauClasseModel")
-const SectionClasse =require ("../../model/SectionClasseModel/SectionClasseModel")
+const niveauModel = require("../../model/NiveauClasseModel/NiveauClasseModel");
+const SectionClasse = require("../../model/SectionClasseModel/SectionClasseModel");
+
+// const registerNiveauClasse = async (userData) => {
+//   try {
+//     const niveauClasse = await niveauClasseDao.createNiveauClasse(userData);
+//     await Promise.all(
+//       userData.sections.map(async (sectionId) => {
+//         await SectionClasse.findByIdAndUpdate(sectionId, {
+//           $push: { niveau_classe: niveauClasse._id },
+//         });
+//       })
+//     );
+
+//     await niveauClasse.populate("sections");
+
+//     return niveauClasse;
+//   } catch (error) {
+//     console.error("Error in registering niveau classe:", error);
+//     throw error;
+//   }
+// };
 
 const registerNiveauClasse = async (userData) => {
   try {
+    // Ensure sections is an array to prevent `.map()` from failing
+    const sections = Array.isArray(userData.sections) ? userData.sections : [];
+
+    // Create NiveauClasse
     const niveauClasse = await niveauClasseDao.createNiveauClasse(userData);
-    await Promise.all(userData.sections.map(async (sectionId) => {
-      await SectionClasse.findByIdAndUpdate(sectionId, { $push: { niveau_classe: niveauClasse._id } });
-    }));
 
-    await niveauClasse.populate('sections')
+    // Update SectionClasse references only if sections exist
+    if (sections.length > 0) {
+      await Promise.all(
+        sections.map(async (sectionId) => {
+          await SectionClasse.findByIdAndUpdate(sectionId, {
+            $push: { niveau_classe: niveauClasse._id },
+          });
+        })
+      );
+    }
 
+    await niveauClasse.populate("sections");
     return niveauClasse;
   } catch (error) {
     console.error("Error in registering niveau classe:", error);
@@ -18,13 +49,12 @@ const registerNiveauClasse = async (userData) => {
   }
 };
 
-
 const updateNiveauClasseDao = async (id, updateData) => {
   return await niveauClasseDao.updateNiveauClasse(id, updateData);
 };
 
 const getNiveauClasseDaoById = async (id) => {
-  return await niveauClasseDao.getNiveauClasseById(id)
+  return await niveauClasseDao.getNiveauClasseById(id);
 };
 
 const getNiveauxClasseDao = async () => {
@@ -50,7 +80,9 @@ const deleteNiveauClasse = async (id) => {
 
     console.log("Update result:", updateResult);
     if (updateResult.nModified === 0) {
-      console.warn(`No sections were updated to remove the deleted niveau classe ID ${id}`);
+      console.warn(
+        `No sections were updated to remove the deleted niveau classe ID ${id}`
+      );
     }
 
     return deletedNiveauClasse;
@@ -59,24 +91,32 @@ const deleteNiveauClasse = async (id) => {
     throw error;
   }
 };
-// getSectionsByIdNiveau 
+// getSectionsByIdNiveau
 
 async function getSectionsByIdNiveau(niveauClasseId) {
-  try{
+  try {
     return await niveauClasseDao.getSectionsByIdNiveau(niveauClasseId);
-  }
-  catch(error){
-throw error
+  } catch (error) {
+    throw error;
   }
 }
 
+// getSectionsByIdNiveau
+
+async function getCyclesByIdNiveau(niveauClasseId) {
+  try {
+    return await niveauClasseDao.getCyclesByIdNiveau(niveauClasseId);
+  } catch (error) {
+    throw error;
+  }
+}
 
 module.exports = {
   deleteNiveauClasse,
-    getNiveauxClasseDao,
-    getNiveauClasseDaoById,
-    registerNiveauClasse,
-    updateNiveauClasseDao,
-    getSectionsByIdNiveau
-
+  getNiveauxClasseDao,
+  getNiveauClasseDaoById,
+  registerNiveauClasse,
+  updateNiveauClasseDao,
+  getSectionsByIdNiveau,
+  getCyclesByIdNiveau,
 };

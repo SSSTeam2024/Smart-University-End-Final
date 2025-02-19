@@ -14,12 +14,16 @@ const getAllParcours = async () => {
       .populate("domaine")
       .populate("type_parcours")
       .populate("mention")
-      .populate("modules");
+      .populate({
+        path: "modules",
+        populate: { path: "matiere" },
+      });
   } catch (error) {
     console.error("Error fetching parcours:", error);
     throw error;
   }
 };
+
 const updateParcours = async (id, updateData) => {
   try {
     return await Parcours.findByIdAndUpdate(id, updateData, { new: true });
@@ -49,6 +53,17 @@ const getParcoursByValue = async (nom_parcours, code_parcours) => {
   return await Parcours.findOne({ nom_parcours, code_parcours });
 };
 
+const getSemestreByParcoursId = async (id) => {
+  try {
+    console.log("id dao", id);
+    const parcours = await Parcours.findById(id).select("semestre_parcours");
+    return parcours ? parcours.semestre_parcours : null;
+  } catch (error) {
+    console.error("Error fetching semestre by parcours ID:", error);
+    return null;
+  }
+};
+
 module.exports = {
   createParcours,
   getAllParcours,
@@ -56,4 +71,5 @@ module.exports = {
   deleteParcours,
   addModuleToParcours,
   getParcoursByValue,
+  getSemestreByParcoursId,
 };

@@ -7,6 +7,7 @@ const createModulesParcours = async (userData) => {
     const moduleParcours = await modulesParcoursDao.createModuleParcours(
       userData
     );
+    console.log("services", moduleParcours);
     // Update the related Parcours with the created module ID
     const parcours = await parcoursDao.addModuleToParcours(
       userData.parcours,

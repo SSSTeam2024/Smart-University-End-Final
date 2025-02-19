@@ -2,10 +2,15 @@ const niveauClasseService = require("../../services/NiveauClasseServices/NiveauC
 
 const addNiveauClasse = async (req, res) => {
   try {
-    const { abreviation, name_niveau_fr , name_niveau_ar, sections } = req.body;
+    const { abreviation, name_niveau_fr, name_niveau_ar, sections, cycles } =
+      req.body;
 
     const niveauClasse = await niveauClasseService.registerNiveauClasse({
-        abreviation, name_niveau_fr , name_niveau_ar, sections
+      abreviation,
+      name_niveau_fr,
+      name_niveau_ar,
+      sections,
+      cycles,
     });
     res.json(niveauClasse);
   } catch (error) {
@@ -16,11 +21,19 @@ const addNiveauClasse = async (req, res) => {
 const updateNiveauClasseById = async (req, res) => {
   try {
     const niveauClasseId = req.params.id;
-    const { abreviation, name_niveau_fr , name_niveau_ar,sections } = req.body;
+    const { abreviation, name_niveau_fr, name_niveau_ar, sections, cycles } =
+      req.body;
 
-    const updatedNiveauClasse= await niveauClasseService.updateNiveauClasseDao(niveauClasseId, {
-        abreviation, name_niveau_fr , name_niveau_ar,sections
-    });
+    const updatedNiveauClasse = await niveauClasseService.updateNiveauClasseDao(
+      niveauClasseId,
+      {
+        abreviation,
+        name_niveau_fr,
+        name_niveau_ar,
+        sections,
+        cycles,
+      }
+    );
 
     if (!updatedNiveauClasse) {
       return res.status(404).send("Niveau Classe not found!");
@@ -36,7 +49,9 @@ const getNiveauClasseById = async (req, res) => {
   try {
     const niveauClasseId = req.params.id;
 
-    const getNiveauClasse= await niveauClasseService.getNiveauClasseDaoById(niveauClasseId);
+    const getNiveauClasse = await niveauClasseService.getNiveauClasseDaoById(
+      niveauClasseId
+    );
 
     if (!getNiveauClasse) {
       return res.status(404).send("Niveau Classe not found");
@@ -61,7 +76,9 @@ const deleteNiveauClasseById = async (req, res) => {
   try {
     const niveauClasseId = req.params.id;
 
-    const deletedNiveauClasse = await niveauClasseService.deleteNiveauClasse(niveauClasseId);
+    const deletedNiveauClasse = await niveauClasseService.deleteNiveauClasse(
+      niveauClasseId
+    );
 
     if (!deletedNiveauClasse) {
       return res.status(404).send("Niveau Classe not found");
@@ -77,20 +94,33 @@ async function getSectionsByIdNiveau(req, res) {
   const { niveauClasseId } = req.params;
 
   try {
-    const sections = await niveauClasseService.getSectionsByIdNiveau(niveauClasseId);
+    const sections = await niveauClasseService.getSectionsByIdNiveau(
+      niveauClasseId
+    );
     res.status(200).json(sections);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 }
 
+async function getCyclesByIdNiveau(req, res) {
+  const { niveauClasseId } = req.params;
+
+  try {
+    const cycles = await niveauClasseService.getCyclesByIdNiveau(
+      niveauClasseId
+    );
+    res.status(200).json(cycles);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
 module.exports = {
-    deleteNiveauClasseById,
-    getAllNiveauxClasse,
-    getNiveauClasseById,
-    updateNiveauClasseById,
-    addNiveauClasse,
-    getSectionsByIdNiveau
-
-
+  deleteNiveauClasseById,
+  getAllNiveauxClasse,
+  getNiveauClasseById,
+  updateNiveauClasseById,
+  addNiveauClasse,
+  getSectionsByIdNiveau,
+  getCyclesByIdNiveau,
 };

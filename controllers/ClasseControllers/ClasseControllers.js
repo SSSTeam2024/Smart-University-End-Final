@@ -3,14 +3,20 @@ const classeDao = require("../../dao/ClasseDao/ClasseDao");
 
 const addClasse = async (req, res) => {
   try {
-    const { niveau_classe, departement, nom_classe_ar, nom_classe_fr } =
-      req.body;
+    const {
+      niveau_classe,
+      departement,
+      nom_classe_ar,
+      nom_classe_fr,
+      groupe_number,
+    } = req.body;
 
     const classeJson = await classeService.createClasse({
       niveau_classe,
       departement,
       nom_classe_ar,
       nom_classe_fr,
+      groupe_number,
     });
     res.json(classeJson);
   } catch (error) {
@@ -21,14 +27,20 @@ const addClasse = async (req, res) => {
 const updateClasseById = async (req, res) => {
   try {
     const classeId = req.params.id;
-    const { niveau_classe, departement, nom_classe_ar, nom_classe_fr } =
-      req.body;
+    const {
+      niveau_classe,
+      departement,
+      nom_classe_ar,
+      nom_classe_fr,
+      groupe_number,
+    } = req.body;
 
     const updatedClasse = await classeService.getClasseById(classeId, {
       niveau_classe,
       departement,
       nom_classe_ar,
       nom_classe_fr,
+      groupe_number,
     });
 
     if (!updatedClasse) {
@@ -173,6 +185,51 @@ const getClasseByValue = async (req, res) => {
   }
 };
 
+// const assignParcoursToClasse = async (req, res) => {
+//   try {
+//     const { classeId, parcoursId } = req.params;
+//     const updatedClasse = await classeService.assignParcoursToClasse(
+//       classeId,
+//       parcoursId
+//     );
+
+//     if (!updatedClasse) {
+//       return res.status(404).json({ message: "Classe not found" });
+//     }
+
+//     res.status(200).json({
+//       message: "Parcours assigned successfully",
+//       classe: updatedClasse,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+const assignParcoursToClasse = async (req, res) => {
+  try {
+    const { classeId, parcoursId } = req.params;
+    const { semestres } = req.body; // ✅ Extract semestres from request body
+
+    const updatedClasse = await classeService.assignParcoursToClasse(
+      classeId,
+      parcoursId,
+      semestres // ✅ Pass semestres to service
+    );
+
+    if (!updatedClasse) {
+      return res.status(404).json({ message: "Classe not found" });
+    }
+
+    res.status(200).json({
+      message: "Parcours assigned successfully",
+      classe: updatedClasse,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   addClasse,
   updateClasseById,
@@ -184,4 +241,5 @@ module.exports = {
   getAssignedMatieres,
   getAllClassesByTeacher,
   getClasseByValue,
+  assignParcoursToClasse,
 };

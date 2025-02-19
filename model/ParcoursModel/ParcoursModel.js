@@ -4,7 +4,7 @@ const parcoursSchema = new mongoose.Schema(
   {
     code_parcours: String,
     nom_parcours: String,
-    semestre: String,
+    semestre_parcours: [String],
     domaine: { type: mongoose.Schema.Types.ObjectId, ref: "DomaineClasse" },
     mention: { type: mongoose.Schema.Types.ObjectId, ref: "MentionClasse" },
     type_parcours: {

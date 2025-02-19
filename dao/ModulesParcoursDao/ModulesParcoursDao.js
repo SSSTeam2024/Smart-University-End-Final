@@ -2,6 +2,7 @@ const moduleParcours = require("../../model/ModulesParcoursModel/ModulesParcours
 
 const createModuleParcours = async (userData) => {
   try {
+    console.log("dao", userData);
     return await moduleParcours.create(userData);
   } catch (error) {
     throw error;
