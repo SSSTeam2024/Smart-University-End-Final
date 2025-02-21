@@ -115,6 +115,37 @@ async function getCyclesByIdNiveau(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
+
+const getNiveauByValue = async (req, res) => {
+  try {
+    const { name_niveau_fr, name_niveau_ar } = req.body;
+
+    if (!name_niveau_fr || !name_niveau_ar) {
+      return res
+        .status(400)
+        .json({ message: "name_niveau_fr and name_niveau_ar are required" });
+    }
+
+    const niveauValue = await niveauClasseService.getNiveauByValue({
+      name_niveau_fr,
+      name_niveau_ar,
+    });
+
+    if (!niveauValue) {
+      return res.json(null);
+    }
+
+    res.json({
+      id: niveauValue._id,
+      cycle_fr: niveauValue.name_niveau_fr,
+      cycle_ar: niveauValue.name_niveau_ar,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   deleteNiveauClasseById,
   getAllNiveauxClasse,
@@ -123,4 +154,5 @@ module.exports = {
   addNiveauClasse,
   getSectionsByIdNiveau,
   getCyclesByIdNiveau,
+  getNiveauByValue,
 };

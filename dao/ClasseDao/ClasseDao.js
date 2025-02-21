@@ -77,7 +77,7 @@ const getClasses = async () => {
             },
           },
           {
-            path: "cycles", // Populating cycles inside niveau_classe
+            path: "cycles",
             model: "Cycle",
           },
         ],

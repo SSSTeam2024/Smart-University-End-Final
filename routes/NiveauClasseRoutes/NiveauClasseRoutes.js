@@ -26,4 +26,5 @@ router.get(
   niveauClasseController.getCyclesByIdNiveau
 );
 // router.post('/getNotesByIdCompany',noteController.getNotesByIdCompany)
+router.post("/get-niveau-value", niveauClasseController.getNiveauByValue);
 module.exports = router;

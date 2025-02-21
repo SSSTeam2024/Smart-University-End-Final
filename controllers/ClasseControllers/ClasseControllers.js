@@ -26,8 +26,8 @@ const addClasse = async (req, res) => {
 
 const updateClasseById = async (req, res) => {
   try {
-    const classeId = req.params.id;
     const {
+      id,
       niveau_classe,
       departement,
       nom_classe_ar,
@@ -35,7 +35,7 @@ const updateClasseById = async (req, res) => {
       groupe_number,
     } = req.body;
 
-    const updatedClasse = await classeService.getClasseById(classeId, {
+    const updatedClasse = await classeService.updateClasse(id, {
       niveau_classe,
       departement,
       nom_classe_ar,

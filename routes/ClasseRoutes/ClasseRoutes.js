@@ -4,7 +4,7 @@ const classeController = require("../../controllers/ClasseControllers/ClasseCont
 const router = express.Router();
 
 router.post("/create-classe", classeController.addClasse);
-router.put("/update-classe/:id", classeController.updateClasseById);
+router.put("/update-classe", classeController.updateClasseById);
 router.get("/get-classe/:id", classeController.getClasseById);
 router.get("/get-all-classe", classeController.getAllClasses);
 router.delete("/delete-classe/:id", classeController.deleteClasseById);

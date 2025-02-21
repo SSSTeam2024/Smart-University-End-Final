@@ -644,6 +644,8 @@ const getEtudiantsByIdClasse = async (req, res) => {
 
     const getEtudiants = await studentService.getEtudiantsByIdClasse(classeId);
 
+    console.log("getEtudiants.length", getEtudiants.length);
+
     if (!getEtudiants) {
       return res.status(404).send("Aucun Etudiant pour ce groupe !!");
     }

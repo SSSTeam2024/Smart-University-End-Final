@@ -164,7 +164,15 @@ const getSeancesByTeacher = async (teacherId, semestre) => {
       .populate({
         path: "classe",
         populate: {
-          path: "matieres",
+          path: "parcours", // Populating parcours
+          populate: {
+            path: "modules", // Populating modules inside parcours
+            model: "ModuleParcours", // Assuming modules are part of the `ModuleParcours` model
+            populate: {
+              path: "matiere", // Populating matiere inside ModuleParcours
+              model: "Matiere", // Assuming matiere is a reference to the `Matiere` model
+            },
+          },
         },
       });
   } catch (error) {

@@ -58,6 +58,10 @@ async function getCyclesByIdNiveau(niveauClasseId) {
   }
 }
 
+const getNiveauByValue = async (name_niveau_ar, name_niveau_fr) => {
+  return await niveauClasse.findOne({ name_niveau_ar, name_niveau_fr });
+};
+
 module.exports = {
   createNiveauClasse,
   getNiveauxClasse,
@@ -66,4 +70,5 @@ module.exports = {
   getNiveauClasseById,
   getSectionsByIdNiveau,
   getCyclesByIdNiveau,
+  getNiveauByValue,
 };

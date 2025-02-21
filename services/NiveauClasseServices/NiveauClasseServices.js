@@ -111,6 +111,10 @@ async function getCyclesByIdNiveau(niveauClasseId) {
   }
 }
 
+const getNiveauByValue = async ({ name_niveau_ar, name_niveau_fr }) => {
+  return await niveauClasseDao.getNiveauByValue(name_niveau_ar, name_niveau_fr);
+};
+
 module.exports = {
   deleteNiveauClasse,
   getNiveauxClasseDao,
@@ -119,4 +123,5 @@ module.exports = {
   updateNiveauClasseDao,
   getSectionsByIdNiveau,
   getCyclesByIdNiveau,
+  getNiveauByValue,
 };
