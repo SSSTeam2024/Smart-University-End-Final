@@ -9,7 +9,7 @@ const puppeteer = require('puppeteer');
 const createDemandeEtudiant = async (demandeEtudiantData) => {
   const demandeEtudiant = new DemandeEtudiant(demandeEtudiantData);
   await demandeEtudiant.save();
-  await generatePDF(demandeEtudiant); // Call to generate PDF
+  // await generatePDF(demandeEtudiant); // Call to generate PDF
   return demandeEtudiant;
 };
 const generatePDF = async (demandeEtudiant) => {
@@ -51,7 +51,7 @@ const getAllDemandeEtudiants = async () => {
       path: "type_inscription",
     }
   ],
-  }).populate("piece_demande")
+  }).populate("piece_demande").populate("generated_doc");
 };
 
 const getDemandeEtudiantById = async (id) => {

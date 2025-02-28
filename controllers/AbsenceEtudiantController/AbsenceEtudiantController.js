@@ -12,7 +12,7 @@ const addAbsenceEtudiant = async (req, res) => {
       date,
       trimestre,
     } = req.body;
-
+    console.log("req.body", req.body);
     const newAbsenceEtudiant =
       await absenceEtudiantServices.createAbsenceEtudiant({
         classe,

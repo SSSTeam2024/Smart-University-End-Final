@@ -23,9 +23,17 @@ const deleteDomaineClasse = async (id) => {
   return await domaineClasseDao.deleteDomaineClasse(id);
 };
 
+const getDomaineByValue = async ({ name_domaine_ar, name_domaine_fr }) => {
+  return await domaineClasseDao.getDomaineByValue(
+    name_domaine_ar,
+    name_domaine_fr
+  );
+};
+
 module.exports = {
   deleteDomaineClasse,
   getDomainesClasse,
   updateDomaineClasse,
   createDomaineClasse,
+  getDomaineByValue,
 };

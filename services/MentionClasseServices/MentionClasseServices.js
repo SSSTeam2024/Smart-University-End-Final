@@ -23,9 +23,17 @@ const deleteMentionClasse = async (id) => {
   return await MentionClasseDao.deleteMentionClasse(id);
 };
 
+const getMentionByValue = async ({ name_mention_ar, name_mention_fr }) => {
+  return await MentionClasseDao.getMentionByValue(
+    name_mention_ar,
+    name_mention_fr
+  );
+};
+
 module.exports = {
   deleteMentionClasse,
   getMentionsClasse,
   updateMentionClasse,
   createMentionClasse,
+  getMentionByValue,
 };

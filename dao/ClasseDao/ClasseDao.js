@@ -30,35 +30,78 @@ const createClasse = async (classe) => {
 //   }
 // };
 
+// const getClasses = async () => {
+//   try {
+//     const classes = await Classe.find()
+//       .populate({
+//         path: "niveau_classe",
+//         populate: {
+//           path: "sections",
+//           model: "SectionClasse",
+//           populate: {
+//             path: "departements",
+//             model: "Departement",
+//             populate: {
+//               path: "sections",
+//               model: "SectionClasse",
+//             },
+//           },
+//         },
+//       })
+//       .populate("departement")
+//       .populate("matieres");
+
+//     return classes;
+//   } catch (error) {
+//     console.error("Error fetching classes:", error);
+//     throw error;
+//   }
+// };
+
 const getClasses = async () => {
   try {
     const classes = await Classe.find()
       .populate({
-        path: 'niveau_classe',
-        populate: {
-          path: 'sections',
-          model: 'SectionClasse',
-          populate: {
-            path: 'departements',
-            model: 'Departement',
+        path: "niveau_classe",
+        populate: [
+          {
+            path: "sections",
+            model: "SectionClasse",
             populate: {
-              path: 'sections',
-              model: 'SectionClasse'
-            }
-          }
-        }
+              path: "departements",
+              model: "Departement",
+              populate: {
+                path: "sections",
+                model: "SectionClasse",
+              },
+            },
+          },
+          {
+            path: "cycles",
+            model: "Cycle",
+          },
+        ],
       })
-      .populate('departement')
-      .populate('matieres');
+      .populate("departement")
+      .populate("matieres")
+      .populate({
+        path: "parcours", // Populating parcours
+        populate: {
+          path: "modules", // Populating modules inside parcours
+          model: "ModuleParcours", // Assuming modules are part of the `ModuleParcours` model
+          populate: {
+            path: "matiere", // Populating matiere inside ModuleParcours
+            model: "Matiere", // Assuming matiere is a reference to the `Matiere` model
+          },
+        },
+      });
 
     return classes;
   } catch (error) {
-    console.error('Error fetching classes:', error);
+    console.error("Error fetching classes:", error);
     throw error;
   }
 };
-
-
 
 const updateClasse = async (id, updateData) => {
   try {
@@ -86,9 +129,43 @@ const getClasseById = async (id) => {
   try {
     return await classeModel
       .findById(id)
+      // .populate("departement")
+      // .populate("niveau_classe")
+      // .populate("matieres");
+      .populate({
+        path: "niveau_classe",
+        populate: [
+          {
+            path: "sections",
+            model: "SectionClasse",
+            populate: {
+              path: "departements",
+              model: "Departement",
+              populate: {
+                path: "sections",
+                model: "SectionClasse",
+              },
+            },
+          },
+          {
+            path: "cycles",
+            model: "Cycle",
+          },
+        ],
+      })
       .populate("departement")
-      .populate("niveau_classe")
-      .populate("matieres");
+      .populate("matieres")
+      .populate({
+        path: "parcours", // Populating parcours
+        populate: {
+          path: "modules", // Populating modules inside parcours
+          model: "ModuleParcours", // Assuming modules are part of the `ModuleParcours` model
+          populate: {
+            path: "matiere", // Populating matiere inside ModuleParcours
+            model: "Matiere", // Assuming matiere is a reference to the `Matiere` model
+          },
+        },
+      });
   } catch (error) {
     console.error("Error fetching classe by ID:", error);
     throw error;
@@ -176,6 +253,29 @@ async function getAssignedMatieres(classeId) {
   }
 }
 
+const getClasseByValue = async (nom_classe_ar, nom_classe_fr) => {
+  return await Classe.findOne({ nom_classe_ar, nom_classe_fr });
+};
+
+const assignParcoursToClasse = async (classeId, parcoursId, semestres) => {
+  if (!classeId || !parcoursId || !semestres) {
+    throw new Error("Classe ID, Parcours ID, and Semestres are required");
+  }
+
+  try {
+    const updatedClasse = await Classe.findByIdAndUpdate(
+      classeId,
+      { parcours: parcoursId, semestres: semestres },
+      { new: true }
+    ).populate("parcours");
+    console.log("updatedClasse", updatedClasse);
+    return updatedClasse;
+  } catch (error) {
+    console.error("Error assigning parcours to classe:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   createClasse,
   getClasses,
@@ -185,4 +285,6 @@ module.exports = {
   assignMatieresToClasse,
   deleteAssignedMatiereFromClasse,
   getAssignedMatieres,
+  getClasseByValue,
+  assignParcoursToClasse,
 };

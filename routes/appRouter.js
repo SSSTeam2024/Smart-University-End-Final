@@ -69,8 +69,14 @@ const typeParcoursRoutes = require("./TypeParcoursRoutes/TypeParcoursRoutes");
 
 const parcoursRoutes = require("./ParcoursRoutes/ParcoursRoutes");
 const moduleParcoursRoutes = require("./ModuleParcoursRoutes/ModuleParcoursRoutes");
+const absencePersonnelRoutes = require("./AbsencePersonnelRoutes/AbsencePersonnelRoutes");
+
+const cycleRoutes = require("./CycleRoutes/CycleRoutes");
+
+const generatedDocRoutes = require("./GeneratedDocRoutes/GeneratedDocRoutes");
 
 router.use("/type-parcours", typeParcoursRoutes);
+router.use("/cycle", cycleRoutes);
 
 router.use("/parcours", parcoursRoutes);
 
@@ -198,4 +204,10 @@ router.use("/absence-etudiant", absenceEtudiantRoutes);
 
 //Cours Enseignant
 router.use("/cours-enseignant", CoursEnseignantRoutes);
+// AbsencePersonnel
+router.use("/absence", absencePersonnelRoutes);
+
+// GeneratedDoc
+router.use("/generated-doc", generatedDocRoutes);
+
 module.exports = router;

@@ -21,10 +21,15 @@ const deleteGradeEnseignantDao = async (id) => {
   return await gradeEnseignantDao.deleteGradeEnseignant(id);
 };
 
+const getGradeByValue = async ({ grade_ar, grade_fr }) => {
+  return await gradeEnseignantDao.getGradeByValue(grade_ar, grade_fr);
+};
+
 module.exports = {
   registerGradeEnseignant,
   deleteGradeEnseignantDao,
   getGradesEnseignantDao,
   getGradeEnseignantDaoById,
   updateGradeEnseignantDao,
+  getGradeByValue,
 };

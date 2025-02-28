@@ -3,6 +3,126 @@ const Personnel = require("../../model/PersonnelModel/PersonnelModel");
 const globalFunctions = require("../../utils/globalFunctions");
 const path = require("path");
 const fs = require("fs");
+// const addPersonnel = async (req, res) => {
+//   try {
+//     const {
+//       nom_fr,
+//       category,
+//       files_papier_administratif,
+//       nom_ar,
+//       prenom_fr,
+//       mat_cnrps,
+//       matricule,
+//       prenom_ar,
+//       lieu_naissance_fr,
+//       lieu_naissance_ar,
+//       date_naissance,
+//       nationalite,
+//       etat_civil,
+//       sexe,
+//       etat_compte,
+//       poste,
+//       grade,
+//       departements,
+//       specilaite,
+//       date_affectation,
+//       compte_courant,
+//       identifinat_unique,
+//       num_cin,
+//       date_delivrance,
+//       categorie,
+//       service,
+//       date_designation,
+//       state,
+//       dependence,
+//       code_postale,
+//       adress_ar,
+//       adress_fr,
+//       num_phone1,
+//       num_phone2,
+//       email,
+//       nom_conjoint,
+//       job_conjoint,
+//       nombre_fils,
+//       PhotoProfilFileExtension,
+//       PhotoProfilFileBase64String,
+//     } = req.body;
+//     const PhotoProfilPath = "files/personnelFiles/PhotoProfil/";
+//     const PhotoProfilFilePath = path.join(
+//       PhotoProfilPath,
+//       globalFunctions.generateUniqueFilename(
+//         PhotoProfilFileExtension,
+//         "photo_profil"
+//       )
+//     );
+
+//     let documents = [
+//       {
+//         base64String: PhotoProfilFileBase64String,
+//         extension: PhotoProfilFileExtension,
+//         name: path.basename(PhotoProfilFilePath),
+//         path: PhotoProfilPath,
+//       },
+//     ];
+//     const personnel = await personnelService.registerPersonnelDao(
+//       {
+//         nom_fr,
+//         nom_ar,
+//         category,
+//         prenom_fr,
+//         files_papier_administratif,
+//         prenom_ar,
+//         lieu_naissance_fr,
+//         lieu_naissance_ar,
+//         date_naissance,
+//         mat_cnrps,
+//         matricule,
+//         nationalite,
+//         etat_civil,
+//         sexe,
+//         etat_compte,
+//         poste,
+//         grade,
+//         specilaite,
+//         date_designation,
+//         date_affectation,
+//         compte_courant,
+//         identifinat_unique,
+//         num_cin,
+//         date_delivrance,
+//         categorie,
+//         service,
+//         state,
+//         dependence,
+//         code_postale,
+//         departements,
+//         adress_ar,
+//         adress_fr,
+//         num_phone1,
+//         num_phone2,
+//         email,
+//         nom_conjoint,
+//         job_conjoint,
+//         nombre_fils,
+//         photo_profil: path.basename(PhotoProfilFilePath),
+//       },
+//       documents
+//     );
+
+//     const populatedPersonnel = await Personnel.findById(personnel._id)
+//       .populate("etat_compte")
+//       .populate("categorie")
+//       .populate("grade")
+//       .populate("poste")
+//       .populate("service");
+
+//     res.json(populatedPersonnel);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// };
+
 const addPersonnel = async (req, res) => {
   try {
     const {
@@ -47,68 +167,77 @@ const addPersonnel = async (req, res) => {
       PhotoProfilFileExtension,
       PhotoProfilFileBase64String,
     } = req.body;
-    const PhotoProfilPath = "files/personnelFiles/PhotoProfil/";
-    const PhotoProfilFilePath = path.join(
-      PhotoProfilPath,
-      globalFunctions.generateUniqueFilename(
-        PhotoProfilFileExtension,
-        "photo_profil"
-      )
-    );
 
-    let documents = [
-      {
-        base64String: PhotoProfilFileBase64String,
-        extension: PhotoProfilFileExtension,
-        name: path.basename(PhotoProfilFilePath),
-        path: PhotoProfilPath,
-      },
-    ];
+    // If PhotoProfilFileBase64String is provided, prepare the document array
+    const documents = PhotoProfilFileBase64String
+      ? [
+          {
+            base64String: PhotoProfilFileBase64String,
+            extension: PhotoProfilFileExtension,
+            name: globalFunctions.generateUniqueFilename(
+              PhotoProfilFileExtension,
+              "photo_profil"
+            ),
+            path: "files/personnelFiles/PhotoProfil/",
+          },
+        ]
+      : []; // Empty array if no file data
+
+    // Prepare personnel data for creation
+    const personnelData = {
+      nom_fr,
+      nom_ar,
+      category,
+      prenom_fr,
+      files_papier_administratif,
+      prenom_ar,
+      lieu_naissance_fr,
+      lieu_naissance_ar,
+      date_naissance,
+      mat_cnrps,
+      matricule,
+      nationalite,
+      etat_civil,
+      sexe,
+      etat_compte,
+      poste,
+      grade,
+      specilaite,
+      date_designation,
+      date_affectation,
+      compte_courant,
+      identifinat_unique,
+      num_cin,
+      date_delivrance,
+      categorie,
+      service,
+      state,
+      dependence,
+      code_postale,
+      departements,
+      adress_ar,
+      adress_fr,
+      num_phone1,
+      num_phone2,
+      email,
+      nom_conjoint,
+      job_conjoint,
+      nombre_fils,
+      photo_profil: PhotoProfilFileBase64String
+        ? globalFunctions.generateUniqueFilename(
+            PhotoProfilFileExtension,
+            "photo_profil"
+          )
+        : null, // Add photo filename if a profile photo is uploaded
+    };
+
+    // Call the service to register the personnel
     const personnel = await personnelService.registerPersonnelDao(
-      {
-        nom_fr,
-        nom_ar,
-        category,
-        prenom_fr,
-        files_papier_administratif,
-        prenom_ar,
-        lieu_naissance_fr,
-        lieu_naissance_ar,
-        date_naissance,
-        mat_cnrps,
-        matricule,
-        nationalite,
-        etat_civil,
-        sexe,
-        etat_compte,
-        poste,
-        grade,
-        specilaite,
-        date_designation,
-        date_affectation,
-        compte_courant,
-        identifinat_unique,
-        num_cin,
-        date_delivrance,
-        categorie,
-        service,
-        state,
-        dependence,
-        code_postale,
-        departements,
-        adress_ar,
-        adress_fr,
-        num_phone1,
-        num_phone2,
-        email,
-        nom_conjoint,
-        job_conjoint,
-        nombre_fils,
-        photo_profil: path.basename(PhotoProfilFilePath),
-      },
+      personnelData,
       documents
     );
 
+    // Populate related data before sending the response
     const populatedPersonnel = await Personnel.findById(personnel._id)
       .populate("etat_compte")
       .populate("categorie")
@@ -118,7 +247,7 @@ const addPersonnel = async (req, res) => {
 
     res.json(populatedPersonnel);
   } catch (error) {
-    console.error(error);
+    console.error("Error adding personnel:", error);
     res.status(500).send("Internal Server Error");
   }
 };
@@ -134,12 +263,19 @@ const getPersonnels = async (req, res) => {
 };
 
 const updatePersonnelById = async (req, res) => {
-  const requestId = new Date().toISOString() + Math.random().toString(36).substring(2, 15); // Unique request identifier
+  const requestId =
+    new Date().toISOString() + Math.random().toString(36).substring(2, 15); // Unique request identifier
   try {
-    console.log(`[${requestId}] Received request to update personnel with ID:`, req.body.id);
+    console.log(
+      `[${requestId}] Received request to update personnel with ID:`,
+      req.body.id
+    );
 
     const personnelId = req.body._id; // Correctly use the personnel ID from the request body
-    console.log(`[${requestId}] Received request to update personnel with ID:`, personnelId);
+    console.log(
+      `[${requestId}] Received request to update personnel with ID:`,
+      personnelId
+    );
 
     // Validate if ID is provided
     if (!personnelId) {
@@ -194,7 +330,9 @@ const updatePersonnelById = async (req, res) => {
         console.log(`[${requestId}] File extension is missing for ${name}.`);
         throw new Error(`File extension is missing for ${name}.`);
       }
-      return `${Date.now()}_${Math.random().toString(36).substring(2, 15)}_${name}.${extension}`;
+      return `${Date.now()}_${Math.random()
+        .toString(36)
+        .substring(2, 15)}_${name}.${extension}`;
     };
 
     // Helper function to save files
@@ -212,7 +350,10 @@ const updatePersonnelById = async (req, res) => {
     // Prepare documents array
     const documents = [];
     if (PhotoProfilFileBase64String && PhotoProfilFileExtension) {
-      const photoProfilName = generateUniqueFilename(PhotoProfilFileExtension, "photo_profil");
+      const photoProfilName = generateUniqueFilename(
+        PhotoProfilFileExtension,
+        "photo_profil"
+      );
       saveFile(PhotoProfilFileBase64String, photoProfilPath, photoProfilName);
       documents.push({ name: photoProfilName });
     }
@@ -268,7 +409,10 @@ const updatePersonnelById = async (req, res) => {
     };
 
     // Call the service to update personnel
-    const updatedPersonnel = await personnelService.updatePersonnelDao(personnelId, updateFields);
+    const updatedPersonnel = await personnelService.updatePersonnelDao(
+      personnelId,
+      updateFields
+    );
 
     if (!updatedPersonnel) {
       return res.status(404).send("Personnel not found!");
@@ -285,7 +429,9 @@ const getPersonnelById = async (req, res) => {
   try {
     const personnelId = req.body.personnelId; // Corrected to match your request body
 
-    const getPersonnel = await personnelService.getPersonnelDaoById(personnelId);
+    const getPersonnel = await personnelService.getPersonnelDaoById(
+      personnelId
+    );
 
     if (!getPersonnel) {
       return res.status(404).send("Personnel not found");
@@ -296,7 +442,6 @@ const getPersonnelById = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
-
 
 const deletePersonnelById = async (req, res) => {
   try {

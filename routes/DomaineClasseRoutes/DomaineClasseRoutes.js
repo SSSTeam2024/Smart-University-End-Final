@@ -19,5 +19,5 @@ router.delete(
   "/delete-domaine-classe/:id",
   domaineClasseController.deleteDomaineClasseById
 );
-
+router.post("/get-domaine-by-value", domaineClasseController.getDomaineByValue);
 module.exports = router;

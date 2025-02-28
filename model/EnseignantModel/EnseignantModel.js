@@ -25,7 +25,11 @@ const enseignantSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "SpecialiteEnseignant",
     },
-    departements: { type: mongoose.Schema.Types.ObjectId, ref: "Departement" },
+    departements: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Departement",
+      default: null,
+    },
     papers: [
       { type: mongoose.Schema.Types.ObjectId, ref: "DossierAdministratif" },
     ],
@@ -59,6 +63,8 @@ const enseignantSchema = new mongoose.Schema(
     annee_certif3: String,
     certif3: String,
     category: [String],
+    situation_ar: String,
+    situation_fr: String,
   },
   { timestamps: true }
 );

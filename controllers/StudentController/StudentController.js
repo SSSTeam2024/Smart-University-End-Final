@@ -5,6 +5,8 @@ const fs = require("fs");
 const path = require("path");
 const TypeInscriptionEtudiant = require("../../model/TypeInscriptionEtudiantModel/TypeInscriptionEtudiantModel");
 const generateCode = require("../../utils/generateCode");
+const emailService = require("../../services/EmailServices/emailService");
+const emailStructure = require("../../utils/emailInscription");
 
 const addStudent = async (req, res) => {
   try {
@@ -62,6 +64,34 @@ const addStudent = async (req, res) => {
       NiveauAr,
       DiplomeAr,
       SpecialiteAr,
+      etat_compte_Ar,
+      type_inscription_ar,
+      nbre_enfants,
+      etablissement_conjoint,
+      profesion_Conjoint,
+      prenom_conjoint,
+      Cycle_Ar,
+      ville,
+      pays_bac,
+      mention,
+      situation_militaire,
+      tel_parents,
+      pays_parents,
+      gouvernorat_parents,
+      code_postale_parents,
+      adresse_parents,
+      etat_mere,
+      etablissement_mere,
+      profession_mere,
+      prenom_mere,
+      etat_pere,
+      prenom_pere,
+      pays,
+      gouvernorat,
+      matricule_number,
+      passeport_number,
+      cnss_number,
+      emails,
     } = req.body;
 
     const face1CINPath = "files/etudiantFiles/Face1CIN/";
@@ -88,22 +118,6 @@ const addStudent = async (req, res) => {
       PhotoProfilFileExtension,
       "photo_profil"
     );
-
-    const typeInscription = await TypeInscriptionEtudiant.findById(
-      type_inscription
-    );
-    if (!typeInscription) {
-      return res.status(404).json({ error: "Type inscription not found" });
-    }
-    // const typeInscription = await TypeInscriptionEtudiant.findById(
-    //   type_inscription
-    // );
-    // if (!typeInscription) {
-    //   return res.status(404).json({ error: "Type inscription not found" });
-    // }
-
-    const filesTypeInscription = typeInscription.files_type_inscription;
-    // const filesTypeInscription = typeInscription.files_type_inscription;
 
     subscriptionFiles = [];
 
@@ -223,10 +237,62 @@ const addStudent = async (req, res) => {
         NiveauAr,
         DiplomeAr,
         SpecialiteAr,
+        etat_compte_Ar,
+        type_inscription_ar,
+        nbre_enfants,
+        etablissement_conjoint,
+        profesion_Conjoint,
+        prenom_conjoint,
+        Cycle_Ar,
+        ville,
+        pays_bac,
+        mention,
+        situation_militaire,
+        tel_parents,
+        pays_parents,
+        gouvernorat_parents,
+        code_postale_parents,
+        adresse_parents,
+        etat_mere,
+        etablissement_mere,
+        profession_mere,
+        prenom_mere,
+        etat_pere,
+        prenom_pere,
+        pays,
+        gouvernorat,
+        matricule_number,
+        passeport_number,
+        cnss_number,
       },
       documents
     );
+    // console.log(emails.length);
+    // for (const email_to_sent of emails) {
+    //   // const emailToSend = prepareEmailInscription(
+    //   //   email_to_sent,
+    //   //   prenom_fr,
+    //   //   nom_fr,
+    //   //   code,
+    //   //   num_CIN,
+    //   //   etudiant.createdAt
+    //   // );
+    //   console.log(email_to_sent);
+    //   // await emailService.sendEmail(emailToSend);
+    // }
+    // const emailToSend = prepareEmailInscription(
+    //   email,
+    //   prenom_fr,
+    //   nom_fr,
+    //   code,
+    //   num_CIN,
+    //   etudiant.createdAt
+    // );
+    // setTimeout(() => {
+    //   console.log("email To Send");
+    // }, 1000);
 
+    // await emailService.sendEmail(emailToSend);
     res.json(etudiant);
   } catch (error) {
     console.error(error);
@@ -323,6 +389,33 @@ const updateStudent = async (req, res) => {
       Face2CINFileExtension,
       FichePaiementFileBase64String,
       FichePaiementFileExtension,
+      etat_compte_Ar,
+      type_inscription_ar,
+      nbre_enfants,
+      etablissement_conjoint,
+      profesion_Conjoint,
+      prenom_conjoint,
+      Cycle_Ar,
+      ville,
+      pays_bac,
+      mention,
+      situation_militaire,
+      tel_parents,
+      pays_parents,
+      gouvernorat_parents,
+      code_postale_parents,
+      adresse_parents,
+      etat_mere,
+      etablissement_mere,
+      profession_mere,
+      prenom_mere,
+      etat_pere,
+      prenom_pere,
+      pays,
+      gouvernorat,
+      matricule_number,
+      passeport_number,
+      cnss_number,
     } = req.body;
 
     // Define file paths
@@ -425,6 +518,33 @@ const updateStudent = async (req, res) => {
       type_inscription,
       etat_compte,
       groupe_classe,
+      etat_compte_Ar,
+      type_inscription_ar,
+      nbre_enfants,
+      etablissement_conjoint,
+      profesion_Conjoint,
+      prenom_conjoint,
+      Cycle_Ar,
+      ville,
+      pays_bac,
+      mention,
+      situation_militaire,
+      tel_parents,
+      pays_parents,
+      gouvernorat_parents,
+      code_postale_parents,
+      adresse_parents,
+      etat_mere,
+      etablissement_mere,
+      profession_mere,
+      prenom_mere,
+      etat_pere,
+      prenom_pere,
+      pays,
+      gouvernorat,
+      matricule_number,
+      passeport_number,
+      cnss_number,
     };
 
     // Conditionally add file paths to update object
@@ -524,6 +644,8 @@ const getEtudiantsByIdClasse = async (req, res) => {
 
     const getEtudiants = await studentService.getEtudiantsByIdClasse(classeId);
 
+    console.log("getEtudiants.length", getEtudiants.length);
+
     if (!getEtudiants) {
       return res.status(404).send("Aucun Etudiant pour ce groupe !!");
     }
@@ -592,6 +714,35 @@ const login = async (req, res) => {
     res.status(401).send(error.message);
   }
 };
+
+function prepareEmailInscription(email, prenom, nom, code, cin, date) {
+  let recipient = email;
+  let pwd = String(cin).split("").reverse().join("");
+  console.log("date", date);
+  let formattedDate = new Date(date)
+    .toLocaleString("en-US", {
+      month: "long",
+      year: "numeric",
+    })
+    .toUpperCase();
+
+  let emailBody = emailStructure.emailTemplates.email_inscription(
+    prenom,
+    nom,
+    code,
+    pwd,
+    cin,
+    formattedDate
+  );
+  let emailSubject = "Confirmation d'inscription et code d'accès";
+  let fullEmailObject = {
+    to: recipient,
+    subject: emailSubject,
+    body: emailBody,
+  };
+  return fullEmailObject;
+}
+
 module.exports = {
   addStudent,
   getAllStudents,

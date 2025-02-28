@@ -110,6 +110,21 @@ const getClassesByTeacherId = async (idTeacher, semestre) => {
   return uniqueClasses;
 };
 
+const getClasseByValue = async ({ nom_classe_ar, nom_classe_fr }) => {
+  return await classeDao.getClasseByValue(nom_classe_ar, nom_classe_fr);
+};
+
+const assignParcoursToClasse = async (classeId, parcoursId, semestres) => {
+  if (!classeId || !parcoursId || !semestres) {
+    throw new Error("Classe ID, Parcours ID, and Semestres are required");
+  }
+
+  return await classeDao.assignParcoursToClasse(
+    classeId,
+    parcoursId,
+    semestres
+  );
+};
 module.exports = {
   createClasse,
   updateClasse,
@@ -119,4 +134,6 @@ module.exports = {
   assignMatieresToClasse,
   getAssignedMatieres,
   getClassesByTeacherId,
+  getClasseByValue,
+  assignParcoursToClasse,
 };

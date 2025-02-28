@@ -29,9 +29,14 @@ const deleteDomaineClasse = async (id) => {
   return await DomaineClasse.findByIdAndDelete(id);
 };
 
+const getDomaineByValue = async (name_domaine_ar, name_domaine_fr) => {
+  return await DomaineClasse.findOne({ name_domaine_ar, name_domaine_fr });
+};
+
 module.exports = {
   deleteDomaineClasse,
   updateDomaineClasse,
   getDomainesClasse,
   createDomaineClasse,
+  getDomaineByValue,
 };

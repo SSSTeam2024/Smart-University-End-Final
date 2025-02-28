@@ -86,7 +86,36 @@ const deleteSpecialiteEnseignantById = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
-//
+const getSpecialiteByValue = async (req, res) => {
+  try {
+    const { specialite_fr, specialite_ar } = req.body;
+
+    if (!specialite_fr || !specialite_ar) {
+      return res
+        .status(400)
+        .json({ message: "specialite_fr and specialite_ar are required" });
+    }
+
+    const specialiteValue =
+      await specialiteEnseignantService.getSpecialiteByValue({
+        specialite_fr,
+        specialite_ar,
+      });
+
+    if (!specialiteValue) {
+      return res.json(null);
+    }
+
+    res.json({
+      id: specialiteValue._id,
+      specialite_fr: specialiteValue.specialite_fr,
+      specialite_ar: specialiteValue.specialite_ar,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = {
   deleteSpecialiteEnseignantById,
@@ -94,4 +123,5 @@ module.exports = {
   getSpecialiteEnseignantById,
   updateSpecialiteEnseignantById,
   addSpecialiteEnseignant,
+  getSpecialiteByValue,
 };

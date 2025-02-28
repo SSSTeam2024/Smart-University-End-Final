@@ -8,20 +8,21 @@ const createNiveauClasse = async (niveau) => {
   }
 };
 
-// const getNiveauxClasse = async () => {
-//   return await niveauClasse.find().populate("sections");
-// };
-
 const getNiveauxClasse = async () => {
-  return await niveauClasse.find().populate({
-    path: "sections",
-    populate: {
-      path: "mention_classe", // Reference to MentionModel
+  return await niveauClasse.find().populate([
+    {
+      path: "sections",
       populate: {
-        path: "domaine", // Reference to DomaineModel
+        path: "mention_classe",
+        populate: {
+          path: "domaine",
+        },
       },
     },
-  });
+    {
+      path: "cycles",
+    },
+  ]);
 };
 
 const updateNiveauClasse = async (id, updateData) => {
@@ -38,7 +39,7 @@ const getNiveauClasseById = async (id) => {
   return await niveauClasse.findById(id).populate("sections");
 };
 
-// getSectionsByIdNiveau
+// get sections by id niveau
 
 async function getSectionsByIdNiveau(niveauClasseId) {
   try {
@@ -47,6 +48,19 @@ async function getSectionsByIdNiveau(niveauClasseId) {
     throw error;
   }
 }
+// getSections By Id Cycle
+
+async function getCyclesByIdNiveau(niveauClasseId) {
+  try {
+    return await niveauClasse.findById(niveauClasseId).populate("cycles");
+  } catch (error) {
+    throw error;
+  }
+}
+
+const getNiveauByValue = async (name_niveau_ar, name_niveau_fr) => {
+  return await niveauClasse.findOne({ name_niveau_ar, name_niveau_fr });
+};
 
 module.exports = {
   createNiveauClasse,
@@ -55,4 +69,6 @@ module.exports = {
   deleteNiveauClasse,
   getNiveauClasseById,
   getSectionsByIdNiveau,
+  getCyclesByIdNiveau,
+  getNiveauByValue,
 };

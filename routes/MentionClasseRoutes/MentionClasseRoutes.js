@@ -19,5 +19,5 @@ router.delete(
   "/delete-mention-classe/:id",
   mentionClasseController.deleteMentionClasseById
 );
-
+router.post("/get-mention-by-value", mentionClasseController.getMentionByValue);
 module.exports = router;

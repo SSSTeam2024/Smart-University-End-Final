@@ -13,5 +13,8 @@ router.delete(
   "/delete-type-parcours/:id",
   typeParcoursController.deleteTypeParcours
 );
-
+router.post(
+  "/get-type-parcours-by-value",
+  typeParcoursController.getTypeParcoursByValue
+);
 module.exports = router;

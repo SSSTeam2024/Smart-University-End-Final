@@ -9,6 +9,7 @@ const createParcours = async (req, res) => {
       mention,
       type_parcours,
       modules,
+      semestre_parcours,
     } = req.body;
 
     const parcours = await parcoursService.createParcours({
@@ -18,8 +19,10 @@ const createParcours = async (req, res) => {
       mention,
       type_parcours,
       modules,
+      semestre_parcours,
     });
     res.json(parcours);
+    // console.log("parcours", parcours);
   } catch (error) {
     console.error(error);
   }
@@ -35,6 +38,7 @@ const updateParcours = async (req, res) => {
       mention,
       type_parcours,
       modules,
+      semestre_parcours,
     } = req.body;
 
     const updatedParcours = await parcoursService.updateParcours(parcoursId, {
@@ -44,6 +48,7 @@ const updateParcours = async (req, res) => {
       mention,
       type_parcours,
       modules,
+      semestre_parcours,
     });
 
     if (!updatedParcours) {
@@ -82,9 +87,51 @@ const deleteParcours = async (req, res) => {
   }
 };
 
+const getParcoursByValue = async (req, res) => {
+  try {
+    const { nom_parcours, code_parcours } = req.body;
+    if (!nom_parcours || !code_parcours) {
+      return res
+        .status(400)
+        .json({ message: "nom_parcours and code_parcours are required" });
+    }
+
+    const parcoursByValue = await parcoursService.getParcourByValue({
+      nom_parcours,
+      code_parcours,
+    });
+
+    if (!parcoursByValue) {
+      return res.json(null);
+    }
+
+    res.json({
+      id: parcoursByValue._id,
+      nom_parcours: parcoursByValue.nom_parcours,
+      code_parcours: parcoursByValue.code_parcours,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getSemestresByParcoursId = async (req, res) => {
+  const { id } = req.body; // Get parcoursId from request URL
+  console.log("id controller", id);
+  try {
+    const semestres = await parcoursService.getSemestresByParcoursId(id);
+    res.status(200).json(semestres);
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   deleteParcours,
   getAllParcours,
   updateParcours,
   createParcours,
+  getParcoursByValue,
+  getSemestresByParcoursId,
 };

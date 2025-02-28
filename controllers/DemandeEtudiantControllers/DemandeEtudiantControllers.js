@@ -44,7 +44,7 @@ const updateDemandeEtudiant = async (req, res) => {
 
 const deleteDemandeEtudiant = async (req, res) => {
   try {
-    const deletedDemandeEtudiant = await demandeEtudiantService.deleteDemandeEtudiant(req.params._id);
+    const deletedDemandeEtudiant = await demandeEtudiantService.deleteDemandeEtudiant(req.params.id);
     if (!deletedDemandeEtudiant) {
       return res.status(404).json({ message: 'DemandeEtudiant not found' });
     }

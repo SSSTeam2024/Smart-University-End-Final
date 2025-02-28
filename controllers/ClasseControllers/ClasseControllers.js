@@ -3,14 +3,20 @@ const classeDao = require("../../dao/ClasseDao/ClasseDao");
 
 const addClasse = async (req, res) => {
   try {
-    const { niveau_classe, departement, nom_classe_ar, nom_classe_fr } =
-      req.body;
+    const {
+      niveau_classe,
+      departement,
+      nom_classe_ar,
+      nom_classe_fr,
+      groupe_number,
+    } = req.body;
 
     const classeJson = await classeService.createClasse({
       niveau_classe,
       departement,
       nom_classe_ar,
       nom_classe_fr,
+      groupe_number,
     });
     res.json(classeJson);
   } catch (error) {
@@ -20,15 +26,21 @@ const addClasse = async (req, res) => {
 
 const updateClasseById = async (req, res) => {
   try {
-    const classeId = req.params.id;
-    const { niveau_classe, departement, nom_classe_ar, nom_classe_fr } =
-      req.body;
-
-    const updatedClasse = await classeService.getClasseById(classeId, {
+    const {
+      id,
       niveau_classe,
       departement,
       nom_classe_ar,
       nom_classe_fr,
+      groupe_number,
+    } = req.body;
+
+    const updatedClasse = await classeService.updateClasse(id, {
+      niveau_classe,
+      departement,
+      nom_classe_ar,
+      nom_classe_fr,
+      groupe_number,
     });
 
     if (!updatedClasse) {
@@ -144,6 +156,81 @@ const getAllClassesByTeacher = async (req, res) => {
   }
 };
 
+const getClasseByValue = async (req, res) => {
+  try {
+    const { nom_classe_ar, nom_classe_fr } = req.body;
+    console.log(req.body);
+    if (!nom_classe_ar || !nom_classe_fr) {
+      return res
+        .status(400)
+        .json({ message: "nom_classe_ar and nom_classe_fr are required" });
+    }
+
+    const classeValue = await classeService.getClasseByValue({
+      nom_classe_ar,
+      nom_classe_fr,
+    });
+
+    if (!classeValue) {
+      return res.json(null);
+    }
+
+    res.json({
+      id: classeValue._id,
+      nom_classe_ar: classeValue.nom_classe_ar,
+      nom_classe_fr: classeValue.nom_classe_fr,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// const assignParcoursToClasse = async (req, res) => {
+//   try {
+//     const { classeId, parcoursId } = req.params;
+//     const updatedClasse = await classeService.assignParcoursToClasse(
+//       classeId,
+//       parcoursId
+//     );
+
+//     if (!updatedClasse) {
+//       return res.status(404).json({ message: "Classe not found" });
+//     }
+
+//     res.status(200).json({
+//       message: "Parcours assigned successfully",
+//       classe: updatedClasse,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+const assignParcoursToClasse = async (req, res) => {
+  try {
+    const { classeId, parcoursId } = req.params;
+    const { semestres } = req.body; // ✅ Extract semestres from request body
+
+    const updatedClasse = await classeService.assignParcoursToClasse(
+      classeId,
+      parcoursId,
+      semestres // ✅ Pass semestres to service
+    );
+
+    if (!updatedClasse) {
+      return res.status(404).json({ message: "Classe not found" });
+    }
+
+    res.status(200).json({
+      message: "Parcours assigned successfully",
+      classe: updatedClasse,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   addClasse,
   updateClasseById,
@@ -154,4 +241,6 @@ module.exports = {
   deleteAssignedMatiereFromClasse,
   getAssignedMatieres,
   getAllClassesByTeacher,
+  getClasseByValue,
+  assignParcoursToClasse,
 };

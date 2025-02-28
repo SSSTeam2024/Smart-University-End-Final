@@ -6,8 +6,8 @@ const templateBodySchema = new Schema({
   body: String,
   langue: String,
   intended_for: String,
-  isArray: String,
-  arraysNumber: String
+  has_code: String,
+  has_number: String
 });
 
 
