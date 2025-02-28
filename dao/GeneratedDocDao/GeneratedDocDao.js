@@ -12,6 +12,13 @@ const getGenerartedDocsByModelId = async (model_id) => {
   return await GeneratedDocModel.find(query).populate("model").populate("enseignant").populate("etudiant").populate("personnel");
 };
 
+const getGenerartedDocsByQrCode = async (num_qr_code) => {
+  const query = {
+    num_qr_code: num_qr_code,
+  };
+  return await GeneratedDocModel.find(query).populate("model").populate("enseignant").populate("etudiant").populate("personnel");
+};
+
 // const getAllAbsencesPersonnels = async () => {
 //   return AbsencePersonnel.find().populate('personnel');
 // };
@@ -27,6 +34,7 @@ const getGenerartedDocsByModelId = async (model_id) => {
 module.exports = {
   saveGenerated,
   getGenerartedDocsByModelId,
+  getGenerartedDocsByQrCode
   // getAllAbsencesPersonnels,
   // updateAbsencePersonnel,
   // deleteAbsencePersonnel

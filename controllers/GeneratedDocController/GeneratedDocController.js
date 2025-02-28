@@ -38,6 +38,16 @@ const getGeneratedDocsByModelId = async (req, res) => {
   }
 };
 
+const getGeneratedDocsByQrCode = async (req, res) => {
+  try {
+    const generatedDoc = await generatedDocService.getGenerartedDocsByQrCode(req.params.num_qr_code);
+    res.status(200).json(generatedDoc);
+  } catch (error) {
+    console.error("Error fetching Generated docs by QR Code:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // const getAllAbsencesPersonnels = async (req, res) => {
 //   try {
 //     const absencePersonnel = await absencePersonnelService.getAllAbsencesPersonnels();
@@ -86,6 +96,7 @@ const getGeneratedDocsByModelId = async (req, res) => {
 module.exports = {
   saveGeneratedDoc,
   getGeneratedDocsByModelId,
+  getGeneratedDocsByQrCode
   // getAllAbsencesPersonnels,
   // updateAbsencePersonnelById,
   // deleteAbsencePersonnel
