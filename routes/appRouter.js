@@ -38,6 +38,7 @@ const avisEnseignantRoutes = require("./AvisEnseignantRoutes/AvisEnseignantRoute
 const avisPersonnelRoutes = require("./AvisPersonnelRoutes/AvisPersonnelRoutes");
 const actualiteRoutes = require("./ActualiteRoutes/ActualiteRoutes");
 const papierAdministratif = require("./PapierAdministratifRoutes/PapierAdministratifRoutes");
+const absenceEtudiantRoutes = require("./AbsenceEtudiantRoutes/AbsenceEtudiantRoutes");
 
 const dossierAdministratif = require("./DossierAdministratifRoutes/DossierAdministratifRoutes");
 const leaveBalance = require("./CongéRoutes/LeaveBalanceRoutes");
@@ -84,6 +85,8 @@ const virtualServiceRoutes = require("./VirtualServiceRoutes/VirtualServiceRoute
 const deplacementRoutes = require("./DeplacementRoutes/DeplacementRoutes");
 const missionRoutes = require("./MissionRoutes/MissionRoutes");
 const noteProRoutes = require("./NoteProRoutes/NoteProRoutes");
+
+const CoursEnseignantRoutes = require("./CoursEnseignantRoutes/CoursEnseignantRoutes");
 
 // gestion des conges
 router.use("/examen", examenRoutes);
@@ -190,4 +193,9 @@ router.use("/note-pro", noteProRoutes);
 //Notes Examen
 router.use("/notes", notesExamenRoutes);
 
+//Absence Etudiant
+router.use("/absence-etudiant", absenceEtudiantRoutes);
+
+//Cours Enseignant
+router.use("/cours-enseignant", CoursEnseignantRoutes);
 module.exports = router;
