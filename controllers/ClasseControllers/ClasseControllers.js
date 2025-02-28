@@ -144,6 +144,7 @@ async function getAssignedMatieres(req, res) {
 const getAllClassesByTeacher = async (req, res) => {
   try {
     const { teacherId, semestre } = req.body;
+    console.log("req body", req.body);
     const classes = await classeService.getClassesByTeacherId(
       teacherId,
       semestre

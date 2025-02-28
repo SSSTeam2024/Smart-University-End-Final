@@ -129,9 +129,43 @@ const getClasseById = async (id) => {
   try {
     return await classeModel
       .findById(id)
+      // .populate("departement")
+      // .populate("niveau_classe")
+      // .populate("matieres");
+      .populate({
+        path: "niveau_classe",
+        populate: [
+          {
+            path: "sections",
+            model: "SectionClasse",
+            populate: {
+              path: "departements",
+              model: "Departement",
+              populate: {
+                path: "sections",
+                model: "SectionClasse",
+              },
+            },
+          },
+          {
+            path: "cycles",
+            model: "Cycle",
+          },
+        ],
+      })
       .populate("departement")
-      .populate("niveau_classe")
-      .populate("matieres");
+      .populate("matieres")
+      .populate({
+        path: "parcours", // Populating parcours
+        populate: {
+          path: "modules", // Populating modules inside parcours
+          model: "ModuleParcours", // Assuming modules are part of the `ModuleParcours` model
+          populate: {
+            path: "matiere", // Populating matiere inside ModuleParcours
+            model: "Matiere", // Assuming matiere is a reference to the `Matiere` model
+          },
+        },
+      });
   } catch (error) {
     console.error("Error fetching classe by ID:", error);
     throw error;
