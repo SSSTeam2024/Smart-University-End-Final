@@ -8,7 +8,7 @@ const createAbsenceEtudiant = async (absenceEtudiantData) => {
 const getAllAbsenceEtudiants = async () => {
   return AbsenceEtudiant.find()
     .populate("classe")
-    .populate("matiere")
+    .populate("seance")
     .populate("departement")
     .populate({
       path: "etudiants",
@@ -51,10 +51,29 @@ const deleteAbsenceEtudiant = async (id) => {
   return AbsenceEtudiant.findByIdAndDelete(id);
 };
 
+const getAllAbsenceClasse = async (id) => {
+  const query = {
+    classe: id,
+  };
+
+  return await AbsenceEtudiant.find(query)
+    .populate("classe")
+    .populate("seance")
+    .populate("departement")
+    .populate({
+      path: "etudiants",
+      populate: {
+        path: "etudiant",
+      },
+    })
+    .populate("enseignant");
+};
+
 module.exports = {
   createAbsenceEtudiant,
   getAllAbsenceEtudiants,
   getAbsenceEtudiantById,
   updateAbsenceEtudiant,
   deleteAbsenceEtudiant,
+  getAllAbsenceClasse,
 };

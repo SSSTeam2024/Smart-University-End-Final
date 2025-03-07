@@ -32,10 +32,17 @@ const getCoursEnseignantById = async (id) => {
   return await CoursEnseignant.findById(id);
 };
 
+const getCoursEnseignantByIdClasse = async (id) => {
+  return await CoursEnseignant.find({ classe: { $in: [id] } })
+    .populate("classe")
+    .populate("enseignant");
+};
+
 module.exports = {
   addCoursEnseignant,
   getCoursEnseignantById,
   deleteCoursEnseignant,
   updateCoursEnseignant,
   getCoursEnseignants,
+  getCoursEnseignantByIdClasse,
 };

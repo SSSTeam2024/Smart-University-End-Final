@@ -20,10 +20,15 @@ const deleteAbsenceEtudiant = async (id) => {
   return await absenceEtudiantDao.deleteAbsenceEtudiant(id);
 };
 
+const getAllAbsenceClasse = async (id) => {
+  return await absenceEtudiantDao.getAllAbsenceClasse(id);
+};
+
 module.exports = {
   createAbsenceEtudiant,
   updateAbsenceEtudiant,
   getAbsenceEtudiantById,
   getAbsenceEtudiants,
   deleteAbsenceEtudiant,
+  getAllAbsenceClasse,
 };

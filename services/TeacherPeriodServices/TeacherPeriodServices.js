@@ -46,7 +46,10 @@ const getPeriodsBySemesterAndTeacher = async (semester, teacherId) => {
       semester,
       teacherId
     );
-    const newPeriods = mergeIntervals(result);
+    let newPeriods = [];
+    if (result.length > 0) {
+      newPeriods = mergeIntervals(result);
+    }
     return newPeriods;
   } catch (error) {
     throw new Error("Service error: " + error.message);

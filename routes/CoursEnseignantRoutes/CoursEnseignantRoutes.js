@@ -11,7 +11,10 @@ router.post(
   CoursEnseignantControllers.getCoursEnseignantById
 );
 
-// router.put('/edit-actualite', CoursEnseignantControllers.updateActualite);
+router.post(
+  "/get-cour-by-id-classe",
+  CoursEnseignantControllers.getCoursEnseignantByIdClasse
+);
 
 router.delete("/delete-cour", CoursEnseignantControllers.deleteCoursEnseignant);
 

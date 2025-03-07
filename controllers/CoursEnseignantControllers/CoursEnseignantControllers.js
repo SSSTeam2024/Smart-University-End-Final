@@ -3,37 +3,37 @@ const globalFunctions = require("../../utils/globalFunctions");
 
 const addCoursEnseignant = async (req, res) => {
   try {
-    const {
-      classe,
-      enseignant,
-      nom_cours,
-      trimestre,
-      pdfBase64String,
-      pdfExtension,
-    } = req.body;
+    const { classe, enseignant, nom_cours, trimestre, filesData } = req.body;
 
-    const pdfPath = "files/Cours/";
+    const supportPath = "files/Cours/";
 
-    const file_cours = globalFunctions.generateUniqueFilename(
-      pdfExtension,
-      `Cours_${nom_cours}`
-    );
+    let documents = [];
+    let file_cours = [];
 
-    let documents = [
-      {
-        base64String: pdfBase64String,
-        name: file_cours,
-        extension: pdfExtension,
-        path: pdfPath,
-      },
-    ];
+    for (const file of filesData) {
+      const randomString = globalFunctions.generateRandomString();
+
+      let [fileNameWithoutExtension, extension] = file.fileName.split(".");
+
+      let generatedFileName = `${fileNameWithoutExtension}_${randomString}.${file.pdfExtension}`;
+
+      documents.push({
+        base64String: file.pdfBase64String,
+        name: generatedFileName,
+        extension: file.pdfExtension,
+        path: supportPath,
+      });
+
+      file_cours.push(generatedFileName);
+    }
+
     const newCoursEnseignant = await coursEnseignantServices.addCoursEnseignant(
       {
         classe,
         enseignant,
         nom_cours,
-        trimestre,
         file_cours,
+        trimestre,
       },
       documents
     );
@@ -66,6 +66,20 @@ const getCoursEnseignantById = async (req, res) => {
     res.status(200).json(coursEnseignantById);
   } catch (error) {
     console.error("Error fetching Cours Enseignants by ID:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getCoursEnseignantByIdClasse = async (req, res) => {
+  try {
+    const coursEnseignantByIdClasse =
+      await coursEnseignantServices.getCoursEnseignantByIdClasse(req.body._id);
+    if (!coursEnseignantByIdClasse) {
+      return res.status(404).json({ message: "Cours Enseignants not found" });
+    }
+    res.status(200).json(coursEnseignantByIdClasse);
+  } catch (error) {
+    console.error("Error fetching Cours Enseignants by ID Class:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -169,4 +183,5 @@ module.exports = {
   getCoursEnseignantById,
   //   updateActualite,
   deleteCoursEnseignant,
+  getCoursEnseignantByIdClasse,
 };
