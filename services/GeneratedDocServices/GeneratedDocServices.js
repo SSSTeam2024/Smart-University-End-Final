@@ -5,7 +5,10 @@ const saveGeneratedDoc = async (generatedDocData) => {
 };
 
 const getGeneratedDocsByModelId = async (model_id) => {
-  return generatedDocDao.getGenerartedDocsByModelId(model_id);
+  return await generatedDocDao.getGenerartedDocsByModelId(model_id);
+};
+const getGenerartedDocsByQrCode = async (num_qr_code) => {
+  return await generatedDocDao.getGenerartedDocsByQrCode(num_qr_code);
 };
 
 // const getAllAbsencesPersonnels = async () => {
@@ -24,6 +27,7 @@ const getGeneratedDocsByModelId = async (model_id) => {
 module.exports = {
   saveGeneratedDoc,
   getGeneratedDocsByModelId,
+  getGenerartedDocsByQrCode
   // getAllAbsencesPersonnels,
   // updateAbsencePersonnel,
   // deleteAbsencePersonnel

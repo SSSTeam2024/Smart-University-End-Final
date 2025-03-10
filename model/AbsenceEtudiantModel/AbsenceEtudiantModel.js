@@ -9,12 +9,6 @@ const AbsenceEtudiantSchema = new Schema(
       required: false,
       default: null,
     },
-    matiere: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Matiere",
-      required: false,
-      default: null,
-    },
     enseignant: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Enseignant",
@@ -33,9 +27,19 @@ const AbsenceEtudiantSchema = new Schema(
       },
     ],
     departement: { type: mongoose.Schema.Types.ObjectId, ref: "Departement" },
-    heure: String,
     date: String,
     trimestre: String,
+    seance: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Seance",
+      required: false,
+      default: null,
+    },
+    added_by: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
   },
   { timestamps: true }
 );

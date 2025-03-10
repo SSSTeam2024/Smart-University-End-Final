@@ -83,7 +83,6 @@ const getClasses = async () => {
         ],
       })
       .populate("departement")
-      .populate("matieres")
       .populate({
         path: "parcours", // Populating parcours
         populate: {
@@ -109,7 +108,7 @@ const updateClasse = async (id, updateData) => {
       .findByIdAndUpdate(id, updateData, { new: true })
       .populate("departement")
       .populate("niveau_classe")
-      .populate("matieres");
+      .populate("parcours");
   } catch (error) {
     console.error("Error updating classe:", error);
     throw error;
@@ -154,7 +153,6 @@ const getClasseById = async (id) => {
         ],
       })
       .populate("departement")
-      .populate("matieres")
       .populate({
         path: "parcours", // Populating parcours
         populate: {

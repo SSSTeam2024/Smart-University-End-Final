@@ -4,12 +4,19 @@ const classeSchema = new mongoose.Schema(
   {
     nom_classe_fr: String,
     nom_classe_ar: String,
-    departement: { type: mongoose.Schema.Types.ObjectId, ref: "Departement" },
+    departement: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Departement",
+      default: null,
+    },
     niveau_classe: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "NiveauClasse",
+      default: null,
     },
-    matieres: [{ type: mongoose.Schema.Types.ObjectId, ref: "Matiere" }],
+    matieres: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Matiere", default: null },
+    ],
     parcours: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Parcours",

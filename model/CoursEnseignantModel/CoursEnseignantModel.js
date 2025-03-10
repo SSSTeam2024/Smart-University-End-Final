@@ -18,7 +18,7 @@ const CoursEnseignantSchema = new Schema(
       default: null,
     },
     nom_cours: String,
-    file_cours: String,
+    file_cours: [String],
     trimestre: String,
   },
   { timestamps: true }
