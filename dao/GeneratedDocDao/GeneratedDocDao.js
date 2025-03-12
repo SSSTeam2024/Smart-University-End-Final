@@ -1,4 +1,4 @@
-const GeneratedDocModel = require('../../model/GeneratedDocModel/GeneratedDocModel');
+const GeneratedDocModel = require("../../model/GeneratedDocModel/GeneratedDocModel");
 
 const saveGenerated = async (generatedDocData) => {
   const generatedDoc = new GeneratedDocModel(generatedDocData);
@@ -9,7 +9,11 @@ const getGenerartedDocsByModelId = async (model_id) => {
   const query = {
     model: model_id,
   };
-  return await GeneratedDocModel.find(query).populate("model").populate("enseignant").populate("etudiant").populate("personnel");
+  return await GeneratedDocModel.find(query)
+    .populate("model")
+    .populate("enseignant")
+    .populate("etudiant")
+    .populate("personnel");
 };
 
 const getGenerartedDocsByQrCode = async (num_qr_code) => {
