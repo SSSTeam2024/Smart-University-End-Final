@@ -84,85 +84,6 @@ const getCoursEnseignantByIdClasse = async (req, res) => {
   }
 };
 
-// const updateActualite = async (req, res) => {
-//   try {
-//     const {
-//       _id,
-//       title,
-//       description,
-//       category,
-//       auteurId,
-//       address,
-//       lien,
-//       pdfBase64String,
-//       pdfExtension,
-//       galleryBase64Strings = [],
-//       galleryExtensions = [],
-//       date_actualite,
-//     } = req.body;
-
-//     const pdfPath = "files/ActualiteFiles/pdf/";
-//     const galleryPath = "files/ActualiteFiles/photo/";
-
-//     let documents = [];
-
-//     if (pdfBase64String && pdfExtension) {
-//       const pdfFilename = globalFunctions.generateUniqueFilename(
-//         pdfExtension,
-//         "ActualitePDF"
-//       );
-//       documents.push({
-//         base64String: pdfBase64String,
-//         name: pdfFilename,
-//         extension: pdfExtension,
-//         path: pdfPath,
-//       });
-//     }
-
-//     if (galleryBase64Strings.length > 0 && galleryExtensions.length > 0) {
-//       const galleryFilenames = galleryExtensions.map((ext, index) =>
-//         globalFunctions.generateUniqueFilename(ext, `ActualitePHOTO_${index}`)
-//       );
-
-//       galleryBase64Strings.forEach((base64String, index) => {
-//         documents.push({
-//           base64String: base64String,
-//           extension: galleryExtensions[index],
-//           name: galleryFilenames[index],
-//           path: galleryPath,
-//         });
-//       });
-//     }
-
-//     const updatedActualite = await ActualiteService.updateActualite(
-//       _id,
-//       {
-//         title,
-//         description,
-//         category,
-//         auteurId,
-//         address,
-//         lien,
-//         pdf: documents.find((doc) => doc.path === pdfPath)?.name,
-//         gallery: documents
-//           .filter((doc) => doc.path === galleryPath)
-//           .map((doc) => doc.name),
-//         date_actualite,
-//       },
-//       documents
-//     );
-
-//     if (!updatedActualite) {
-//       return res.status(404).json({ message: "Actualite not found" });
-//     }
-
-//     res.status(200).json(updatedActualite);
-//   } catch (error) {
-//     console.error("Error updating Actualite:", error);
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
 const deleteCoursEnseignant = async (req, res) => {
   try {
     const deleteCoursEnseignant =
@@ -177,11 +98,60 @@ const deleteCoursEnseignant = async (req, res) => {
   }
 };
 
+const updateCoursEnseignant = async (req, res) => {
+  try {
+    const coursId = req.params.id;
+    const { classe, enseignant, nom_cours, trimestre, filesData } = req.body;
+
+    const supportPath = "files/Cours/";
+
+    let documents = [];
+    let file_cours = [];
+
+    for (const file of filesData) {
+      const randomString = globalFunctions.generateRandomString();
+
+      let [fileNameWithoutExtension, extension] = file.fileName.split(".");
+
+      let generatedFileName = `${fileNameWithoutExtension}_${randomString}.${file.pdfExtension}`;
+
+      documents.push({
+        base64String: file.pdfBase64String,
+        name: generatedFileName,
+        extension: file.pdfExtension,
+        path: supportPath,
+      });
+
+      file_cours.push(generatedFileName);
+    }
+
+    const updatedCours = await coursEnseignantServices.updateCoursEnseignant(
+      coursId,
+      {
+        classe,
+        enseignant,
+        nom_cours,
+        file_cours,
+        trimestre,
+      },
+      documents
+    );
+
+    if (!updatedCours) {
+      return res.status(404).send("Cours not found!");
+    }
+    res.json(updatedCours);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   addCoursEnseignant,
   getCoursEnseignants,
   getCoursEnseignantById,
-  //   updateActualite,
+  updateCoursEnseignant,
   deleteCoursEnseignant,
   getCoursEnseignantByIdClasse,
 };

@@ -17,5 +17,5 @@ router.post(
 );
 
 router.delete("/delete-cour", CoursEnseignantControllers.deleteCoursEnseignant);
-
+router.put("/edit-cours/:id", CoursEnseignantControllers.updateCoursEnseignant);
 module.exports = router;

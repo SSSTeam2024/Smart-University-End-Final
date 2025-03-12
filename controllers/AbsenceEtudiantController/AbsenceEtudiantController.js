@@ -44,6 +44,8 @@ const updateAbsenceEtudiantById = async (req, res) => {
       added_by,
     } = req.body;
 
+    console.log(etudiants);
+
     const updatedAbsenceEtudiant =
       await absenceEtudiantServices.updateAbsenceEtudiant(absenceEtudiantId, {
         classe,
