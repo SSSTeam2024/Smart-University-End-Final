@@ -718,7 +718,7 @@ const login = async (req, res) => {
 function prepareEmailInscription(email, prenom, nom, code, cin, date) {
   let recipient = email;
   let pwd = String(cin).split("").reverse().join("");
-  console.log("date", date);
+  
   let formattedDate = new Date(date)
     .toLocaleString("en-US", {
       month: "long",

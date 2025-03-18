@@ -101,7 +101,7 @@ const deleteTypeInscriptionEtudianttById = async (req, res) => {
 const getTypeInscriptionByValue = async (req, res) => {
   try {
     const { type_fr, type_ar } = req.body;
-    console.log(req.body);
+    
     if (!type_fr || !type_ar) {
       return res
         .status(400)

@@ -41,7 +41,7 @@ const addVariableGlobale = async (req, res) => {
  
 
     } = req.body;
-    console.log("req.body",req.body)
+    
     const signatureDirecteurFilesPath = "files/variableGlobaleFiles/signatureDirecteurFiles/";
     const signatureSecretaireFilesPath = "files/variableGlobaleFiles/signatureSecretaireFiles/";
     const logoEtablissementFilesPath = "files/variableGlobaleFiles/logoEtablissementFiles/";

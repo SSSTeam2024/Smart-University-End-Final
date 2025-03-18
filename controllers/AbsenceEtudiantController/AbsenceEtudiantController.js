@@ -12,7 +12,6 @@ const addAbsenceEtudiant = async (req, res) => {
       trimestre,
       added_by,
     } = req.body;
-    console.log("req.body", req.body);
     const newAbsenceEtudiant =
       await absenceEtudiantServices.createAbsenceEtudiant({
         classe,
@@ -43,8 +42,6 @@ const updateAbsenceEtudiantById = async (req, res) => {
       trimestre,
       added_by,
     } = req.body;
-
-    console.log(etudiants);
 
     const updatedAbsenceEtudiant =
       await absenceEtudiantServices.updateAbsenceEtudiant(absenceEtudiantId, {

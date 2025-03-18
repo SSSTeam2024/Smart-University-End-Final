@@ -58,7 +58,6 @@ const createOrUpdateLeaveBalance = async (req, res) => {
       remainingDays,
       year,
       lastUpdated } = req.body;
-console.log("req", req.body)
     // Basic validation
     if (
       !personnelId || !leaveType || !year ||

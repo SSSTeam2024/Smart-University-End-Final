@@ -21,7 +21,14 @@ const getFichesVoeux = async () => {
     .find()
     .populate({
       path: "fiche_voeux_classes",
-      populate: [{ path: "matieres" }, { path: "classe" }],
+      populate: {
+        path: "classe",
+        populate: [{
+          path: "subject_id",
+        },{
+          path: "class_id", 
+        }]
+      },
     })
     .populate({
       path: "enseignant",
@@ -42,9 +49,6 @@ const deleteFicheVoeuxById = async (id) => {
   const deletedFicheVoeux = await ficheVoeuxModel.findByIdAndDelete(id);
 
   return deletedFicheVoeux;
-};
-const getSalleById = async (id) => {
-  return await salleModel.findById(id).populate("departement");
 };
 
 module.exports = {

@@ -16,7 +16,7 @@ const addPapierAdministratif = async (req, res) => {
 };
 
 const updatePapierAdministratiftById = async (req, res) => {
-  console.log("body request",req.body)
+  
   try {
     const { _id, files_papier_administratif } = req.body;
 

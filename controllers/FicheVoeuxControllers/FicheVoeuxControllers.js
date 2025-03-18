@@ -2,10 +2,10 @@ const ficheVoeuxService = require("../../services/FicheVoeuxServices/FicheVoeuxS
 
 const addFicheVoeux = async (req, res) => {
   try {
-    const { fiche_voeux_classes, enseignant, semestre, jours } = req.body;
+    const { fiche_voeux_classes, enseignant, semestre, jours, remarque } = req.body;
 
     const fiche = await ficheVoeuxService.createficheVoeux({
-      fiche_voeux_classes, enseignant, semestre, jours
+      fiche_voeux_classes, enseignant, semestre, jours, remarque
     });
     res.json(fiche);
   } catch (error) {
@@ -16,32 +16,16 @@ const addFicheVoeux = async (req, res) => {
 const updateFicheVoeuxById = async (req, res) => {
   try {
     const ficheVoeuxId = req.body._id;
-    const { fiche_voeux_classes, jours, temps, classe,enseignant,semestre } = req.body;
+    const { fiche_voeux_classes, jours, temps, classe,enseignant,semestre, remarque } = req.body;
 
     const updatedFicheVoeux= await ficheVoeuxService.updateFicheVoeux(ficheVoeuxId, {
-      fiche_voeux_classes, jours, temps, classe,enseignant,semestre
+      fiche_voeux_classes, jours, temps, classe,enseignant,semestre, remarque
     });
 
     if (!updatedFicheVoeux) {
       return res.status(404).send("Fiche Voeux not found!");
     }
     res.json(updatedFicheVoeux);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send(error.message);
-  }
-};
-
-const getSalleById = async (req, res) => {
-  try {
-    const salleId = req.params.id;
-
-    const getSalle= await salleService.getSalleById(salleId);
-
-    if (!getSalle) {
-      return res.status(404).send("Salle not found");
-    }
-    res.json(getSalle);
   } catch (error) {
     console.error(error);
     res.status(500).send(error.message);
