@@ -101,28 +101,59 @@ const deleteCoursEnseignant = async (req, res) => {
 const updateCoursEnseignant = async (req, res) => {
   try {
     const coursId = req.params.id;
-    const { classe, enseignant, nom_cours, trimestre, filesData } = req.body;
+    const { classe, enseignant, nom_cours, trimestre, filesData, deletedfile } =
+      req.body;
 
     const supportPath = "files/Cours/";
 
     let documents = [];
     let file_cours = [];
+    console.log("filesData", filesData);
+    if (deletedfile === "no") {
+      // for (const file of filesData) {
+      //   const randomString = globalFunctions.generateRandomString();
 
-    for (const file of filesData) {
-      const randomString = globalFunctions.generateRandomString();
+      //   let [fileNameWithoutExtension, extension] = file.fileName.split(".");
 
-      let [fileNameWithoutExtension, extension] = file.fileName.split(".");
+      //   let generatedFileName = `${fileNameWithoutExtension}_${randomString}.${file.pdfExtension}`;
 
-      let generatedFileName = `${fileNameWithoutExtension}_${randomString}.${file.pdfExtension}`;
+      //   documents.push({
+      //     base64String: file.pdfBase64String,
+      //     name: generatedFileName,
+      //     extension: file.pdfExtension,
+      //     path: supportPath,
+      //   });
 
-      documents.push({
-        base64String: file.pdfBase64String,
-        name: generatedFileName,
-        extension: file.pdfExtension,
-        path: supportPath,
-      });
+      //   file_cours.push(generatedFileName);
+      // }
+      for (const file of filesData) {
+        if (typeof file === "string") {
+          // If it's already a filename, just push it
+          file_cours.push(file);
+        } else if (typeof file === "object" && file.fileName) {
+          // Handle new file objects
+          const randomString = globalFunctions.generateRandomString();
+          let [fileNameWithoutExtension] = file.fileName.split(".");
+          let generatedFileName = `${fileNameWithoutExtension}_${randomString}.${file.pdfExtension}`;
 
-      file_cours.push(generatedFileName);
+          documents.push({
+            base64String: file.pdfBase64String,
+            name: generatedFileName,
+            extension: file.pdfExtension,
+            path: supportPath,
+          });
+
+          file_cours.push(generatedFileName);
+        }
+      }
+    } else if (deletedfile === "yes") {
+      for (const file of filesData) {
+        file_cours.push(file);
+      }
+    } else {
+      for (const file of filesData) {
+        file_cours.push(file);
+      }
     }
 
     const updatedCours = await coursEnseignantServices.updateCoursEnseignant(
