@@ -21,5 +21,9 @@ router.post(
 );
 router.post("/login-etudiant", etudiantController.login);
 router.post("/get-etudiant-by-token", etudiantController.getEtudiantByToken);
+router.post(
+  "/get-nbr-etudiants-by-classes",
+  etudiantController.getNbrEtudiantsByClasses
+);
 
 module.exports = router;
