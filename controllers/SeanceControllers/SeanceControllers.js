@@ -14,7 +14,7 @@ const createSeance = async (req, res) => {
       type_seance,
       emploiPeriodique_id,
     } = req.body;
-    console.log(req.body);
+    
     const seanceJson = await seanceService.createSeance({
       jour,
       matiere,
@@ -128,9 +128,9 @@ const getPeriodicSessionsByTeacher = async (req, res) => {
 const getSessionsByRoomId = async (req, res) => {
   try {
     const roomId = req.params.id;
-    console.log(roomId);
+   
     const seances = await seanceService.getSessionsByRoomId(roomId);
-    console.log(seances);
+    
     if (!seances) {
       return res.status(404).send("Pas de séances");
     }

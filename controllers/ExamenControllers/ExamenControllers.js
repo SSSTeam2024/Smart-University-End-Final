@@ -130,7 +130,7 @@ const editCalendrierExamens = async (req, res) => {
       nbre_exclus,
       notes,
     } = req.body;
-    console.log("req body", req.body);
+    
     const sentResult = await examenService.editCalendrierExamens({
       id_Calendrier,
       epreuveId,

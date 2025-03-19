@@ -164,7 +164,7 @@ const getAllClassesByTeacher = async (req, res) => {
 const getClasseByValue = async (req, res) => {
   try {
     const { nom_classe_ar, nom_classe_fr } = req.body;
-    console.log(req.body);
+
     if (!nom_classe_ar || !nom_classe_fr) {
       return res
         .status(400)

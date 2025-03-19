@@ -74,6 +74,8 @@ const absencePersonnelRoutes = require("./AbsencePersonnelRoutes/AbsencePersonne
 const cycleRoutes = require("./CycleRoutes/CycleRoutes");
 
 const generatedDocRoutes = require("./GeneratedDocRoutes/GeneratedDocRoutes");
+const demandeTirageRoutes = require("./DemandeTirageRoutes/DemandeTirageRoutes");
+router.use("/demande-tirage", demandeTirageRoutes);
 
 router.use("/type-parcours", typeParcoursRoutes);
 router.use("/cycle", cycleRoutes);
