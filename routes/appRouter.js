@@ -96,6 +96,8 @@ const noteProRoutes = require("./NoteProRoutes/NoteProRoutes");
 
 const CoursEnseignantRoutes = require("./CoursEnseignantRoutes/CoursEnseignantRoutes");
 
+const PersonnelWorkingDayRoutes = require("./PersonnelWorkingDayRoutes/PersonnelWorkingDayRoutes");
+
 // gestion des conges
 router.use("/examen", examenRoutes);
 
@@ -211,5 +213,8 @@ router.use("/absence", absencePersonnelRoutes);
 
 // GeneratedDoc
 router.use("/generated-doc", generatedDocRoutes);
+
+// GeneratedDoc
+router.use("/personnelWorkingDay", PersonnelWorkingDayRoutes);
 
 module.exports = router;
