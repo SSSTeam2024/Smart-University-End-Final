@@ -91,7 +91,8 @@ const virtualServiceRoutes = require("./VirtualServiceRoutes/VirtualServiceRoute
 const deplacementRoutes = require("./DeplacementRoutes/DeplacementRoutes");
 const missionRoutes = require("./MissionRoutes/MissionRoutes");
 const noteProRoutes = require("./NoteProRoutes/NoteProRoutes");
-
+const messagerieRoutes = require("./MessagerieRoutes-old/MessagerieRoutes");
+const messageRoutes = require("./MessagerieRoutes/MessagerieRoutes");
 const CoursEnseignantRoutes = require("./CoursEnseignantRoutes/CoursEnseignantRoutes");
 
 // gestion des conges
@@ -210,4 +211,11 @@ router.use("/absence", absencePersonnelRoutes);
 // GeneratedDoc
 router.use("/generated-doc", generatedDocRoutes);
 
+// Messagerie-old
+
+router.use("/messagerie", messagerieRoutes);
+
+// Messagerie
+
+router.use("/messages", messageRoutes);
 module.exports = router;
