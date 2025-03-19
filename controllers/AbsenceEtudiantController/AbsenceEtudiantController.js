@@ -4,25 +4,24 @@ const addAbsenceEtudiant = async (req, res) => {
   try {
     const {
       classe,
-      matiere,
       enseignant,
       etudiants,
+      seance,
       departement,
-      heure,
       date,
       trimestre,
+      added_by,
     } = req.body;
-    console.log("req.body", req.body);
     const newAbsenceEtudiant =
       await absenceEtudiantServices.createAbsenceEtudiant({
         classe,
-        matiere,
         enseignant,
         etudiants,
+        seance,
         departement,
-        heure,
         date,
         trimestre,
+        added_by,
       });
     res.json(newAbsenceEtudiant);
   } catch (error) {
@@ -35,25 +34,25 @@ const updateAbsenceEtudiantById = async (req, res) => {
     const absenceEtudiantId = req.params.id;
     const {
       classe,
-      matiere,
       enseignant,
       etudiants,
+      seance,
       departement,
-      heure,
       date,
       trimestre,
+      added_by,
     } = req.body;
 
     const updatedAbsenceEtudiant =
       await absenceEtudiantServices.updateAbsenceEtudiant(absenceEtudiantId, {
         classe,
-        matiere,
         enseignant,
         etudiants,
+        seance,
         departement,
-        heure,
         date,
         trimestre,
+        added_by,
       });
 
     if (!updatedAbsenceEtudiant) {
@@ -110,6 +109,19 @@ const deleteAbsenceEtudiantById = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+
+const getAllAbsenceClasse = async (req, res) => {
+  try {
+    const classId = req.params.id;
+    let classAbsences = await absenceEtudiantServices.getAllAbsenceClasse(
+      classId
+    );
+    res.json(classAbsences);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+};
 //
 
 module.exports = {
@@ -118,4 +130,5 @@ module.exports = {
   getAbsenceEtudiantById,
   updateAbsenceEtudiantById,
   addAbsenceEtudiant,
+  getAllAbsenceClasse,
 };

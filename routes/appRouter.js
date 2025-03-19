@@ -74,6 +74,8 @@ const absencePersonnelRoutes = require("./AbsencePersonnelRoutes/AbsencePersonne
 const cycleRoutes = require("./CycleRoutes/CycleRoutes");
 
 const generatedDocRoutes = require("./GeneratedDocRoutes/GeneratedDocRoutes");
+const demandeTirageRoutes = require("./DemandeTirageRoutes/DemandeTirageRoutes");
+router.use("/demande-tirage", demandeTirageRoutes);
 
 router.use("/type-parcours", typeParcoursRoutes);
 router.use("/cycle", cycleRoutes);
@@ -94,6 +96,8 @@ const noteProRoutes = require("./NoteProRoutes/NoteProRoutes");
 const messagerieRoutes = require("./MessagerieRoutes-old/MessagerieRoutes");
 const messageRoutes = require("./MessagerieRoutes/MessagerieRoutes");
 const CoursEnseignantRoutes = require("./CoursEnseignantRoutes/CoursEnseignantRoutes");
+
+const PersonnelWorkingDayRoutes = require("./PersonnelWorkingDayRoutes/PersonnelWorkingDayRoutes");
 
 // gestion des conges
 router.use("/examen", examenRoutes);
@@ -218,4 +222,7 @@ router.use("/messagerie", messagerieRoutes);
 // Messagerie
 
 router.use("/messages", messageRoutes);
+// GeneratedDoc
+router.use("/personnelWorkingDay", PersonnelWorkingDayRoutes);
+
 module.exports = router;

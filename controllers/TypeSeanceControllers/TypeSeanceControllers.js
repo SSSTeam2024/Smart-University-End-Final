@@ -3,7 +3,7 @@ const typeSeanceService = require("../../services/TypeSeanceServices/TypeSeanceS
 const createTypeSeance = async (req, res) => {
   try {
     const { seance_ar, seance_fr, abreviation, charge } = req.body;
-    console.log(req.body);
+   
     const typeSeanceJson = await typeSeanceService.createTypeSeance({
       seance_ar,
       seance_fr,

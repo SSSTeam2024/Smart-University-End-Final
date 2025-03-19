@@ -3,10 +3,9 @@ const SalleDisponibiliteService = require("../../services/SalleDisponibiliteServ
 const teacherPeriodService = require("../../services/TeacherPeriodServices/TeacherPeriodServices");
 
 const createSeance = async (data) => {
-  console.log("data", data);
 
-  const hoursNumber = getHoursNumber(data.heure_debut, data.heure_fin);
-  console.log("hoursNumber: ", hoursNumber);
+  const hoursNumber = getHoursNumber(data.heure_debut, data.heure_fin, data.type_seance);
+
 
   let result = await teacherPeriodService.getTeacherPeriodByIdClassPeriod(
     data.emploiPeriodique_id,
@@ -14,9 +13,7 @@ const createSeance = async (data) => {
   );
 
   if (result.length > 0) {
-    console.log(result[0].nbr_heure);
     let newHoursNumber = hoursNumber + Number(result[0].nbr_heure);
-    console.log("newHoursNumber: ", String(newHoursNumber));
     await teacherPeriodService.updateTeacherPeriod(
       result[0]._id,
       String(newHoursNumber)
@@ -91,17 +88,15 @@ const getAllSeancesByIdEmploi = async (idEmploi) => {
 const deleteSeance = async (seance) => {
   try {
     const hoursNumber = getHoursNumber(seance.heure_debut, seance.heure_fin);
-    console.log("hoursNumber: ", hoursNumber);
+   
 
     let result = await teacherPeriodService.getTeacherPeriodByIdClassPeriod(
       seance.emploiPeriodique_id._id,
       seance.enseignant._id
     );
 
-    console.log(result);
 
     let newHoursNumber = Number(result[0].nbr_heure) - hoursNumber;
-    console.log("newHoursNumber: ", String(newHoursNumber));
 
     const deletedSeance = await seanceDao.deleteSeance(seance._id);
 
@@ -120,7 +115,7 @@ const deleteSeance = async (seance) => {
   }
 };
 
-const getHoursNumber = (start, end) => {
+const getHoursNumber = (start, end, sessionType) => {
   // Parse hours and minutes from the start and end times
   const [startHour, startMinute] = start.split(":").map(Number);
   const [endHour, endMinute] = end.split(":").map(Number);
@@ -132,8 +127,10 @@ const getHoursNumber = (start, end) => {
   // Calculate the difference in minutes
   const durationMinutes = endTotalMinutes - startTotalMinutes;
 
+  let result = sessionType === '1' ? durationMinutes / 60 : (durationMinutes / 60) / 2;
+
   // Convert minutes to decimal hours
-  return durationMinutes / 60;
+  return result;
 };
 
 const getSeancesByIdTeacherAndSemestre = async (enseignantId, semestre) => {

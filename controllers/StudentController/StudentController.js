@@ -718,7 +718,7 @@ const login = async (req, res) => {
 function prepareEmailInscription(email, prenom, nom, code, cin, date) {
   let recipient = email;
   let pwd = String(cin).split("").reverse().join("");
-  console.log("date", date);
+
   let formattedDate = new Date(date)
     .toLocaleString("en-US", {
       month: "long",
@@ -743,6 +743,24 @@ function prepareEmailInscription(email, prenom, nom, code, cin, date) {
   return fullEmailObject;
 }
 
+const getNbrEtudiantsByClasses = async (req, res) => {
+  try {
+    const { classeIds } = req.body;
+
+    const nbrEtudiants = await studentService.getNbrEtudiantsByClasses(classeIds);
+
+    console.log("Nombre Etudiants", nbrEtudiants);
+
+    if (!nbrEtudiants) {
+      return res.status(404).send("Aucun Etudiant pour ces groupes !!");
+    }
+    res.json({ nbr: nbrEtudiants });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   addStudent,
   getAllStudents,
@@ -757,4 +775,5 @@ module.exports = {
   getEtudiantByCinAndCode,
   getEtudiantByToken,
   login,
+  getNbrEtudiantsByClasses
 };

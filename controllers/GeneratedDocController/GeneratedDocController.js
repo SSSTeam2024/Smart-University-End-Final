@@ -1,12 +1,27 @@
-const generatedDocService = require('../../services/GeneratedDocServices/GeneratedDocServices');
-
+const generatedDocService = require("../../services/GeneratedDocServices/GeneratedDocServices");
 
 const saveGeneratedDoc = async (req, res) => {
   try {
-    const { personnel, etudiant, enseignant, model, body, date_generation, num_ordre, num_qr_code } = req.body;
+    const {
+      personnel,
+      etudiant,
+      enseignant,
+      model,
+      body,
+      date_generation,
+      num_ordre,
+      num_qr_code,
+    } = req.body;
 
     const generatedDoc = await generatedDocService.saveGeneratedDoc({
-      personnel, etudiant, enseignant, model, body, date_generation, num_ordre, num_qr_code
+      personnel,
+      etudiant,
+      enseignant,
+      model,
+      body,
+      date_generation,
+      num_ordre,
+      num_qr_code,
     });
     res.json(generatedDoc);
   } catch (error) {
@@ -17,23 +32,32 @@ const saveGeneratedDoc = async (req, res) => {
 const getGeneratedDocsByModelId = async (req, res) => {
   try {
     let number = {
-      value: ''
+      value: "",
     };
 
-    const generatedDocs = await generatedDocService.getGeneratedDocsByModelId(req.params.id);
+    const generatedDocs = await generatedDocService.getGeneratedDocsByModelId(
+      req.params.id
+    );
     if (!generatedDocs) {
-      return res.status(404).json({ message: 'No generated docs according to the provided model!' });
+      return res
+        .status(404)
+        .json({
+          message: "No generated docs according to the provided model!",
+        });
     }
 
-    if(generatedDocs.length === 0){
-      number.value = '01';
-    }else{
-      number.value = (generatedDocs.length + 1).toString().padStart(2, '0');
+    if (generatedDocs.length === 0) {
+      number.value = "01";
+    } else {
+      number.value = (generatedDocs.length + 1).toString().padStart(2, "0");
     }
 
     res.status(200).json(number);
   } catch (error) {
-    console.error("Error fetching Generated docs by the provided model ID:", error);
+    console.error(
+      "Error fetching Generated docs by the provided model ID:",
+      error
+    );
     res.status(500).json({ message: error.message });
   }
 };

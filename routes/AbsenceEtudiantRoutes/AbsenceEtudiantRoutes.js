@@ -19,4 +19,8 @@ router.delete(
   "/delete-absence-etudiant/:id",
   AbsenceEtudiantController.deleteAbsenceEtudiantById
 );
+router.get(
+  "/get-all-absence-classe/:id",
+  AbsenceEtudiantController.getAllAbsenceClasse
+);
 module.exports = router;

@@ -129,7 +129,7 @@ const getPeriodicSessionsByTeacher = async (
       .populate("classe")
       .populate("matiere")
       .populate("enseignant")
-      .populate("salle");
+      .populate("salle").populate("emploiPeriodique_id");
   } catch (error) {
     console.error("Error fetching seances:", error);
     throw error;

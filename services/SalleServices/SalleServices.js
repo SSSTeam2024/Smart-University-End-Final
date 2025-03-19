@@ -43,7 +43,6 @@ const getSallesByDayAndTime = async (
       semestre
     );
 
-  console.log("emploiClassPeriodique", emploiClassPeriodique);
 
   const givenStart = parseDate(date_debut_emploi_period);
   const givenEnd = parseDate(date_fin_emploi_period);
@@ -113,10 +112,8 @@ const getSallesByDayAndTime = async (
   //console.log("availableRooms1", availableRooms);
 
   if (session_type === "1/15") {
-    console.log("session_type", session_type);
     for (const occupiedRoom of occupiedRooms) {
       if (occupiedRoom.session_type === "1/15") {
-        console.log("force push", occupiedRoom.room);
         availableRooms.push(occupiedRoom.room);
       }
     }

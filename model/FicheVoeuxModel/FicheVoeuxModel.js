@@ -4,8 +4,13 @@ const ficheVoeuxSchema = new mongoose.Schema(
   {
     fiche_voeux_classes: [
       {
-        matieres: [{ type: mongoose.Schema.Types.ObjectId, ref: "Matiere" }],
-        classe: { type: mongoose.Schema.Types.ObjectId, ref: "Classe" },
+        matieres: String,
+        classe: [
+          {
+            subject_id: { type: mongoose.Schema.Types.ObjectId, ref: "Matiere" },
+            class_id: { type: mongoose.Schema.Types.ObjectId, ref: "Classe" }
+          }
+        ]
       },
     ],
     jours: [
@@ -17,6 +22,7 @@ const ficheVoeuxSchema = new mongoose.Schema(
     enseignant: { type: mongoose.Schema.Types.ObjectId, ref: "Enseignant" },
 
     semestre: String,
+    remarque: String
   },
   { timestamps: true }
 );

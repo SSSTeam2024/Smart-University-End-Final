@@ -27,20 +27,26 @@ const addClasse = async (req, res) => {
 const updateClasseById = async (req, res) => {
   try {
     const {
-      id,
+      _id,
       niveau_classe,
       departement,
       nom_classe_ar,
       nom_classe_fr,
       groupe_number,
+      parcours,
+      semestres,
+      matieres,
     } = req.body;
 
-    const updatedClasse = await classeService.updateClasse(id, {
+    const updatedClasse = await classeService.updateClasse(_id, {
       niveau_classe,
       departement,
       nom_classe_ar,
       nom_classe_fr,
       groupe_number,
+      parcours,
+      semestres,
+      matieres,
     });
 
     if (!updatedClasse) {
@@ -144,7 +150,6 @@ async function getAssignedMatieres(req, res) {
 const getAllClassesByTeacher = async (req, res) => {
   try {
     const { teacherId, semestre } = req.body;
-    console.log("req body", req.body);
     const classes = await classeService.getClassesByTeacherId(
       teacherId,
       semestre
@@ -159,7 +164,7 @@ const getAllClassesByTeacher = async (req, res) => {
 const getClasseByValue = async (req, res) => {
   try {
     const { nom_classe_ar, nom_classe_fr } = req.body;
-    console.log(req.body);
+
     if (!nom_classe_ar || !nom_classe_fr) {
       return res
         .status(400)

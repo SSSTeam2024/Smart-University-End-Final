@@ -49,6 +49,10 @@ const getCoursEnseignantById = async (id) => {
   return coursEnseignantDao.getCoursEnseignantById(id);
 };
 
+const getCoursEnseignantByIdClasse = async (id) => {
+  return coursEnseignantDao.getCoursEnseignantByIdClasse(id);
+};
+
 const updateCoursEnseignant = async (id, updateData, documents) => {
   try {
     if (documents && documents.length > 0) {
@@ -75,4 +79,5 @@ module.exports = {
   getCoursEnseignantById,
   updateCoursEnseignant,
   deleteCoursEnseignant,
+  getCoursEnseignantByIdClasse,
 };

@@ -15,7 +15,7 @@ const createRattrapage = async (req, res) => {
       etat,
       status,
     } = req.body;
-    console.log(req.body);
+  
     const rattrapageJson = await rattrapageService.createRattrapage({
       matiere,
       enseignant,

@@ -1,7 +1,7 @@
-const generatedDocDao = require('../../dao/GeneratedDocDao/GeneratedDocDao');
+const generatedDocDao = require("../../dao/GeneratedDocDao/GeneratedDocDao");
 
 const saveGeneratedDoc = async (generatedDocData) => {
-    return await generatedDocDao.saveGenerated(generatedDocData);
+  return await generatedDocDao.saveGenerated(generatedDocData);
 };
 
 const getGeneratedDocsByModelId = async (model_id) => {
@@ -16,7 +16,7 @@ const getGenerartedDocsByQrCode = async (num_qr_code) => {
 // };
 
 // const updateAbsencePersonnel = async (id, updateData) => {
- 
+
 //     return await absencePersonnelDao.updateAbsencePersonnel(id, updateData);
 // };
 
