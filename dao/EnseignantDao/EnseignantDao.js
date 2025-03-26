@@ -241,6 +241,18 @@ const getTeacherByCIN = async (cin_teacher) => {
     throw error;
   }
 };
+
+const updateJwtToken = async (id, token) => {
+  return await enseignantModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      $set: {
+        api_token: token,
+      },
+    }
+  );
+};
+
 module.exports = {
   createEnseignant,
   getEnseignants,
@@ -250,5 +262,6 @@ module.exports = {
   assignPapierToTeacher,
   fetchAllTeachersPeriods,
   getTeachersGroupedByGrade,
-  getTeacherByCIN
+  getTeacherByCIN,
+  updateJwtToken
 };
