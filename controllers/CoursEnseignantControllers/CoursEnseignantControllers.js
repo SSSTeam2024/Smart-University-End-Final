@@ -177,6 +177,17 @@ const updateCoursEnseignant = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+const getSupportCoursByTeacherId = async (req, res) => {
+  try {
+    const { enseignantId } = req.params;
+    const demandesTirage = await coursEnseignantServices.getSupportCoursByTeacherId(enseignantId);
+    res.json(demandesTirage);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error fetching demandes tirage by teacher ID" });
+  }
+};
+
 
 module.exports = {
   addCoursEnseignant,
@@ -185,4 +196,5 @@ module.exports = {
   updateCoursEnseignant,
   deleteCoursEnseignant,
   getCoursEnseignantByIdClasse,
+  getSupportCoursByTeacherId
 };

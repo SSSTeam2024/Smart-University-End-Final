@@ -15,7 +15,7 @@ const createRattrapage = async (req, res) => {
       etat,
       status,
     } = req.body;
-  
+
     const rattrapageJson = await rattrapageService.createRattrapage({
       matiere,
       enseignant,
@@ -113,8 +113,31 @@ const updateRattrapageEtatStatus = async (req, res) => {
 //     }
 //   };
 
+const getRattrapagesByClassId = async (req, res) => {
+  try {
+    const { classId } = req.params;
+    const rattrapages = await rattrapageService.getRattrapagesByClassId(classId);
+    res.json(rattrapages);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error fetching rattrapages by class ID" });
+  }
+};
+const getRattrapagesByTeacherId = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+    const rattrapages = await rattrapageService.getRattrapagesByTeacherId(teacherId);
+    res.json(rattrapages);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error fetching rattrapages by teacher ID" });
+  }
+};
+
 module.exports = {
   getRattrapages,
   createRattrapage,
   updateRattrapageEtatStatus,
+  getRattrapagesByClassId,
+  getRattrapagesByTeacherId
 };

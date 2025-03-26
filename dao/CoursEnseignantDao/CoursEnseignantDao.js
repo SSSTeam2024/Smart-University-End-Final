@@ -38,6 +38,17 @@ const getCoursEnseignantByIdClasse = async (id) => {
     .populate("enseignant");
 };
 
+const getSupportCoursByTeacherId = async (enseignantId) => {
+  try {
+    return await CoursEnseignant.find({ enseignant: enseignantId })
+      .populate("enseignant")
+      .populate("classe")
+  } catch (error) {
+    console.error("Error fetching support cours by teacher ID:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   addCoursEnseignant,
   getCoursEnseignantById,
@@ -45,4 +56,5 @@ module.exports = {
   updateCoursEnseignant,
   getCoursEnseignants,
   getCoursEnseignantByIdClasse,
+  getSupportCoursByTeacherId
 };

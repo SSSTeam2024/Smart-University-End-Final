@@ -50,7 +50,7 @@ const getAllDemandeEtudiants = async () => {
     {
       path: "type_inscription",
     }
-  ],
+    ],
   }).populate("piece_demande").populate("generated_doc");
 };
 
@@ -70,10 +70,23 @@ const deleteDemandeEtudiant = async (id) => {
   return DemandeEtudiant.findByIdAndDelete(id).populate('studentId');
 };
 
+const getDemandesByStudentId = async (studentId) => {
+  try {
+    return await DemandeEtudiant.find({ studentId })
+      .populate("studentId")
+      .populate("piece_demande")
+      .populate("generated_doc");
+  } catch (error) {
+    console.error("Error fetching demandes by student ID:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   createDemandeEtudiant,
   getAllDemandeEtudiants,
   getDemandeEtudiantById,
   updateDemandeEtudiant,
-  deleteDemandeEtudiant
+  deleteDemandeEtudiant,
+  getDemandesByStudentId
 };

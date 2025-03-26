@@ -3,6 +3,7 @@ const Enseignant = require("../../model/EnseignantModel/EnseignantModel");
 const globalFunctions = require("../../utils/globalFunctions");
 const path = require("path");
 const fs = require("fs");
+const bcrypt = require("bcrypt");
 
 // const addEnseignant = async (req, res) => {
 //   try {
@@ -187,17 +188,19 @@ const addEnseignant = async (req, res) => {
     // If PhotoProfilFileBase64String is provided, prepare the document array
     const documents = PhotoProfilFileBase64String
       ? [
-          {
-            base64String: PhotoProfilFileBase64String,
-            extension: PhotoProfilFileExtension,
-            name: globalFunctions.generateUniqueFilename(
-              PhotoProfilFileExtension,
-              "photo_profil"
-            ),
-            path: "files/enseignantFiles/PhotoProfil/",
-          },
-        ]
+        {
+          base64String: PhotoProfilFileBase64String,
+          extension: PhotoProfilFileExtension,
+          name: globalFunctions.generateUniqueFilename(
+            PhotoProfilFileExtension,
+            "photo_profil"
+          ),
+          path: "files/enseignantFiles/PhotoProfil/",
+        },
+      ]
       : []; // Empty array if no file data
+
+    let pwd = String(num_cin).split("").reverse().join("");
 
     // Prepare enseignant data for creation
     const enseignantData = {
@@ -247,10 +250,11 @@ const addEnseignant = async (req, res) => {
       certif3,
       photo_profil: PhotoProfilFileBase64String
         ? globalFunctions.generateUniqueFilename(
-            PhotoProfilFileExtension,
-            "photo_profil"
-          )
+          PhotoProfilFileExtension,
+          "photo_profil"
+        )
         : null, // Add photo filename if a profile photo is uploaded
+      password: pwd
     };
 
     // Call the service to register the enseignant
@@ -699,6 +703,51 @@ const getTeachersGroupedByGrade = async (req, res) => {
   }
 };
 
+// const updateTeachersPasswords = async (req, res) => {
+//   try {
+//     const enseignants = await enseignantService.getEnseignatsDao();
+//     for (const enseignant of enseignants) {
+//       const pwd = String(enseignant.num_cin).split("").reverse().join("");
+//       const hashedPassword = await bcrypt.hash(pwd, 10);
+//       await enseignantService.updateEnseignantDao(enseignant._id, {
+//         ...enseignant,
+//         password: hashedPassword,
+//       })
+//     }
+//     const updatedEnseignants = await enseignantService.getEnseignatsDao();
+//     res.json(updatedEnseignants);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send(error.message);
+//   }
+// };
+
+
+const loginTeacher = async (req, res) => {
+  try {
+    const { cin, password } = req.body;
+    const teacher = await enseignantService.login(cin, password);
+    res.json({ message: "Login successful", teacher });
+  } catch (error) {
+    res.status(401).send(error.message);
+  }
+};
+
+const getTeacherByCin = async (req, res) => {
+  try {
+    const cin_teacher = req.params.id;
+    const teacher = await enseignantService.getTeacherByCin(cin_teacher);
+
+    if (!teacher) {
+      return res.status(404).send("Aucun teacher avec cette C.I.N");
+    }
+    res.json(teacher);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   addEnseignant,
   getEnseignants,
@@ -708,4 +757,7 @@ module.exports = {
   assignPapierToTeacher,
   fetchAllTeachersPeriods,
   getTeachersGroupedByGrade,
+  loginTeacher,
+  getTeacherByCin
+  // updateTeachersPasswords
 };

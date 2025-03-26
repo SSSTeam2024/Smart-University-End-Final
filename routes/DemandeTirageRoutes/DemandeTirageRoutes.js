@@ -16,12 +16,19 @@ router.get(
 //   "/update-absence-etudiant/:id",
 //   AbsenceEtudiantController.updateAbsenceEtudiantById
 // );
-// router.delete(
-//   "/delete-absence-etudiant/:id",
-//   AbsenceEtudiantController.deleteAbsenceEtudiantById
-// );
+router.delete(
+  "/delete-demande-tirage/:id",
+  DemandeTirageController.deleteDemandeTirage
+);
+
+router.put(
+  "/update-etat-demande-tirage/:id",
+  DemandeTirageController.updateEtatDemandeTirage
+);
 // router.get(
 //   "/get-all-absence-classe/:id",
 //   AbsenceEtudiantController.getAllAbsenceClasse
 // );
+
+router.get("/get-demande-tirage-by-id-teacher/:enseignantId", DemandeTirageController.getDemandesTirageByTeacherId);
 module.exports = router;

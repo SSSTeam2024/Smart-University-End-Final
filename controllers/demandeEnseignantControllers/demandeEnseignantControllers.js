@@ -54,10 +54,23 @@ const deleteDemandeEnseignant = async (req, res) => {
   }
 };
 
+const getDemandesByTeacherId = async (req, res) => {
+  try {
+    const { enseignantId } = req.params;
+    const demandes = await demandeEnseignantService.getDemandesByTeacherId(enseignantId);
+    res.json(demandes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error fetching demandes by teacher ID" });
+  }
+};
+
+
 module.exports = {
   createDemandeEnseignant,
   getAllDemandeEnseignants,
   getDemandeEnseignantById,
   updateDemandeEnseignant,
-  deleteDemandeEnseignant
+  deleteDemandeEnseignant,
+  getDemandesByTeacherId
 };

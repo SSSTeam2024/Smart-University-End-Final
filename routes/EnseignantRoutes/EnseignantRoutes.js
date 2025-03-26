@@ -17,5 +17,8 @@ router.post(
 );
 
 router.get("/charges-periodic", enseignantController.fetchAllTeachersPeriods);
-router.get("/get-enseignants-grouped-by-grade",enseignantController.getTeachersGroupedByGrade);
+router.get("/get-enseignants-grouped-by-grade", enseignantController.getTeachersGroupedByGrade);
+// router.get("/update-teachers-password", enseignantController.updateTeachersPasswords);
+router.post("/login-teacher", enseignantController.loginTeacher);
+
 module.exports = router;

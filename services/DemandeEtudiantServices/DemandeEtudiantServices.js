@@ -21,10 +21,15 @@ const deleteDemandeEtudiant = async (id) => {
   return demandeEtudiantDao.deleteDemandeEtudiant(id);
 };
 
+const getDemandesByStudentId = async (studentId) => {
+  return await demandeEtudiantDao.getDemandesByStudentId(studentId);
+};
+
 module.exports = {
   createDemandeEtudiant,
   getAllDemandeEtudiants,
   getDemandeEtudiantById,
   updateDemandeEtudiant,
-  deleteDemandeEtudiant
+  deleteDemandeEtudiant,
+  getDemandesByStudentId
 };

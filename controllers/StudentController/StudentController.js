@@ -644,8 +644,6 @@ const getEtudiantsByIdClasse = async (req, res) => {
 
     const getEtudiants = await studentService.getEtudiantsByIdClasse(classeId);
 
-    console.log("getEtudiants.length", getEtudiants.length);
-
     if (!getEtudiants) {
       return res.status(404).send("Aucun Etudiant pour ce groupe !!");
     }
@@ -761,6 +759,23 @@ const getNbrEtudiantsByClasses = async (req, res) => {
   }
 };
 
+const logoutEtudiant = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const updatedStudent = await studentService.logoutEtudiant(studentId);
+
+    if (!updatedStudent) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    res.json({ message: "Logout successful" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error logging out student" });
+  }
+};
+
+
 module.exports = {
   addStudent,
   getAllStudents,
@@ -775,5 +790,6 @@ module.exports = {
   getEtudiantByCinAndCode,
   getEtudiantByToken,
   login,
-  getNbrEtudiantsByClasses
+  getNbrEtudiantsByClasses,
+  logoutEtudiant
 };

@@ -26,7 +26,11 @@ const registerEnseignantDao = async (userData, documents = []) => {
     }
 
     // Create the enseignant
-    const newEnseignant = await enseignantDao.createEnseignant(userData);
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    const newEnseignant = await enseignantDao.createEnseignant({
+      ...userData,
+      password: hashedPassword,
+    });
     return newEnseignant;
   } catch (error) {
     console.error("Error registering enseignant:", error);
@@ -145,6 +149,29 @@ const getTeachersGroupedByGrade = async () => {
   return result;
 };
 
+const login = async (cin, password) => {
+  const teacher = await enseignantDao.getTeacherByCIN(cin);
+
+  if (!teacher) {
+    throw new Error("teacher not found");
+  }
+
+  if (await bcrypt.compare(password, teacher.password)) {
+    const accessToken = jwt.sign({ login: teacher.num_cin }, "yourSecretKey");
+
+    await enseignantDao.updateJwtToken(teacher._id, String(accessToken));
+
+    let updatedTeacher = await enseignantDao.getEnseignantById(teacher._id);
+
+    return updatedTeacher;
+  } else {
+    throw new Error("Incorrect password");
+  }
+};
+const getEtudiantByCin = async (cin_teacher) => {
+  return enseignantDao.getTeacherByCIN(cin_teacher);
+};
+
 module.exports = {
   registerEnseignantDao,
   getEnseignatsDao,
@@ -154,4 +181,6 @@ module.exports = {
   assignPapierToTeacher,
   fetchAllTeachersPeriods,
   getTeachersGroupedByGrade,
+  login,
+  getEtudiantByCin
 };

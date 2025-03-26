@@ -26,15 +26,15 @@ const deleteEnseignant = async (id) => {
 };
 
 const getEnseignantById = async (id) => {
-  try{
+  try {
     const enseignant = await enseignantModel.findById(id)
-    .populate("specilaite")
-    .populate("grade")
-    .populate("poste")
-    .populate("departements");
+      .populate("specilaite")
+      .populate("grade")
+      .populate("poste")
+      .populate("departements");
     return enseignant
   }
-  catch (error){
+  catch (error) {
     console.error('Error fetching enseignant:', error);
     throw error;
   }
@@ -229,6 +229,18 @@ const getTeachersGroupedByGrade = async () => {
     console.error("Error fetching", error);
   }
 };
+
+const getTeacherByCIN = async (cin_teacher) => {
+  try {
+    const teacher = await enseignantModel.findOne({
+      num_cin: cin_teacher,
+    });
+    return teacher;
+  } catch (error) {
+    console.error("Error while getting teacher by cin");
+    throw error;
+  }
+};
 module.exports = {
   createEnseignant,
   getEnseignants,
@@ -238,4 +250,5 @@ module.exports = {
   assignPapierToTeacher,
   fetchAllTeachersPeriods,
   getTeachersGroupedByGrade,
+  getTeacherByCIN
 };

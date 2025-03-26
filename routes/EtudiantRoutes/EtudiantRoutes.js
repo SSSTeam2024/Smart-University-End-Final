@@ -26,4 +26,6 @@ router.post(
   etudiantController.getNbrEtudiantsByClasses
 );
 
+router.post("/logout/:studentId", etudiantController.logoutEtudiant);
+
 module.exports = router;

@@ -64,6 +64,7 @@ const enseignantSchema = new mongoose.Schema(
     category: [String],
     situation_ar: String,
     situation_fr: String,
+    password: String
   },
   { timestamps: true }
 );
