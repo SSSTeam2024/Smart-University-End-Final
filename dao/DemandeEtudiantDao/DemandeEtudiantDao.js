@@ -55,7 +55,7 @@ const getAllDemandeEtudiants = async () => {
 };
 
 const getDemandeEtudiantById = async (id) => {
-  return DemandeEtudiant.findById(id).populate('studentId');
+  return DemandeEtudiant.findById(id).populate('studentId').populate("piece_demande").populate("generated_doc");
 };
 
 const updateDemandeEtudiant = async (id, updateData) => {
