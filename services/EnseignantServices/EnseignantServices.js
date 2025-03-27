@@ -173,7 +173,9 @@ const login = async (cin, password) => {
 const getEtudiantByCin = async (cin_teacher) => {
   return enseignantDao.getTeacherByCIN(cin_teacher);
 };
-
+const logoutTeacher = async (teacherId) => {
+  return await enseignantDao.logoutTeacher(teacherId);
+};
 module.exports = {
   registerEnseignantDao,
   getEnseignatsDao,
@@ -184,5 +186,6 @@ module.exports = {
   fetchAllTeachersPeriods,
   getTeachersGroupedByGrade,
   login,
-  getEtudiantByCin
+  getEtudiantByCin,
+  logoutTeacher
 };

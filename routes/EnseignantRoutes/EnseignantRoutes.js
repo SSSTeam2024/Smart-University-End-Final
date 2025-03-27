@@ -21,4 +21,6 @@ router.get("/get-enseignants-grouped-by-grade", enseignantController.getTeachers
 // router.get("/update-teachers-password", enseignantController.updateTeachersPasswords);
 router.post("/login-teacher", enseignantController.loginTeacher);
 
+router.post("/logout/:teacherId", enseignantController.logoutTeacher);
+
 module.exports = router;

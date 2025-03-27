@@ -748,6 +748,23 @@ const getTeacherByCin = async (req, res) => {
   }
 };
 
+
+const logoutTeacher = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+    const updatedTeacher = await enseignantService.logoutTeacher(teacherId);
+
+    if (!updatedTeacher) {
+      return res.status(404).json({ error: "Teacher not found" });
+    }
+
+    res.json({ message: "Logout successful" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error logging out teacher" });
+  }
+};
+
 module.exports = {
   addEnseignant,
   getEnseignants,
@@ -758,6 +775,6 @@ module.exports = {
   fetchAllTeachersPeriods,
   getTeachersGroupedByGrade,
   loginTeacher,
-  getTeacherByCin
-  // updateTeachersPasswords
+  getTeacherByCin,
+  logoutTeacher
 };

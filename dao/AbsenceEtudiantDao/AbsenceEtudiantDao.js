@@ -102,7 +102,20 @@ const getAllAbsenceClasse = async (id) => {
       ],
     });
 };
+const getAbsencesByTeacherId = async (teacherId) => {
+  try {
+    const objectId = new mongoose.Types.ObjectId(teacherId);
 
+    return await AbsenceEtudiant.find({ enseignant: objectId })
+      .populate("classe")
+      .populate("etudiants.etudiant")
+      .populate("departement")
+      .populate("seance")
+      .sort({ date: -1 });
+  } catch (error) {
+    throw error;
+  }
+};
 module.exports = {
   createAbsenceEtudiant,
   getAllAbsenceEtudiants,
@@ -110,4 +123,5 @@ module.exports = {
   updateAbsenceEtudiant,
   deleteAbsenceEtudiant,
   getAllAbsenceClasse,
+  getAbsencesByTeacherId
 };

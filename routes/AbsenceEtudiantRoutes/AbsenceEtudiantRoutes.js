@@ -23,4 +23,5 @@ router.get(
   "/get-all-absence-classe/:id",
   AbsenceEtudiantController.getAllAbsenceClasse
 );
+router.get("/historique/teacher/:teacherId", AbsenceEtudiantController.getHistoriqueAbsence);
 module.exports = router;

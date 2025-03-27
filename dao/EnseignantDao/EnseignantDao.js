@@ -253,6 +253,15 @@ const updateJwtToken = async (id, token) => {
   );
 };
 
+const logoutTeacher = async (teacherId) => {
+  try {
+    return await enseignantModel.findByIdAndUpdate(teacherId, { api_token: null }, { new: true });
+  } catch (error) {
+    console.error("Error logging out teacher:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   createEnseignant,
   getEnseignants,
@@ -263,5 +272,6 @@ module.exports = {
   fetchAllTeachersPeriods,
   getTeachersGroupedByGrade,
   getTeacherByCIN,
-  updateJwtToken
+  updateJwtToken,
+  logoutTeacher
 };
