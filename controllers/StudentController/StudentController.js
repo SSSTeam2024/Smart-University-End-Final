@@ -487,6 +487,44 @@ const updateStudent = async (req, res) => {
     }
 
     // Construct update object
+
+    subscriptionFiles = [];
+    for (let i = 0; i < files.length; i++) {
+      const fileTypeNameFr = files[i].name_fr;
+      const base64String = files[i].base64String;
+      const fileExtension = files[i].extension;
+      if (!base64String || !fileExtension) {
+        return res.status(400).json({
+          error: `Base64 string or extension is undefined for file type: ${fileTypeNameFr}`,
+        });
+      }
+
+      const filePath = `files/etudiantFiles/Additional/${fileTypeNameFr}/`;
+      let fileFullPath = globalFunctions.generateUniqueFilename(
+        fileExtension,
+        fileTypeNameFr
+      );
+
+      subscriptionFiles.push({
+        fileType: fileTypeNameFr,
+        name: fileFullPath,
+      });
+
+      documents.push({
+        base64String,
+        extension: fileExtension,
+        name: fileFullPath,
+        path: filePath,
+      });
+    }
+
+    const filesArray = subscriptionFiles.map((file) => {
+      return {
+        file_type: file.fileType,
+        fileName: file.name,
+      };
+    });
+
     const updateFields = {
       nom_fr,
       nom_ar,
@@ -545,6 +583,7 @@ const updateStudent = async (req, res) => {
       matricule_number,
       passeport_number,
       cnss_number,
+      files: filesArray,
     };
 
     // Conditionally add file paths to update object
