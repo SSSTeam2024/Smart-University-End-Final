@@ -21,6 +21,9 @@ router.put("/edit-cours/:id", CoursEnseignantControllers.updateCoursEnseignant);
 
 router.get("/get-cours-by-id-teacher/:enseignantId", CoursEnseignantControllers.getSupportCoursByTeacherId);
 
-
+router.delete(
+  "/delete-support-cours/:id",
+  CoursEnseignantControllers.deleteSupportCoursEnseignant
+);
 
 module.exports = router;

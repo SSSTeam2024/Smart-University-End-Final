@@ -76,6 +76,9 @@ const deleteCoursEnseignant = async (id) => {
 const getSupportCoursByTeacherId = async (enseignantId) => {
   return await coursEnseignantDao.getSupportCoursByTeacherId(enseignantId);
 };
+const deleteSupportCoursEnseignant = async (id) => {
+  return await coursEnseignantDao.deleteSupportCoursEnseignant(id);
+};
 
 module.exports = {
   addCoursEnseignant,
@@ -84,5 +87,6 @@ module.exports = {
   updateCoursEnseignant,
   deleteCoursEnseignant,
   getCoursEnseignantByIdClasse,
-  getSupportCoursByTeacherId
+  getSupportCoursByTeacherId,
+  deleteSupportCoursEnseignant
 };

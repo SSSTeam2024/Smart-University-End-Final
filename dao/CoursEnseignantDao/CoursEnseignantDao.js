@@ -49,6 +49,10 @@ const getSupportCoursByTeacherId = async (enseignantId) => {
   }
 };
 
+const deleteSupportCoursEnseignant = async (id) => {
+  return await CoursEnseignant.findByIdAndDelete(id);
+};
+
 module.exports = {
   addCoursEnseignant,
   getCoursEnseignantById,
@@ -56,5 +60,6 @@ module.exports = {
   updateCoursEnseignant,
   getCoursEnseignants,
   getCoursEnseignantByIdClasse,
-  getSupportCoursByTeacherId
+  getSupportCoursByTeacherId,
+  deleteSupportCoursEnseignant
 };

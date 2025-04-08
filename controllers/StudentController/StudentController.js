@@ -92,6 +92,10 @@ const addStudent = async (req, res) => {
       passeport_number,
       cnss_number,
       emails,
+      mention_university_ar,
+      mention_university_fr,
+      session_university_fr,
+      session_university_ar
     } = req.body;
 
     const face1CINPath = "files/etudiantFiles/Face1CIN/";
@@ -264,6 +268,10 @@ const addStudent = async (req, res) => {
         matricule_number,
         passeport_number,
         cnss_number,
+        mention_university_ar,
+        mention_university_fr,
+        session_university_fr,
+        session_university_ar
       },
       documents
     );

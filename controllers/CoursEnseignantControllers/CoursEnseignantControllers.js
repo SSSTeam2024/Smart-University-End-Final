@@ -188,7 +188,23 @@ const getSupportCoursByTeacherId = async (req, res) => {
   }
 };
 
+const deleteSupportCoursEnseignant = async (req, res) => {
+  try {
+    const supportCoursId = req.params.id;
 
+    const deletedSupportCours = await coursEnseignantServices.deleteSupportCoursEnseignant(
+      supportCoursId
+    );
+
+    if (!deletedSupportCours) {
+      return res.status(404).send("Support Cours not found");
+    }
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+};
 module.exports = {
   addCoursEnseignant,
   getCoursEnseignants,
@@ -196,5 +212,6 @@ module.exports = {
   updateCoursEnseignant,
   deleteCoursEnseignant,
   getCoursEnseignantByIdClasse,
-  getSupportCoursByTeacherId
+  getSupportCoursByTeacherId,
+  deleteSupportCoursEnseignant
 };
