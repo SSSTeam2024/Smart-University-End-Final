@@ -11,5 +11,7 @@ router.put(
   "/updateRattrapage/:id",
   rattarapageController.updateRattrapageEtatStatus
 );
+router.get("/get-rattrapage-by-id-class/:classId", rattarapageController.getRattrapagesByClassId);
 
+router.get("/get-rattrapage-by-id-teacher/:teacherId", rattarapageController.getRattrapagesByTeacherId);
 module.exports = router;

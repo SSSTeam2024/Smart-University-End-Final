@@ -92,6 +92,10 @@ const addStudent = async (req, res) => {
       passeport_number,
       cnss_number,
       emails,
+      mention_university_ar,
+      mention_university_fr,
+      session_university_fr,
+      session_university_ar
     } = req.body;
 
     const face1CINPath = "files/etudiantFiles/Face1CIN/";
@@ -264,6 +268,10 @@ const addStudent = async (req, res) => {
         matricule_number,
         passeport_number,
         cnss_number,
+        mention_university_ar,
+        mention_university_fr,
+        session_university_fr,
+        session_university_ar
       },
       documents
     );
@@ -487,6 +495,44 @@ const updateStudent = async (req, res) => {
     }
 
     // Construct update object
+
+    subscriptionFiles = [];
+    for (let i = 0; i < files.length; i++) {
+      const fileTypeNameFr = files[i].name_fr;
+      const base64String = files[i].base64String;
+      const fileExtension = files[i].extension;
+      if (!base64String || !fileExtension) {
+        return res.status(400).json({
+          error: `Base64 string or extension is undefined for file type: ${fileTypeNameFr}`,
+        });
+      }
+
+      const filePath = `files/etudiantFiles/Additional/${fileTypeNameFr}/`;
+      let fileFullPath = globalFunctions.generateUniqueFilename(
+        fileExtension,
+        fileTypeNameFr
+      );
+
+      subscriptionFiles.push({
+        fileType: fileTypeNameFr,
+        name: fileFullPath,
+      });
+
+      documents.push({
+        base64String,
+        extension: fileExtension,
+        name: fileFullPath,
+        path: filePath,
+      });
+    }
+
+    const filesArray = subscriptionFiles.map((file) => {
+      return {
+        file_type: file.fileType,
+        fileName: file.name,
+      };
+    });
+
     const updateFields = {
       nom_fr,
       nom_ar,
@@ -545,6 +591,7 @@ const updateStudent = async (req, res) => {
       matricule_number,
       passeport_number,
       cnss_number,
+      files: filesArray,
     };
 
     // Conditionally add file paths to update object
@@ -644,8 +691,6 @@ const getEtudiantsByIdClasse = async (req, res) => {
 
     const getEtudiants = await studentService.getEtudiantsByIdClasse(classeId);
 
-    console.log("getEtudiants.length", getEtudiants.length);
-
     if (!getEtudiants) {
       return res.status(404).send("Aucun Etudiant pour ce groupe !!");
     }
@@ -718,7 +763,7 @@ const login = async (req, res) => {
 function prepareEmailInscription(email, prenom, nom, code, cin, date) {
   let recipient = email;
   let pwd = String(cin).split("").reverse().join("");
-  
+
   let formattedDate = new Date(date)
     .toLocaleString("en-US", {
       month: "long",
@@ -743,6 +788,41 @@ function prepareEmailInscription(email, prenom, nom, code, cin, date) {
   return fullEmailObject;
 }
 
+const getNbrEtudiantsByClasses = async (req, res) => {
+  try {
+    const { classeIds } = req.body;
+
+    const nbrEtudiants = await studentService.getNbrEtudiantsByClasses(classeIds);
+
+    console.log("Nombre Etudiants", nbrEtudiants);
+
+    if (!nbrEtudiants) {
+      return res.status(404).send("Aucun Etudiant pour ces groupes !!");
+    }
+    res.json({ nbr: nbrEtudiants });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+};
+
+const logoutEtudiant = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const updatedStudent = await studentService.logoutEtudiant(studentId);
+
+    if (!updatedStudent) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    res.json({ message: "Logout successful" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error logging out student" });
+  }
+};
+
+
 module.exports = {
   addStudent,
   getAllStudents,
@@ -757,4 +837,6 @@ module.exports = {
   getEtudiantByCinAndCode,
   getEtudiantByToken,
   login,
+  getNbrEtudiantsByClasses,
+  logoutEtudiant
 };

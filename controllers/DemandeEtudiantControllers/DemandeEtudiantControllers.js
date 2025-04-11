@@ -54,10 +54,22 @@ const deleteDemandeEtudiant = async (req, res) => {
   }
 };
 
+const getDemandesByStudentId = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const demandes = await demandeEtudiantService.getDemandesByStudentId(studentId);
+    res.json(demandes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error fetching demandes by student ID" });
+  }
+};
+
 module.exports = {
   createDemandeEtudiant,
   getAllDemandeEtudiants,
   getDemandeEtudiantById,
   updateDemandeEtudiant,
-  deleteDemandeEtudiant
+  deleteDemandeEtudiant,
+  getDemandesByStudentId
 };

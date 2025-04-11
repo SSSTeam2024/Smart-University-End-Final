@@ -31,8 +31,18 @@ const updateRattrapageEtatStatusService = async (
 //     return await rattrapageDao.updateTypeSeance(id, updateData);
 //   };
 
+const getRattrapagesByClassId = async (classId) => {
+  return await rattrapageDao.getRattrapagesByClassId(classId);
+};
+
+const getRattrapagesByTeacherId = async (teacherId) => {
+  return await rattrapageDao.getRattrapagesByTeacherId(teacherId);
+};
+
 module.exports = {
   createRattrapage,
   getRattrapages,
   updateRattrapageEtatStatusService,
+  getRattrapagesByClassId,
+  getRattrapagesByTeacherId
 };

@@ -3,21 +3,21 @@ const templateBodyService = require("../../services/TemplateBodyServices/templat
 const addTemplateBody = async (req, res) => {
   try {
     const {
-        title,
-        body,
-        langue,
-        intended_for,
-        has_code,
-        has_number
+      title,
+      body,
+      langue,
+      intended_for,
+      has_code,
+      has_number
     } = req.body;
 
     const templateBody = await templateBodyService.createTemplateBody({
-        title,
-        body,
-        langue,
-        intended_for,
-        has_code,
-        has_number
+      title,
+      body,
+      langue,
+      intended_for,
+      has_code,
+      has_number
     });
 
     res.json(templateBody);
@@ -60,10 +60,21 @@ const deleteTemplateBody = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
+const getTemplateBodyByContext = async (req, res) => {
+  try {
+    const templateBodies = await templateBodyService.getTemplateBodyByContext(req.body.intended_for);
+    if (!templateBodies) {
+      return res.status(404).json({ message: 'template bodies not found' });
+    }
+    res.status(200).json(templateBodies);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 module.exports = {
-    addTemplateBody,
-    getAllTemplateBodys,
-    getAllTemplateBodyById,
-    deleteTemplateBody
+  addTemplateBody,
+  getAllTemplateBodys,
+  getAllTemplateBodyById,
+  deleteTemplateBody,
+  getTemplateBodyByContext
 };

@@ -233,6 +233,20 @@ const getEtudiantByToken = async (token) => {
   return await etudiantDao.findEtudiantByToken(token);
 };
 
+const getNbrEtudiantsByClasses = async (classeIds) => {
+  let nbr = 0;
+  for (const classId of classeIds) {
+    const students = await etudiantDao.getEtudiantsByIdClasse(classId);
+    nbr += students.length;
+  }
+  return nbr;
+};
+
+const logoutEtudiant = async (studentId) => {
+  return await etudiantDao.logoutEtudiant(studentId);
+};
+
+
 module.exports = {
   getEtudiants,
   getEtudiantById,
@@ -246,4 +260,6 @@ module.exports = {
   getEtudiatByCinAndCode,
   login,
   getEtudiantByToken,
+  getNbrEtudiantsByClasses,
+  logoutEtudiant
 };

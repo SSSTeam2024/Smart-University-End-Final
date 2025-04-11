@@ -24,6 +24,14 @@ const getAllAbsenceClasse = async (id) => {
   return await absenceEtudiantDao.getAllAbsenceClasse(id);
 };
 
+
+const getHistoriqueAbsenceByTeacherId = async (teacherId) => {
+  if (!teacherId) {
+    throw new Error("Teacher ID is required");
+  }
+
+  return await absenceEtudiantDao.getAbsencesByTeacherId(teacherId);
+};
 module.exports = {
   createAbsenceEtudiant,
   updateAbsenceEtudiant,
@@ -31,4 +39,5 @@ module.exports = {
   getAbsenceEtudiants,
   deleteAbsenceEtudiant,
   getAllAbsenceClasse,
+  getHistoriqueAbsenceByTeacherId
 };

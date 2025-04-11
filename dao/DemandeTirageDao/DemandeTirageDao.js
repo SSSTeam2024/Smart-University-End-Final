@@ -7,13 +7,13 @@ const createDemandeTirage = async (demandeTirageData) => {
 
 const getAllDemandesTirage = async () => {
   return DemandeTirage.find().populate("classes").populate("enseignant").populate("matiere").populate({
-          path: "added_by",
-          populate: [{
-            path: "enseignantId",
-          },{
-            path: "personnelId",
-          }]
-        });
+    path: "added_by",
+    populate: [{
+      path: "enseignantId",
+    }, {
+      path: "personnelId",
+    }]
+  });
 };
 
 // const getAbsenceEtudiantById = async (id) => {
@@ -44,9 +44,59 @@ const getAllDemandesTirage = async () => {
 //     .populate("enseignant");
 // };
 
-// const deleteAbsenceEtudiant = async (id) => {
-//   return AbsenceEtudiant.findByIdAndDelete(id);
-// };
+const deleteDemandeTirage = async (id) => {
+  return DemandeTirage.findByIdAndDelete(id);
+};
+const updateEtatDemandeTirage = async (demandeTirageId, etat, date, heure) => {
+  try {
+    let date_recuperation = '';
+    let heure_recuperation = '';
+    let date_impression = '';
+    let heure_impression = '';
+    let date_refus = '';
+    let heure_refus = '';
+
+    switch (etat) {
+      case 'Imprimée':
+        date_impression = date;
+        heure_impression = heure;
+        break;
+
+      case 'Réfusée':
+        date_refus = date;
+        heure_refus = heure;
+        break;
+
+      case 'Récupérée':
+        date_recuperation = date;
+        heure_recuperation = heure;
+        break;
+
+      default:
+        break;
+    }
+
+    const updatedDemandeTirage = await DemandeTirage.findByIdAndUpdate(
+      demandeTirageId,
+      {
+        etat,
+        date_recuperation,
+        heure_recuperation,
+        date_impression,
+        heure_impression,
+        date_refus,
+        heure_refus
+      },
+      { new: true }
+    );
+    if (!updatedDemandeTirage) {
+      throw new Error(`Demande Tirage with ID ${demandeTirageId} not found.`);
+    }
+    return updatedDemandeTirage;
+  } catch (error) {
+    throw new Error(`Failed to update Demande Tirage: ${error.message}`);
+  }
+};
 
 // const getAllAbsenceClasse = async (id) => {
 //   const query = {
@@ -73,7 +123,21 @@ const getAllDemandesTirage = async () => {
 //     });
 // };
 
+const getDemandesTirageByTeacherId = async (enseignantId) => {
+  try {
+    return await DemandeTirage.find({ enseignant: enseignantId })
+      .populate("enseignant")
+      .populate("classes")
+      .populate("added_by");
+  } catch (error) {
+    console.error("Error fetching demandes tirage by teacher ID:", error);
+    throw error;
+  }
+};
 module.exports = {
   createDemandeTirage,
-  getAllDemandesTirage
+  getAllDemandesTirage,
+  deleteDemandeTirage,
+  updateEtatDemandeTirage,
+  getDemandesTirageByTeacherId
 };

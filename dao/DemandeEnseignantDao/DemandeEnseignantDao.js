@@ -12,13 +12,13 @@ const getAllDemandeEnseignants = async () => {
       path: "enseignantId",
       populate: [{
         path: "poste",
-      },{
+      }, {
         path: "etat_compte",
-      },{
+      }, {
         path: "specilaite"
-      },{
+      }, {
         path: "departements"
-      },{
+      }, {
         path: "grade"
       }],
       options: { strictPopulate: false },
@@ -37,11 +37,22 @@ const updateDemandeEnseignant = async (id, updateData) => {
 const deleteDemandeEnseignant = async (id) => {
   return DemandeEnseignant.findByIdAndDelete(id).populate('enseignantId');
 };
-
+const getDemandesByTeacherId = async (enseignantId) => {
+  try {
+    return await DemandeEnseignant.find({ enseignantId })
+      .populate("enseignantId")
+      .populate("piece_demande")
+      .populate("generated_doc");
+  } catch (error) {
+    console.error("Error fetching demandes by teacher ID:", error);
+    throw error;
+  }
+};
 module.exports = {
   createDemandeEnseignant,
   getAllDemandeEnseignants,
   getDemandeEnseignantById,
   updateDemandeEnseignant,
-  deleteDemandeEnseignant
+  deleteDemandeEnseignant,
+  getDemandesByTeacherId
 };

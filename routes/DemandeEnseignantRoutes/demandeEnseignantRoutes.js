@@ -16,5 +16,5 @@ router.put('/edit-demande-Enseignant/:id', demandeEnseignantController.updateDem
 
 // Delete a demandeEnseignant by ID
 router.delete('/delete-demande-Enseignant/:id', demandeEnseignantController.deleteDemandeEnseignant);
-
+router.get("/get-demande-by-id-teacher/:enseignantId", demandeEnseignantController.getDemandesByTeacherId);
 module.exports = router;

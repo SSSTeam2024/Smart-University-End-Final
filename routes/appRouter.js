@@ -96,6 +96,8 @@ const noteProRoutes = require("./NoteProRoutes/NoteProRoutes");
 const voieEnvoieRoutes = require("./VoieEnvoiRoutes/VoieEnvoiRoutes");
 const CourrierEntrantRoutes = require("./CourrierEntrantRoutes/CourrierEntrantRoutes");
 const CourrierSortantRoutes = require("./CourrierSortantRoutes/CourrierSortantRoutes");
+const messagerieRoutes = require("./MessagerieRoutes-old/MessagerieRoutes");
+const messageRoutes = require("./MessagerieRoutes/MessagerieRoutes");
 const CoursEnseignantRoutes = require("./CoursEnseignantRoutes/CoursEnseignantRoutes");
 const IntervenantRoutes = require("./IntervenantRoutes/IntervenantRoutes");
 const PersonnelWorkingDayRoutes = require("./PersonnelWorkingDayRoutes/PersonnelWorkingDayRoutes");
@@ -217,6 +219,14 @@ router.use("/absence", absencePersonnelRoutes);
 router.use("/generated-doc", generatedDocRoutes);
 
 // Personnel Working Day
+// Messagerie-old
+
+router.use("/messagerie", messagerieRoutes);
+
+// Messagerie
+
+router.use("/messages", messageRoutes);
+// GeneratedDoc
 router.use("/personnelWorkingDay", PersonnelWorkingDayRoutes);
 
 //Voie Envoie
