@@ -2,15 +2,27 @@ const PersonnelWorkingDayServices = require("../../services/PersonnelWorkingDayS
 
 const addPersonnelWorkingDay = async (req, res) => {
   try {
-    const { day_start_time, day_end_time, daily_pause_start, daily_pause_end } =
-      req.body;
+    const {
+      name,
+      day_start_time,
+      day_end_time,
+      daily_pause_start,
+      daily_pause_end,
+      period_start,
+      period_end,
+      part_time,
+    } = req.body;
 
     const personnelWorkingDay =
       await PersonnelWorkingDayServices.createPersonnelWorkingDay({
+        name,
         day_start_time,
         day_end_time,
         daily_pause_start,
         daily_pause_end,
+        period_start,
+        period_end,
+        part_time,
       });
     res.json(personnelWorkingDay);
   } catch (error) {
@@ -20,21 +32,37 @@ const addPersonnelWorkingDay = async (req, res) => {
 
 const updatePersonnelWorkingDay = async (req, res) => {
   try {
-    const { day_start_time, day_end_time, daily_pause_start, daily_pause_end } =
-      req.body;
+    const personnelWorkingDayId = req.params.id;
+    const {
+      name,
+      day_start_time,
+      day_end_time,
+      daily_pause_start,
+      daily_pause_end,
+      period_start,
+      period_end,
+      part_time,
+    } = req.body;
 
-    const updatedPersonnelWorkingDay =
-      await PersonnelWorkingDayServices.updatePersonnelWorkingDay({
-        day_start_time,
-        day_end_time,
-        daily_pause_start,
-        daily_pause_end,
-      });
+    const updatePersonnelWorkingDay =
+      await PersonnelWorkingDayServices.updatePersonnelWorkingDay(
+        personnelWorkingDayId,
+        {
+          name,
+          day_start_time,
+          day_end_time,
+          daily_pause_start,
+          daily_pause_end,
+          period_start,
+          period_end,
+          part_time,
+        }
+      );
 
-    if (!updatedPersonnelWorkingDay) {
+    if (!updatePersonnelWorkingDay) {
       return res.status(404).send("Personnel Working Day not found!");
     }
-    res.json(updatedPersonnelWorkingDay);
+    res.json(updatePersonnelWorkingDay);
   } catch (error) {
     console.error(error);
     res.status(500).send(error.message);
@@ -52,8 +80,28 @@ const getPersonnelWorkingDay = async (req, res) => {
   }
 };
 
+const deletePersonnelWorkingDay = async (req, res) => {
+  try {
+    const personnelWorkingDayId = req.params.id;
+
+    const deletedPersonnelWorkingDay =
+      await PersonnelWorkingDayServices.deletePersonnelWorkingDay(
+        personnelWorkingDayId
+      );
+
+    if (!deletedPersonnelWorkingDay) {
+      return res.status(404).send("Personnel Working Day not found");
+    }
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   getPersonnelWorkingDay,
   updatePersonnelWorkingDay,
   addPersonnelWorkingDay,
+  deletePersonnelWorkingDay,
 };

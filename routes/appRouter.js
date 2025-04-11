@@ -93,9 +93,11 @@ const virtualServiceRoutes = require("./VirtualServiceRoutes/VirtualServiceRoute
 const deplacementRoutes = require("./DeplacementRoutes/DeplacementRoutes");
 const missionRoutes = require("./MissionRoutes/MissionRoutes");
 const noteProRoutes = require("./NoteProRoutes/NoteProRoutes");
-
+const voieEnvoieRoutes = require("./VoieEnvoiRoutes/VoieEnvoiRoutes");
+const CourrierEntrantRoutes = require("./CourrierEntrantRoutes/CourrierEntrantRoutes");
+const CourrierSortantRoutes = require("./CourrierSortantRoutes/CourrierSortantRoutes");
 const CoursEnseignantRoutes = require("./CoursEnseignantRoutes/CoursEnseignantRoutes");
-
+const IntervenantRoutes = require("./IntervenantRoutes/IntervenantRoutes");
 const PersonnelWorkingDayRoutes = require("./PersonnelWorkingDayRoutes/PersonnelWorkingDayRoutes");
 
 // gestion des conges
@@ -214,7 +216,19 @@ router.use("/absence", absencePersonnelRoutes);
 // GeneratedDoc
 router.use("/generated-doc", generatedDocRoutes);
 
-// GeneratedDoc
+// Personnel Working Day
 router.use("/personnelWorkingDay", PersonnelWorkingDayRoutes);
+
+//Voie Envoie
+router.use("/voie-envoie", voieEnvoieRoutes);
+
+//Intervenant
+router.use("/intervenant", IntervenantRoutes);
+
+//Courrier Entrant
+router.use("/courrier-entrant", CourrierEntrantRoutes);
+
+//Courrier Sortant
+router.use("/courrier-sortant", CourrierSortantRoutes);
 
 module.exports = router;

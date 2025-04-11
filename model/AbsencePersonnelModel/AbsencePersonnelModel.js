@@ -13,6 +13,7 @@ const AbsencePersonnelSchema = new Schema(
         },
         evening: String,
         morning: String,
+        fullDay: String,
         duree: String,
       },
     ],
