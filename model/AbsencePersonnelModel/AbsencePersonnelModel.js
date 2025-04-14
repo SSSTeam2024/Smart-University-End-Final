@@ -15,6 +15,8 @@ const AbsencePersonnelSchema = new Schema(
         morning: String,
         fullDay: String,
         duree: String,
+        autorisation: String,
+        en_conge: String,
       },
     ],
     jour: { type: String, required: false },

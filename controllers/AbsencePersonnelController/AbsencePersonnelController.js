@@ -42,7 +42,7 @@ const getAbsencePersonnelById = async (req, res) => {
 
 const updateAbsencePersonnelById = async (req, res) => {
   try {
-    const absencePersonnelId = req.body._id;
+    const absencePersonnelId = req.params.id;
     const { personnels, jour, added_by } = req.body;
 
     const updatedAbsencePersonnel =
