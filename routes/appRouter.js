@@ -101,6 +101,7 @@ const messageRoutes = require("./MessagerieRoutes/MessagerieRoutes");
 const CoursEnseignantRoutes = require("./CoursEnseignantRoutes/CoursEnseignantRoutes");
 const IntervenantRoutes = require("./IntervenantRoutes/IntervenantRoutes");
 const PersonnelWorkingDayRoutes = require("./PersonnelWorkingDayRoutes/PersonnelWorkingDayRoutes");
+const PointageEnseignantRoutes = require("./PointageEnseignantRoutes/PointageEnseignantRoutes");
 
 // gestion des conges
 router.use("/examen", examenRoutes);
@@ -240,5 +241,8 @@ router.use("/courrier-entrant", CourrierEntrantRoutes);
 
 //Courrier Sortant
 router.use("/courrier-sortant", CourrierSortantRoutes);
+
+//Pointage Enseignant
+router.use("/pointage-enseignant", PointageEnseignantRoutes);
 
 module.exports = router;
