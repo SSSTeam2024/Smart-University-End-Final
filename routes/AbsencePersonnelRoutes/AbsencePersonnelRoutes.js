@@ -15,7 +15,7 @@ router.post(
   absencePersonnelController.getAbsencePersonnelById
 );
 router.put(
-  "/edit-absence-personnel",
+  "/edit-absence-personnel/:id",
   absencePersonnelController.updateAbsencePersonnelById
 );
 router.delete(

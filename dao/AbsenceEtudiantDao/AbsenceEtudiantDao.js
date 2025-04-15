@@ -1,7 +1,6 @@
 const AbsenceEtudiant = require("../../model/AbsenceEtudiantModel/AbsenceEtudiantModel");
 const mongoose = require("mongoose");
 
-
 const createAbsenceEtudiant = async (absenceEtudiantData) => {
   const absenceEtudiant = new AbsenceEtudiant(absenceEtudiantData);
   return absenceEtudiant.save();
@@ -105,7 +104,6 @@ const getAllAbsenceClasse = async (id) => {
     });
 };
 
-
 const getAbsencesByTeacherId = async (teacherId) => {
   try {
     const objectId = new mongoose.Types.ObjectId(teacherId);
@@ -115,11 +113,19 @@ const getAbsencesByTeacherId = async (teacherId) => {
       .populate("etudiants.etudiant")
       .populate("departement")
       .populate("seance")
+      .populate({
+        path: "seance",
+        populate: [
+          { path: "matiere", model: "Matiere" },
+          { path: "salle", model: "Salle" },
+        ],
+      })
+      .populate("added_by")
       .sort({ date: -1 });
 
-    const filteredAbsences = absences.map(absence => ({
+    const filteredAbsences = absences.map((absence) => ({
       ...absence.toObject(),
-      etudiants: absence.etudiants.filter(e => e.typeAbsent === "A")
+      etudiants: absence.etudiants.filter((e) => e.typeAbsent === "A"),
     }));
 
     return filteredAbsences;
@@ -128,7 +134,6 @@ const getAbsencesByTeacherId = async (teacherId) => {
   }
 };
 
-
 module.exports = {
   createAbsenceEtudiant,
   getAllAbsenceEtudiants,
@@ -136,5 +141,5 @@ module.exports = {
   updateAbsenceEtudiant,
   deleteAbsenceEtudiant,
   getAllAbsenceClasse,
-  getAbsencesByTeacherId
+  getAbsencesByTeacherId,
 };

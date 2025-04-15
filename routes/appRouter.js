@@ -93,11 +93,15 @@ const virtualServiceRoutes = require("./VirtualServiceRoutes/VirtualServiceRoute
 const deplacementRoutes = require("./DeplacementRoutes/DeplacementRoutes");
 const missionRoutes = require("./MissionRoutes/MissionRoutes");
 const noteProRoutes = require("./NoteProRoutes/NoteProRoutes");
+const voieEnvoieRoutes = require("./VoieEnvoiRoutes/VoieEnvoiRoutes");
+const CourrierEntrantRoutes = require("./CourrierEntrantRoutes/CourrierEntrantRoutes");
+const CourrierSortantRoutes = require("./CourrierSortantRoutes/CourrierSortantRoutes");
 const messagerieRoutes = require("./MessagerieRoutes-old/MessagerieRoutes");
 const messageRoutes = require("./MessagerieRoutes/MessagerieRoutes");
 const CoursEnseignantRoutes = require("./CoursEnseignantRoutes/CoursEnseignantRoutes");
-
+const IntervenantRoutes = require("./IntervenantRoutes/IntervenantRoutes");
 const PersonnelWorkingDayRoutes = require("./PersonnelWorkingDayRoutes/PersonnelWorkingDayRoutes");
+const PointageEnseignantRoutes = require("./PointageEnseignantRoutes/PointageEnseignantRoutes");
 
 // gestion des conges
 router.use("/examen", examenRoutes);
@@ -215,6 +219,7 @@ router.use("/absence", absencePersonnelRoutes);
 // GeneratedDoc
 router.use("/generated-doc", generatedDocRoutes);
 
+// Personnel Working Day
 // Messagerie-old
 
 router.use("/messagerie", messagerieRoutes);
@@ -224,5 +229,20 @@ router.use("/messagerie", messagerieRoutes);
 router.use("/messages", messageRoutes);
 // GeneratedDoc
 router.use("/personnelWorkingDay", PersonnelWorkingDayRoutes);
+
+//Voie Envoie
+router.use("/voie-envoie", voieEnvoieRoutes);
+
+//Intervenant
+router.use("/intervenant", IntervenantRoutes);
+
+//Courrier Entrant
+router.use("/courrier-entrant", CourrierEntrantRoutes);
+
+//Courrier Sortant
+router.use("/courrier-sortant", CourrierSortantRoutes);
+
+//Pointage Enseignant
+router.use("/pointage-enseignant", PointageEnseignantRoutes);
 
 module.exports = router;
