@@ -30,8 +30,16 @@ const getDemandeEnseignantById = async (id) => {
   return DemandeEnseignant.findById(id).populate('enseignantId').populate('piece_demande');
 };
 
+// const updateDemandeEnseignant = async (id, updateData) => {
+//   return DemandeEnseignant.findByIdAndUpdate(id, updateData, { new: true }).populate('enseignantId').populate('piece_demande');
+// };
+
 const updateDemandeEnseignant = async (id, updateData) => {
-  return DemandeEnseignant.findByIdAndUpdate(id, updateData, { new: true }).populate('enseignantId').populate('piece_demande');
+  updateData.updatedAt = Date.now(); // Ensure updatedAt is updated
+
+  return DemandeEnseignant.findByIdAndUpdate(id, updateData, { new: true, runValidators: true })
+    .populate('enseignantId')
+    .exec();
 };
 
 const deleteDemandeEnseignant = async (id) => {
