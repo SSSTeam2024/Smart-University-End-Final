@@ -2,6 +2,8 @@ const enseignantDao = require("../../dao/EnseignantDao/EnseignantDao");
 const Enseignant = require("../../model/EnseignantModel/EnseignantModel");
 const fs = require("fs");
 const path = require("path");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 // const registerEnseignantDao = async (userData, documents) => {
 //   try {
@@ -26,7 +28,11 @@ const registerEnseignantDao = async (userData, documents = []) => {
     }
 
     // Create the enseignant
-    const newEnseignant = await enseignantDao.createEnseignant(userData);
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    const newEnseignant = await enseignantDao.createEnseignant({
+      ...userData,
+      password: hashedPassword,
+    });
     return newEnseignant;
   } catch (error) {
     console.error("Error registering enseignant:", error);
@@ -145,6 +151,31 @@ const getTeachersGroupedByGrade = async () => {
   return result;
 };
 
+const login = async (cin, password) => {
+  const teacher = await enseignantDao.getTeacherByCIN(cin);
+
+  if (!teacher) {
+    throw new Error("teacher not found");
+  }
+
+  if (await bcrypt.compare(password, teacher.password)) {
+    const accessToken = jwt.sign({ login: teacher.num_cin }, "yourSecretKey");
+
+    await enseignantDao.updateJwtToken(teacher._id, String(accessToken));
+
+    let updatedTeacher = await enseignantDao.getEnseignantById(teacher._id);
+
+    return updatedTeacher;
+  } else {
+    throw new Error("Incorrect password");
+  }
+};
+const getEtudiantByCin = async (cin_teacher) => {
+  return enseignantDao.getTeacherByCIN(cin_teacher);
+};
+const logoutTeacher = async (teacherId) => {
+  return await enseignantDao.logoutTeacher(teacherId);
+};
 module.exports = {
   registerEnseignantDao,
   getEnseignatsDao,
@@ -154,4 +185,7 @@ module.exports = {
   assignPapierToTeacher,
   fetchAllTeachersPeriods,
   getTeachersGroupedByGrade,
+  login,
+  getEtudiantByCin,
+  logoutTeacher
 };

@@ -105,7 +105,7 @@ const getEtudiantsByIdClasse = async (classeId) => {
     });
     return etudiants;
   } catch (error) {
-    console.error("Error while getting studiants for this classe id");
+    console.error("Error while getting students for this classe id");
     throw error;
   }
 };
@@ -157,6 +157,15 @@ const updateJwtToken = async (id, token) => {
   );
 };
 
+const logoutEtudiant = async (studentId) => {
+  try {
+    return await etudiantModel.findByIdAndUpdate(studentId, { api_token: null }, { new: true });
+  } catch (error) {
+    console.error("Error logging out student:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   createEudiant,
   getEtudiantById,
@@ -169,4 +178,5 @@ module.exports = {
   getEtudiantByCinAndCode,
   findEtudiantByToken,
   updateJwtToken,
+  logoutEtudiant
 };

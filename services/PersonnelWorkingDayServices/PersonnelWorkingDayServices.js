@@ -9,8 +9,8 @@ const createPersonnelWorkingDay = async (params) => {
   }
 };
 
-const updatePersonnelWorkingDay = async (updateData) => {
-  return await PersonnelWorkingDayDao.updatePersonnelWorkingDay(updateData);
+const updatePersonnelWorkingDay = async (id, updateData) => {
+  return await PersonnelWorkingDayDao.updatePersonnelWorkingDay(id, updateData);
 };
 
 const getPersonnelWorkingDay = async () => {
@@ -18,8 +18,13 @@ const getPersonnelWorkingDay = async () => {
   return result;
 };
 
+const deletePersonnelWorkingDay = async (id) => {
+  return PersonnelWorkingDayDao.deletePersonnelWorkingDay(id);
+};
+
 module.exports = {
   getPersonnelWorkingDay,
   updatePersonnelWorkingDay,
   createPersonnelWorkingDay,
+  deletePersonnelWorkingDay,
 };

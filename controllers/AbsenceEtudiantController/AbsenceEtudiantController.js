@@ -122,7 +122,25 @@ const getAllAbsenceClasse = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
-//
+const getHistoriqueAbsence = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+    console.log("Received teacherId:", teacherId);
+
+    if (!teacherId) {
+      return res.status(400).json({ message: "Teacher ID is required" });
+    }
+
+    const absences = await absenceEtudiantServices.getHistoriqueAbsenceByTeacherId(teacherId);
+
+    console.log("Returning absences:", absences);
+
+    return res.status(200).json(absences);
+  } catch (error) {
+    console.error("Error in controller:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = {
   deleteAbsenceEtudiantById,
@@ -131,4 +149,5 @@ module.exports = {
   updateAbsenceEtudiantById,
   addAbsenceEtudiant,
   getAllAbsenceClasse,
+  getHistoriqueAbsence
 };

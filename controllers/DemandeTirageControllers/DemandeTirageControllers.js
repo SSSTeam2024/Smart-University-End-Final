@@ -12,7 +12,7 @@ const addDemandeTirage = async (req, res) => {
       docFileBase64String,
       titre,
       nbr_page,
-      recto_verso, 
+      recto_verso,
       nbr_copies,
       format,
       date_envoi_demande,
@@ -21,6 +21,10 @@ const addDemandeTirage = async (req, res) => {
       heure_limite,
       date_recuperation,
       heure_recuperation,
+      date_impression,
+      heure_impression,
+      date_refus,
+      heure_refus,
       etat,
       added_by,
       note,
@@ -50,7 +54,7 @@ const addDemandeTirage = async (req, res) => {
         file_document,
         titre,
         nbr_page,
-        recto_verso, 
+        recto_verso,
         nbr_copies,
         format,
         date_envoi_demande,
@@ -59,6 +63,10 @@ const addDemandeTirage = async (req, res) => {
         heure_limite,
         date_recuperation,
         heure_recuperation,
+        date_impression,
+        heure_impression,
+        date_refus,
+        heure_refus,
         etat,
         added_by,
         note,
@@ -136,23 +144,50 @@ const getAllDemandeTirage = async (req, res) => {
 //   }
 // };
 
-// const deleteAbsenceEtudiantById = async (req, res) => {
-//   try {
-//     const absenceEtudiantId = req.params.id;
+const deleteDemandeTirage = async (req, res) => {
+  try {
+    const demandeTirageId = req.params.id;
 
-//     const deletedAbsenceEtudiant =
-//       await absenceEtudiantServices.deleteAbsenceEtudiant(absenceEtudiantId);
+    const deletedDemandeTirage =
+      await demandeTirageServices.deleteDemandeTirage(demandeTirageId);
 
-//     if (!deletedAbsenceEtudiant) {
-//       return res.status(404).send("Absence Etudiant not found");
-//     }
-//     res.sendStatus(200);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send(error.message);
-//   }
-// };
+    if (!deletedDemandeTirage) {
+      return res.status(404).send("Demande Tirage not found");
+    }
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+};
+const updateEtatDemandeTirage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { etat, date, heure } = req.body;
 
+    if (!id) {
+      return res.status(400).json({ message: "Demande Tirage ID is required." });
+    }
+
+    const updatedEtat =
+      await demandeTirageServices.updateEtatDemandeTirageService(
+        id,
+        etat,
+        date, heure
+      );
+
+    if (!updatedEtat) {
+      return res.status(404).json({ message: "demande Tirage not found." });
+    }
+
+    res.status(200).json({
+      message: "demande Tirage updated successfully.",
+      demandeTirage: updatedEtat,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 // const getAllAbsenceClasse = async (req, res) => {
 //   try {
 //     const classId = req.params.id;
@@ -166,8 +201,20 @@ const getAllDemandeTirage = async (req, res) => {
 //   }
 // };
 //
-
+const getDemandesTirageByTeacherId = async (req, res) => {
+  try {
+    const { enseignantId } = req.params;
+    const demandesTirage = await demandeTirageServices.getDemandesTirageByTeacherId(enseignantId);
+    res.json(demandesTirage);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error fetching demandes tirage by teacher ID" });
+  }
+};
 module.exports = {
   addDemandeTirage,
-  getAllDemandeTirage
+  getAllDemandeTirage,
+  deleteDemandeTirage,
+  updateEtatDemandeTirage,
+  getDemandesTirageByTeacherId
 };

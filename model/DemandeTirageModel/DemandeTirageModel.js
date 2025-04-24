@@ -31,8 +31,10 @@ const DemandeTirageSchema = new Schema(
     heure_recuperation: String,
     date_impression: String,
     heure_impression: String,
+    date_refus: String,
+    heure_refus: String,
     etat: String,
-    added_by_admin: {
+    added_by: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       default: null,

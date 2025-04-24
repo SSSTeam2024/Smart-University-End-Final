@@ -61,15 +61,35 @@ const getAllDemandesTirage = async () => {
 //   return await absenceEtudiantDao.getAbsenceEtudiantById(id);
 // };
 
-// const deleteAbsenceEtudiant = async (id) => {
-//   return await absenceEtudiantDao.deleteAbsenceEtudiant(id);
-// };
+const deleteDemandeTirage = async (id) => {
+  return await demandeTirageDao.deleteDemandeTirage(id);
+};
+const updateEtatDemandeTirageService = async (
+  demandeTirageId,
+  etat,
+  date, heure
+) => {
+  if (!etat) {
+    throw new Error(" etat must be provided.");
+  }
+
+  return await demandeTirageDao.updateEtatDemandeTirage(
+    demandeTirageId,
+    etat,
+    date, heure
+  );
+};
 
 // const getAllAbsenceClasse = async (id) => {
 //   return await absenceEtudiantDao.getAllAbsenceClasse(id);
 // };
-
+const getDemandesTirageByTeacherId = async (enseignantId) => {
+  return await demandeTirageDao.getDemandesTirageByTeacherId(enseignantId);
+};
 module.exports = {
   createDemandeTirage,
-  getAllDemandesTirage
+  getAllDemandesTirage,
+  deleteDemandeTirage,
+  updateEtatDemandeTirageService,
+  getDemandesTirageByTeacherId
 };

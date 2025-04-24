@@ -177,7 +177,34 @@ const updateCoursEnseignant = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+const getSupportCoursByTeacherId = async (req, res) => {
+  try {
+    const { enseignantId } = req.params;
+    const demandesTirage = await coursEnseignantServices.getSupportCoursByTeacherId(enseignantId);
+    res.json(demandesTirage);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error fetching demandes tirage by teacher ID" });
+  }
+};
 
+const deleteSupportCoursEnseignant = async (req, res) => {
+  try {
+    const supportCoursId = req.params.id;
+
+    const deletedSupportCours = await coursEnseignantServices.deleteSupportCoursEnseignant(
+      supportCoursId
+    );
+
+    if (!deletedSupportCours) {
+      return res.status(404).send("Support Cours not found");
+    }
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+};
 module.exports = {
   addCoursEnseignant,
   getCoursEnseignants,
@@ -185,4 +212,6 @@ module.exports = {
   updateCoursEnseignant,
   deleteCoursEnseignant,
   getCoursEnseignantByIdClasse,
+  getSupportCoursByTeacherId,
+  deleteSupportCoursEnseignant
 };

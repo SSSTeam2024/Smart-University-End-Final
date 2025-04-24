@@ -8,17 +8,17 @@ const getPersonnelWorkingDay = async () => {
   return await PersonnelWorkingDay.find();
 };
 
-const updatePersonnelWorkingDay = async (updateData) => {
-  let params = await PersonnelWorkingDay.find();
-  return await PersonnelWorkingDay.findByIdAndUpdate(
-    params[0]._id,
-    updateData,
-    { new: true }
-  );
+const updatePersonnelWorkingDay = async (id, updateData) => {
+  return PersonnelWorkingDay.findByIdAndUpdate(id, updateData, { new: true });
+};
+
+const deletePersonnelWorkingDay = async (id) => {
+  return PersonnelWorkingDay.findByIdAndDelete(id);
 };
 
 module.exports = {
   createPersonnelWorkingDay,
   getPersonnelWorkingDay,
   updatePersonnelWorkingDay,
+  deletePersonnelWorkingDay,
 };

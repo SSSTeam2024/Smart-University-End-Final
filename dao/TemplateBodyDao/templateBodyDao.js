@@ -15,9 +15,17 @@ const deleteTemplateBody = async (id) => {
   return await TemplateBody.findByIdAndDelete(id)
 };
 
+const getTemplateBodyByContext = async (intended_for) => {
+  const query = {
+    intended_for: intended_for
+  };
+  return await TemplateBody.find(query)
+};
+
 module.exports = {
-    createTemplateBody,
-    getTemplateBodys,
-    getTemplateBodyById,
-    deleteTemplateBody
+  createTemplateBody,
+  getTemplateBodys,
+  getTemplateBodyById,
+  deleteTemplateBody,
+  getTemplateBodyByContext
 };

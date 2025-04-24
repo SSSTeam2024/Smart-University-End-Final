@@ -8,7 +8,7 @@ const getTemplateBodys = async () => {
   const result = await templateBodyDao.getTemplateBodys();
   return result;
 };
-const getTemplateBodyById= async (id) => {
+const getTemplateBodyById = async (id) => {
   try {
     return await templateBodyDao.getTemplateBodyById(id);
   } catch (error) {
@@ -21,9 +21,16 @@ const deleteTemplateBody = async (id) => {
   const result = await templateBodyDao.deleteTemplateBody(id);
   return result;
 };
+
+const getTemplateBodyByContext = async (intended_for) => {
+  const result = await templateBodyDao.getTemplateBodyByContext(intended_for);
+  return result;
+};
+
 module.exports = {
-    createTemplateBody,
-    getTemplateBodys,
-    getTemplateBodyById,
-    deleteTemplateBody
+  createTemplateBody,
+  getTemplateBodys,
+  getTemplateBodyById,
+  deleteTemplateBody,
+  getTemplateBodyByContext
 };

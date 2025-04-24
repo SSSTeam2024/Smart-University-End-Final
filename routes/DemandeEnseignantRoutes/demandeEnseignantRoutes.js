@@ -12,9 +12,9 @@ router.get('/get-all-demande-Enseignants', demandeEnseignantController.getAllDem
 router.get('/get-demande-Enseignant/:id', demandeEnseignantController.getDemandeEnseignantById);
 
 // Update a demandeEnseignant by ID
-router.put('/edit-demande-Enseignant/:id', demandeEnseignantController.updateDemandeEnseignant);
+router.put('/edit-demande-Enseignant', demandeEnseignantController.updateDemandeEnseignant);
 
 // Delete a demandeEnseignant by ID
 router.delete('/delete-demande-Enseignant/:id', demandeEnseignantController.deleteDemandeEnseignant);
-
+router.get("/get-demande-by-id-teacher/:enseignantId", demandeEnseignantController.getDemandesByTeacherId);
 module.exports = router;

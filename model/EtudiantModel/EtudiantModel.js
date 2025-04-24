@@ -97,6 +97,10 @@ const etudiantSchema = new mongoose.Schema(
     matricule_number: String,
     passeport_number: String,
     cnss_number: String,
+    mention_university_ar: String,
+    mention_university_fr: String,
+    session_university_fr: String,
+    session_university_ar: String,
   },
   { timestamps: true }
 );

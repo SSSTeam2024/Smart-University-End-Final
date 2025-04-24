@@ -32,7 +32,7 @@ const getDemandeEnseignantById = async (req, res) => {
 
 const updateDemandeEnseignant = async (req, res) => {
   try {
-    const updatedDemandeEnseignant = await demandeEnseignantService.updateDemandeEnseignant(req.params.id, req.body);
+    const updatedDemandeEnseignant = await demandeEnseignantService.updateDemandeEnseignant(req.body._id, req.body);
     if (!updatedDemandeEnseignant) {
       return res.status(404).json({ message: 'DemandeEnseignant not found' });
     }
@@ -54,10 +54,23 @@ const deleteDemandeEnseignant = async (req, res) => {
   }
 };
 
+const getDemandesByTeacherId = async (req, res) => {
+  try {
+    const { enseignantId } = req.params;
+    const demandes = await demandeEnseignantService.getDemandesByTeacherId(enseignantId);
+    res.json(demandes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error fetching demandes by teacher ID" });
+  }
+};
+
+
 module.exports = {
   createDemandeEnseignant,
   getAllDemandeEnseignants,
   getDemandeEnseignantById,
   updateDemandeEnseignant,
-  deleteDemandeEnseignant
+  deleteDemandeEnseignant,
+  getDemandesByTeacherId
 };

@@ -242,6 +242,10 @@ const getNbrEtudiantsByClasses = async (classeIds) => {
   return nbr;
 };
 
+const logoutEtudiant = async (studentId) => {
+  return await etudiantDao.logoutEtudiant(studentId);
+};
+
 
 module.exports = {
   getEtudiants,
@@ -256,5 +260,6 @@ module.exports = {
   getEtudiatByCinAndCode,
   login,
   getEtudiantByToken,
-  getNbrEtudiantsByClasses
+  getNbrEtudiantsByClasses,
+  logoutEtudiant
 };

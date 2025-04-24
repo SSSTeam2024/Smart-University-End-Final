@@ -20,11 +20,14 @@ const updateDemandeEnseignant = async (id, updateData) => {
 const deleteDemandeEnseignant = async (id) => {
   return demandeEnseignantDao.deleteDemandeEnseignant(id);
 };
-
+const getDemandesByTeacherId = async (enseignantId) => {
+  return await demandeEnseignantDao.getDemandesByTeacherId(enseignantId);
+};
 module.exports = {
   createDemandeEnseignant,
   getAllDemandeEnseignants,
   getDemandeEnseignantById,
   updateDemandeEnseignant,
-  deleteDemandeEnseignant
+  deleteDemandeEnseignant,
+  getDemandesByTeacherId
 };
