@@ -8,8 +8,6 @@ const enseignantService = require("../services/EnseignantServices/EnseignantServ
 const personnelService = require("../services/PersonnelServices/PersonnelServices.js");
 const userService = require("../services/userServices/userService.js");
 
-const models = { Etudiant, Enseignant, Personnel, User };
-
 const getUserByIdV1 = async (id, userType, db) => {
   let user;
   switch (userType) {
