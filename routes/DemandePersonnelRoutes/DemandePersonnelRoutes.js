@@ -31,10 +31,16 @@ router.delete(
   "/delete-demande-Personnel/:id",
   demandePersonnelController.deleteDemandePersonnel
 );
+// Handle demand
+router.post(
+  "/handle-demande-personnel",
+  demandePersonnelController.handleDemandePersonnel
+);
 
 // Delete many Demandes Personnel
 router.delete(
   "/delete-many",
   demandePersonnelController.deleteManyDemandePersonnel
 );
+
 module.exports = router;

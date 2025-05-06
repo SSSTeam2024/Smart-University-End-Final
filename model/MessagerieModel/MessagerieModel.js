@@ -18,6 +18,15 @@ const MessageSchema = new mongoose.Schema(
         required: true,
       },
     },
+    forwardedBy: {
+      userId: { type: mongoose.Schema.Types.ObjectId, required: false },
+      userType: {
+        type: String,
+        enum: ["Etudiant", "Enseignant", "Personnel", "User"],
+        required: false,
+      },
+    },
+    transferredAt: { type: Date },
     subject: { type: String, required: true },
     content: { type: String, required: true },
     attachments: [{ type: String, required: false }], // Array of file URLs

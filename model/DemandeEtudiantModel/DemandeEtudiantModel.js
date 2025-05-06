@@ -19,12 +19,7 @@ const DemandeEtudiantSchema = new Schema({
     enum: ["en attente", "traité", "rejeté"],
     default: "en attente",
   }, //TODO: Add new status : notifié
-  generated_doc: {
-    type: Schema.Types.ObjectId,
-    ref: "GeneratedDocModel",
-    required: false,
-    default: null,
-  },
+  generated_doc: { type: String, required: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

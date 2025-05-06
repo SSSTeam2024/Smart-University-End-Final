@@ -11,7 +11,7 @@ const GeneratedDocModelSchema = new Schema(
       default: null,
     },
     model: { type: Schema.Types.ObjectId, ref: "TemplateBody" },
-    body: String,
+    doc: String,
     date_generation: String,
     num_ordre: String,
     num_qr_code: String,

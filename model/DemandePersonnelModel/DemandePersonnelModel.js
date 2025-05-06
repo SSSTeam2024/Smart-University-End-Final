@@ -16,8 +16,9 @@ const DemandePersonnelSchema = new Schema({
     default: null,
   },
   langue: { type: String, required: false },
-  nombre_copie: { type: Number, required: true },
+  nombre_copie: { type: Number, required: false },
   response: { type: String, required: false },
+  generated_doc: { type: String, required: false },
   status: {
     type: String,
     enum: ["en attente", "traité", "rejeté"],

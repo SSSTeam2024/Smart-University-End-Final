@@ -44,7 +44,6 @@ const getDemandeEtudiantById = async (req, res) => {
     if (!DemandeEtudiant) {
       return res.status(404).json({ message: "DemandeEtudiant not found" });
     }
-    res.status(200).json(DemandeEtudiant);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -61,7 +60,6 @@ const updateDemandeEtudiant = async (req, res) => {
     if (!updatedDemandeEtudiant) {
       return res.status(404).json({ message: "DemandeEtudiant not found" });
     }
-    res.status(200).json(updatedDemandeEtudiant);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -122,6 +120,25 @@ const deleteManyDemandeEtudiant = async (req, res) => {
   }
 };
 
+const handleDemandeEtudiant = async (req, res) => {
+  try {
+    const { demandId, modelName, modelLangage } = req.body;
+    const updatedDemandeEtudiant =
+      await demandeEtudiantService.handleDemandeEtudiant(
+        demandId,
+        modelName,
+        modelLangage
+      );
+
+    if (!updatedDemandeEtudiant) {
+      return res.status(404).json({ message: "DemandeEtudiant not found" });
+    }
+    res.status(200).json(updatedDemandeEtudiant);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createDemandeEtudiant,
   getAllDemandeEtudiants,
@@ -129,5 +146,6 @@ module.exports = {
   updateDemandeEtudiant,
   deleteDemandeEtudiant,
   getDemandesByStudentId,
+  handleDemandeEtudiant,
   deleteManyDemandeEtudiant,
 };

@@ -8,7 +8,7 @@ const DemandeEnseignantSchema = new Schema({
     required: true,
   },
   title: { type: String, required: false },
-  description: { type: String, required: true },
+  description: { type: String, required: false },
   piece_demande: {
     type: Schema.Types.ObjectId,
     ref: "TemplateBody",
@@ -23,6 +23,7 @@ const DemandeEnseignantSchema = new Schema({
     enum: ["en attente", "traité", "rejeté"],
     default: "en attente",
   },
+  generated_doc: { type: String, required: false, default: null },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

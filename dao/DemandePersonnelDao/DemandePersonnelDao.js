@@ -43,15 +43,43 @@ const getAllDemandePersonnels = async (dbName) => {
 const getDemandePersonnelById = async (id, dbName) => {
   const DemandePersonnel = await getDemandePersonnelModel(dbName);
   return DemandePersonnel.findById(id)
-    .populate("personnelId")
+    .populate({
+      path: "personnelId",
+      populate: [
+        {
+          path: "service",
+        },
+        {
+          path: "etat_compte",
+        },
+        {
+          path: "poste",
+        },
+        {
+          path: "grade",
+        },
+        {
+          path: "categorie",
+        },
+      ],
+      options: { strictPopulate: false },
+    })
     .populate("piece_demande");
 };
 
+// const updateDemandePersonnel = async (id, updateData) => {
+//   return DemandePersonnel.findByIdAndUpdate(id, updateData, { new: true }).populate('personnelId');
+// };
 const updateDemandePersonnel = async (id, updateData, dbName) => {
   const DemandePersonnel = await getDemandePersonnelModel(dbName);
+  updateData.updatedAt = Date.now(); // Ensure updatedAt is updated
+
   return DemandePersonnel.findByIdAndUpdate(id, updateData, {
     new: true,
-  }).populate("personnelId");
+    runValidators: true,
+  })
+    .populate("personnelId")
+    .exec();
 };
 
 const deleteDemandePersonnel = async (id, dbName) => {

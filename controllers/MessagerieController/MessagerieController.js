@@ -2,7 +2,7 @@ const messageService = require("../../dao/MessaegrieDao/MessagerieDao");
 const messageServices = require("../../services/MessagerieServices/MessagerieServices");
 const globalFunctions = require("../../utils/globalFunctions");
 
-const { getUserById } = require("../../utils/getUser");
+const { getUserByIdV2 } = require("../../utils/getUser");
 
 function useNewDb(req) {
   return req.headers["x-use-new-db"] === "true";
@@ -13,6 +13,37 @@ function useNewDb(req) {
 //     const { sender, receiver, subject, content, attachments } = req.body;
 //     const message = await messageService.createMessage({ sender, receiver, subject, content, attachments });
 //     res.status(201).json(message);
+//   } catch (error) {
+//     res.status(500).json({ error: "Failed to send message", details: error.message });
+//   }
+// };
+
+// const sendMessage = async (req, res) => {
+//   try {
+//     const { sender, receiver, subject, content, attachmentsBase64Strings,attachmentsExtensions, parentMessageId   } = req.body;
+
+//     const attachementsPath = 'files/messagerieFiles/';
+//     const attachementsFilenames  = attachmentsExtensions.map((ext, index) =>
+//           globalFunctions.generateUniqueFilename(ext, `MessagerieFiles_${index}`)
+//         );
+
+//         let documents = [...attachmentsBase64Strings.map((base64String, index) => ({
+//           base64String: base64String,
+//           extension: attachmentsExtensions[index],
+//           name: attachementsFilenames[index],
+//           path: attachementsPath
+//         }))]
+//     const message = await messageServices.createMessage({ sender, receiver, subject, content, attachments: attachementsFilenames,   parentMessageId: parentMessageId || null },documents);
+
+//     // Fetch sender and receiver details
+//     const senderDetails = await getUserById(sender.userId, sender.userType);
+//     const receiverDetails = await getUserById(receiver.userId, receiver.userType);
+
+//     res.status(201).json({
+//       ...message.toObject(),
+//       sender: { ...sender, ...senderDetails?._doc },
+//       receiver: { ...receiver, ...receiverDetails?._doc },
+//     });
 //   } catch (error) {
 //     res.status(500).json({ error: "Failed to send message", details: error.message });
 //   }
@@ -30,19 +61,24 @@ const sendMessage = async (req, res) => {
       parentMessageId,
     } = req.body;
 
+    if (attachmentsBase64Strings.length !== attachmentsExtensions.length) {
+      return res
+        .status(400)
+        .json({ error: "Mismatch between attachment data and extensions." });
+    }
+
     const attachementsPath = "files/messagerieFiles/";
     const attachementsFilenames = attachmentsExtensions.map((ext, index) =>
       globalFunctions.generateUniqueFilename(ext, `MessagerieFiles_${index}`)
     );
 
-    let documents = [
-      ...attachmentsBase64Strings.map((base64String, index) => ({
-        base64String: base64String,
-        extension: attachmentsExtensions[index],
-        name: attachementsFilenames[index],
-        path: attachementsPath,
-      })),
-    ];
+    const documents = attachmentsBase64Strings.map((base64String, index) => ({
+      base64String,
+      extension: attachmentsExtensions[index],
+      name: attachementsFilenames[index],
+      path: attachementsPath,
+    }));
+
     const message = await messageServices.createMessage(
       {
         sender,
@@ -56,11 +92,15 @@ const sendMessage = async (req, res) => {
       useNewDb(req)
     );
 
-    // Fetch sender and receiver details
-    const senderDetails = await getUserById(sender.userId, sender.userType);
-    const receiverDetails = await getUserById(
+    const senderDetails = await getUserByIdV2(
+      sender.userId,
+      sender.userType,
+      useNewDb(req)
+    );
+    const receiverDetails = await getUserByIdV2(
       receiver.userId,
-      receiver.userType
+      receiver.userType,
+      useNewDb(req)
     );
 
     res.status(201).json({
@@ -69,6 +109,7 @@ const sendMessage = async (req, res) => {
       receiver: { ...receiver, ...receiverDetails?._doc },
     });
   } catch (error) {
+    console.error("Error sending message:", error);
     res
       .status(500)
       .json({ error: "Failed to send message", details: error.message });
@@ -107,6 +148,7 @@ const getInbox = async (req, res) => {
       useNewDb(req)
     );
     res.status(200).json(messages);
+    // console.log("inbox",messages)
   } catch (error) {
     res
       .status(500)
@@ -184,13 +226,25 @@ const markMessageAsRead = async (req, res) => {
     });
   }
 };
+const markMessageAsUnread = async (req, res) => {
+  try {
+    const message = await messageService.markAsUnread(
+      req.params.messageId,
+      useNewDb(req)
+    );
+    res.status(200).json(message);
+  } catch (error) {
+    res.status(500).json({
+      error: "Failed to mark message as unread",
+      details: error.message,
+    });
+  }
+};
+
 const archiveMessage = async (req, res) => {
   try {
     const { messageId } = req.params;
-    const { userId, userType } = req.body; // Get the user who is archiving the message
-
-    // console.log("Archiving message with ID:", messageId);
-    // console.log("Archiving for user:", userId, "Type:", userType);
+    const { userId, userType } = req.body;
 
     const updatedMessage = await messageService.archiveMessage(
       messageId,
@@ -207,11 +261,52 @@ const archiveMessage = async (req, res) => {
       .json({ error: "Failed to archive message", details: error.message });
   }
 };
+const restoreMessage = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+    const { userId, userType } = req.body;
 
+    const updatedMessage = await messageService.restoreMessage(
+      messageId,
+      userId,
+      userType,
+      useNewDb(req)
+    );
+    res
+      .status(200)
+      .json({ message: "Message restored successfully", updatedMessage });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Failed to restore message", details: error.message });
+  }
+};
+
+// const deleteMessage = async (req, res) => {
+//   try {
+//     await messageService.deleteMessage(req.params.messageId);
+//     res.status(200).json({ message: "Message deleted successfully" });
+//   } catch (error) {
+//     res.status(500).json({ error: "Failed to delete message", details: error.message });
+//   }
+// };
 const deleteMessage = async (req, res) => {
   try {
-    await messageService.deleteMessage(req.params.messageId, useNewDb(req));
-    res.status(200).json({ message: "Message deleted successfully" });
+    const { messageId } = req.params;
+    const { userId, userType } = req.body; // Get the user who is archiving the message
+
+    // console.log("Archiving message with ID:", messageId);
+    // console.log("Archiving for user:", userId, "Type:", userType);
+
+    const updatedMessage = await messageService.deleteMessage(
+      messageId,
+      userId,
+      userType,
+      useNewDb(req)
+    );
+    res
+      .status(200)
+      .json({ message: "Message deleted successfully", updatedMessage });
   } catch (error) {
     res
       .status(500)
@@ -245,6 +340,71 @@ const deleteMessageForUser = async (req, res) => {
   }
 };
 
+// const getDeletedSentMessages = async (req, res) => {
+//   try {
+//     const { userId, userType } = req.params;
+//     const messages = await messageService.getUserDeletedSentMessages(userId, userType);
+//     res.status(200).json(messages);
+//   } catch (error) {
+//     res.status(500).json({ error: "Failed to fetch deleted sent messages", details: error.message });
+//   }
+// };
+// const getDeletedInboxMessages = async (req, res) => {
+//   try {
+//     const { userId, userType } = req.params;
+//     const messages = await messageService.getUserDeletedInboxMessages(userId, userType);
+//     res.status(200).json(messages);
+//   } catch (error) {
+//     res.status(500).json({ error: "Failed to fetch deleted sent messages", details: error.message });
+//   }
+// };
+
+// GET DELETED MESSAGES FOR USER
+const getDeletedMessagesForUser = async (req, res) => {
+  try {
+    const { userId, userType } = req.body; // Ensure body contains userId & userType
+
+    const deletedMessages = await messageService.findDeletedMessagesForUser(
+      userId,
+      userType,
+      useNewDb(req)
+    );
+
+    res.json({ deletedMessages });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+const transferMessage = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+    const { newReceiver, forwardedBy } = req.body;
+
+    if (
+      !newReceiver?.userId ||
+      !newReceiver?.userType ||
+      !forwardedBy?.userId ||
+      !forwardedBy?.userType
+    ) {
+      return res
+        .status(400)
+        .json({ error: "Receiver or Forwarder information is incomplete" });
+    }
+
+    const updatedMessage = await messageService.transferMessage(
+      messageId,
+      newReceiver,
+      forwardedBy,
+      useNewDb(req)
+    );
+
+    res.status(200).json({ message: "Message transferred", updatedMessage });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   sendMessage,
   getInbox,
@@ -252,8 +412,12 @@ module.exports = {
   getSentMessages,
   getArchivedSentMessages,
   markMessageAsRead,
+  markMessageAsUnread,
   archiveMessage,
   deleteMessage,
   fetchReplies,
   deleteMessageForUser,
+  restoreMessage,
+  getDeletedMessagesForUser,
+  transferMessage,
 };

@@ -43,15 +43,44 @@ const getAllDemandeEnseignants = async (dbName) => {
 const getDemandeEnseignantById = async (id, dbName) => {
   const DemandeEnseignant = await getDemandeEnseignantModel(dbName);
   return DemandeEnseignant.findById(id)
-    .populate("enseignantId")
+    .populate({
+      path: "enseignantId",
+      populate: [
+        {
+          path: "poste",
+        },
+        {
+          path: "etat_compte",
+        },
+        {
+          path: "specilaite",
+        },
+        {
+          path: "departements",
+        },
+        {
+          path: "grade",
+        },
+      ],
+      options: { strictPopulate: false },
+    })
     .populate("piece_demande");
 };
 
+// const updateDemandeEnseignant = async (id, updateData) => {
+//   return DemandeEnseignant.findByIdAndUpdate(id, updateData, { new: true }).populate('enseignantId').populate('piece_demande');
+// };
+
 const updateDemandeEnseignant = async (id, updateData, dbName) => {
   const DemandeEnseignant = await getDemandeEnseignantModel(dbName);
-  return DemandeEnseignant.findByIdAndUpdate(id, updateData, { new: true })
+  updateData.updatedAt = Date.now(); // Ensure updatedAt is updated
+
+  return DemandeEnseignant.findByIdAndUpdate(id, updateData, {
+    new: true,
+    runValidators: true,
+  })
     .populate("enseignantId")
-    .populate("piece_demande");
+    .exec();
 };
 
 const deleteDemandeEnseignant = async (id, dbName) => {

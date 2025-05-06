@@ -43,3 +43,10 @@ router.delete(
 );
 
 module.exports = router;
+// Handle demand
+router.post(
+  "/handle-demande-etudiant",
+  demandeEtudiantController.handleDemandeEtudiant
+);
+
+module.exports = router;

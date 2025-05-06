@@ -22,7 +22,7 @@ router.get(
 
 // Update a demandeEnseignant by ID
 router.put(
-  "/edit-demande-Enseignant/:id",
+  "/edit-demande-Enseignant",
   demandeEnseignantController.updateDemandeEnseignant
 );
 
@@ -31,15 +31,20 @@ router.delete(
   "/delete-demande-Enseignant/:id",
   demandeEnseignantController.deleteDemandeEnseignant
 );
-
 router.get(
   "/get-demande-by-id-teacher/:enseignantId",
   demandeEnseignantController.getDemandesByTeacherId
 );
+// Handle demand
+router.post(
+  "/handle-demande-enseignant",
+  demandeEnseignantController.handleDemandeEnseignant
+);
 
-// Delete many Demandes Etudiant
+// Delete many Demandes Enseignant
 router.delete(
   "/delete-many",
   demandeEnseignantController.deleteManyDemandeEnseignant
 );
+
 module.exports = router;

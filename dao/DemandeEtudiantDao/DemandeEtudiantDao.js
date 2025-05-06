@@ -40,17 +40,32 @@ const getAllDemandeEtudiants = async (dbName) => {
 
 const getDemandeEtudiantById = async (id, dbName) => {
   const DemandeEtudiant = await getDemandeEtudiantModel(dbName);
-  return DemandeEtudiant.findById(id)
-    .populate("studentId")
-    .populate("piece_demande")
-    .populate("generated_doc");
+  return await DemandeEtudiant.findById(id)
+    .populate({
+      path: "studentId",
+      populate: [
+        {
+          path: "groupe_classe",
+          populate: {
+            path: "departement",
+          },
+        },
+        {
+          path: "etat_compte",
+        },
+        {
+          path: "type_inscription",
+        },
+      ],
+    })
+    .populate("piece_demande");
 };
 
 const updateDemandeEtudiant = async (id, updateData, dbName) => {
   const DemandeEtudiant = await getDemandeEtudiantModel(dbName);
   updateData.updatedAt = Date.now();
 
-  return DemandeEtudiant.findByIdAndUpdate(id, updateData, {
+  return await DemandeEtudiant.findByIdAndUpdate(id, updateData, {
     new: true,
     runValidators: true,
   })
