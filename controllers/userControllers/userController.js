@@ -22,6 +22,9 @@ exports.createUser = async (req, res) => {
       app_name,
       status,
       permissions,
+      nom_fr,
+      prenom_fr,
+      email
     } = req.body;
 
     let user = await userService.createUser({
@@ -34,6 +37,9 @@ exports.createUser = async (req, res) => {
       app_name,
       status,
       permissions,
+      nom_fr,
+      prenom_fr,
+      email
     });
     res.json(user);
   } catch (error) {
