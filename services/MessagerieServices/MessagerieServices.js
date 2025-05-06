@@ -18,10 +18,13 @@ async function saveMediaToServer(documents) {
 }
 
 async function saveFile(base64String, fileName, filePath) {
-  const binaryData = Buffer.from(base64String, "base64");
+ 
+  const cleanedBase64 = base64String.split(',')[1];
+
+  const binaryData = Buffer.from(cleanedBase64, "base64");
   const fullFilePath = filePath + fileName;
   try {
-    await fs.writeFile(fullFilePath, binaryData, "binary");
+    await fs.writeFile(fullFilePath, binaryData);
     console.log("File saved successfully!");
   } catch (err) {
     console.error("Error saving the file:", err);
