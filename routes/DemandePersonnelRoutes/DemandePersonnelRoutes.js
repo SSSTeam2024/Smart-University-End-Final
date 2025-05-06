@@ -16,5 +16,6 @@ router.put('/edit-demande-Personnel/:id', demandePersonnelController.updateDeman
 
 // Delete a demandePersonnel by ID
 router.delete('/delete-demande-Personnel/:id', demandePersonnelController.deleteDemandePersonnel);
-
+// Handle demand
+router.post('/handle-demande-personnel', demandePersonnelController.handleDemandePersonnel);
 module.exports = router;

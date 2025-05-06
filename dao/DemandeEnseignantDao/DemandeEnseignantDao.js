@@ -27,7 +27,23 @@ const getAllDemandeEnseignants = async () => {
 };
 
 const getDemandeEnseignantById = async (id) => {
-  return DemandeEnseignant.findById(id).populate('enseignantId').populate('piece_demande');
+  return DemandeEnseignant.findById(id)
+    .populate({
+      path: "enseignantId",
+      populate: [{
+        path: "poste",
+      }, {
+        path: "etat_compte",
+      }, {
+        path: "specilaite"
+      }, {
+        path: "departements"
+      }, {
+        path: "grade"
+      }],
+      options: { strictPopulate: false },
+    })
+    .populate('piece_demande');
 };
 
 // const updateDemandeEnseignant = async (id, updateData) => {

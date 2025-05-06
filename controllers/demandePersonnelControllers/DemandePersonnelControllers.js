@@ -32,7 +32,7 @@ const getDemandePersonnelById = async (req, res) => {
 
 const updateDemandePersonnel = async (req, res) => {
   try {
-    const updatedDemandePersonnel = await demandePersonnelService.updateDemandePersonnel(req.params.id, req.body);
+    const updatedDemandePersonnel = await demandePersonnelService.updateDemandePersonnel(req.body._id, req.body);
     if (!updatedDemandePersonnel) {
       return res.status(404).json({ message: 'DemandePersonnel not found' });
     }
@@ -53,11 +53,24 @@ const deleteDemandePersonnel = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+const handleDemandePersonnel = async (req, res) => {
+  try {
+    const { demandId, modelName, modelLangage } = req.body;
+    const updatedDemandePersonnel = await demandePersonnelService.handleDemandePersonnel(demandId, modelName, modelLangage);
 
+    if (!updatedDemandePersonnel) {
+      return res.status(404).json({ message: 'DemandePersonnel not found' });
+    }
+    res.status(200).json(updatedDemandePersonnel);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 module.exports = {
   createDemandePersonnel,
   getAllDemandePersonnels,
   getDemandePersonnelById,
   updateDemandePersonnel,
-  deleteDemandePersonnel
+  deleteDemandePersonnel,
+  handleDemandePersonnel
 };

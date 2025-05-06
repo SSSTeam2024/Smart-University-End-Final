@@ -22,10 +22,15 @@ const getTemplateBodyByContext = async (intended_for) => {
   return await TemplateBody.find(query)
 };
 
+const updateTemplateBody = async (id, updateData) => {
+  return await TemplateBody.findByIdAndUpdate(id, updateData, { new: true });
+};
+
 module.exports = {
   createTemplateBody,
   getTemplateBodys,
   getTemplateBodyById,
   deleteTemplateBody,
-  getTemplateBodyByContext
+  getTemplateBodyByContext,
+  updateTemplateBody
 };

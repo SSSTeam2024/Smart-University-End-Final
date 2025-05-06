@@ -9,7 +9,7 @@ const DemandePersonnelSchema = new Schema({
   langue: { type: String, required: false },
   nombre_copie: { type: Number, required: false },
   response: { type: String, required: false },
-  generated_doc: { type: Schema.Types.ObjectId, ref: 'GeneratedDocModel', required: false, default: null },
+  generated_doc: { type: String, required: false },
   status: { type: String, enum: ['en attente', 'traité', 'rejeté'], default: 'en attente' },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }

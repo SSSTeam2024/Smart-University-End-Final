@@ -64,7 +64,20 @@ const getDemandesByTeacherId = async (req, res) => {
     res.status(500).json({ error: "Error fetching demandes by teacher ID" });
   }
 };
+const handleDemandeEnseignant = async (req, res) => {
+  try {
+    const { demandId, modelName, modelLangage } = req.body;
 
+    const updatedDemandeEnseignant = await demandeEnseignantService.handleDemandeEnseignant(demandId, modelName, modelLangage);
+
+    if (!updatedDemandeEnseignant) {
+      return res.status(404).json({ message: 'Demande Enseignant not found' });
+    }
+    res.status(200).json(updatedDemandeEnseignant);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = {
   createDemandeEnseignant,
@@ -72,5 +85,6 @@ module.exports = {
   getDemandeEnseignantById,
   updateDemandeEnseignant,
   deleteDemandeEnseignant,
-  getDemandesByTeacherId
+  getDemandesByTeacherId,
+  handleDemandeEnseignant
 };

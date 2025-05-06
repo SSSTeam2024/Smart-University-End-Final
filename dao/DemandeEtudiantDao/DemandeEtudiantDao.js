@@ -55,13 +55,28 @@ const getAllDemandeEtudiants = async () => {
 };
 
 const getDemandeEtudiantById = async (id) => {
-  return DemandeEtudiant.findById(id).populate('studentId').populate("piece_demande").populate("generated_doc");
+  return await DemandeEtudiant.findById(id).populate({
+    path: "studentId",
+    populate: [{
+      path: "groupe_classe",
+      populate: {
+        path: "departement",
+      },
+    },
+    {
+      path: "etat_compte",
+    },
+    {
+      path: "type_inscription",
+    }
+    ],
+  }).populate("piece_demande");
 };
 
 const updateDemandeEtudiant = async (id, updateData) => {
   updateData.updatedAt = Date.now(); // Ensure updatedAt is updated
 
-  return DemandeEtudiant.findByIdAndUpdate(id, updateData, { new: true, runValidators: true })
+  return await DemandeEtudiant.findByIdAndUpdate(id, updateData, { new: true, runValidators: true })
     .populate('studentId')
     .exec();
 };

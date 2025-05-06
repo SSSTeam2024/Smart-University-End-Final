@@ -1,24 +1,42 @@
 const templateBodyService = require("../../services/TemplateBodyServices/templateBodyServices");
+const globalFunctions = require("../../utils/globalFunctions");
 
 const addTemplateBody = async (req, res) => {
   try {
     const {
       title,
-      body,
+      fileBase64,
+      fileExtension,
+      fileName,
       langue,
       intended_for,
       has_code,
       has_number
     } = req.body;
 
+    let documents = [];
+
+    const modelsPath = "files/Modeles/";
+
+    const randomString = globalFunctions.generateRandomString();
+
+    let doc = `${fileName}_${randomString}.${fileExtension}`;
+
+    documents.push({
+      base64String: fileBase64,
+      name: doc,
+      extension: fileExtension,
+      path: modelsPath,
+    });
+
     const templateBody = await templateBodyService.createTemplateBody({
       title,
-      body,
+      doc,
       langue,
       intended_for,
       has_code,
       has_number
-    });
+    }, documents);
 
     res.json(templateBody);
   } catch (error) {
@@ -71,10 +89,25 @@ const getTemplateBodyByContext = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
+const updateTemplateBodyById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    const updatedTemplate = await templateBodyService.updateTemplateBodyById(id, updateData);
+    res.status(200).json(updatedTemplate);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 module.exports = {
   addTemplateBody,
   getAllTemplateBodys,
   getAllTemplateBodyById,
   deleteTemplateBody,
-  getTemplateBodyByContext
+  getTemplateBodyByContext,
+  updateTemplateBodyById
 };

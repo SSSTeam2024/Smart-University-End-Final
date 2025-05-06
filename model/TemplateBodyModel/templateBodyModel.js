@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const templateBodySchema = new Schema({
   title: String,
-  body: String,
+  doc: String,
   langue: String,
   intended_for: String,
   has_code: String,
