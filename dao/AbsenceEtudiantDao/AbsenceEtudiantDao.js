@@ -1,34 +1,21 @@
-const AbsenceEtudiant = require("../../model/AbsenceEtudiantModel/AbsenceEtudiantModel");
+const AbsenceEtudiantSchema = require("../../model/AbsenceEtudiantModel/AbsenceEtudiantModel");
 const mongoose = require("mongoose");
 
-const createAbsenceEtudiant = async (absenceEtudiantData) => {
+function getAbsenceEtudiantModel(dbConnection) {
+  return (
+    dbConnection.models.AbsenceEtudiant ||
+    dbConnection.model("AbsenceEtudiant", AbsenceEtudiantSchema)
+  );
+}
+
+const createAbsenceEtudiant = async (absenceEtudiantData, dbName) => {
+  const AbsenceEtudiant = getAbsenceEtudiantModel(dbName);
   const absenceEtudiant = new AbsenceEtudiant(absenceEtudiantData);
   return absenceEtudiant.save();
 };
 
-// const getAllAbsenceEtudiants = async () => {
-//   return AbsenceEtudiant.find()
-//     .populate("classe")
-//     .populate("seance")
-//     .populate("departement")
-//     .populate({
-//       path: "etudiants",
-//       populate: {
-//         path: "etudiant",
-//       },
-//     })
-//     .populate({
-//       path: "seance",
-//       populate: {
-//         path: "matiere",
-//       },
-//       populate: {
-//         path: "salle",
-//       },
-//     })
-//     .populate("enseignant");
-// };
-const getAllAbsenceEtudiants = async () => {
+const getAllAbsenceEtudiants = async (dbName) => {
+  const AbsenceEtudiant = getAbsenceEtudiantModel(dbName);
   return AbsenceEtudiant.find()
     .populate("classe")
     .populate("seance")
@@ -40,14 +27,12 @@ const getAllAbsenceEtudiants = async () => {
     })
     .populate({
       path: "seance",
-      populate: [
-        { path: "matiere" }, // Correctly populates matiere
-        { path: "salle" }, // Correctly populates salle
-      ],
+      populate: [{ path: "matiere" }, { path: "salle" }],
     });
 };
 
-const getAbsenceEtudiantById = async (id) => {
+const getAbsenceEtudiantById = async (id, dbName) => {
+  const AbsenceEtudiant = getAbsenceEtudiantModel(dbName);
   return AbsenceEtudiant.findById(id)
     .populate("classe")
     .populate("matiere")
@@ -61,7 +46,8 @@ const getAbsenceEtudiantById = async (id) => {
     .populate("enseignant");
 };
 
-const updateAbsenceEtudiant = async (id, updateData) => {
+const updateAbsenceEtudiant = async (id, updateData, dbName) => {
+  const AbsenceEtudiant = getAbsenceEtudiantModel(dbName);
   return AbsenceEtudiant.findByIdAndUpdate(id, updateData, { new: true })
     .populate("classe")
     .populate("seance")
@@ -75,11 +61,13 @@ const updateAbsenceEtudiant = async (id, updateData) => {
     .populate("enseignant");
 };
 
-const deleteAbsenceEtudiant = async (id) => {
+const deleteAbsenceEtudiant = async (id, dbName) => {
+  const AbsenceEtudiant = getAbsenceEtudiantModel(dbName);
   return AbsenceEtudiant.findByIdAndDelete(id);
 };
 
-const getAllAbsenceClasse = async (id) => {
+const getAllAbsenceClasse = async (id, dbName) => {
+  const AbsenceEtudiant = getAbsenceEtudiantModel(dbName);
   const query = {
     classe: id,
   };
@@ -104,8 +92,9 @@ const getAllAbsenceClasse = async (id) => {
     });
 };
 
-const getAbsencesByTeacherId = async (teacherId) => {
+const getAbsencesByTeacherId = async (teacherId, dbName) => {
   try {
+    const AbsenceEtudiant = getAbsenceEtudiantModel(dbName);
     const objectId = new mongoose.Types.ObjectId(teacherId);
 
     const absences = await AbsenceEtudiant.find({ enseignant: objectId })

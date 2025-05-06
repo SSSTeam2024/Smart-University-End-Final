@@ -1,38 +1,40 @@
 const enseignantDao = require("../../dao/EnseignantDao/EnseignantDao");
-const Enseignant = require("../../model/EnseignantModel/EnseignantModel");
+const enseignantSchema = require("../../model/EnseignantModel/EnseignantModel");
 const fs = require("fs");
 const path = require("path");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { getDb } = require("../../config/dbSwitcher");
 
-// const registerEnseignantDao = async (userData, documents) => {
-//   try {
-//     // Save the documents and get their IDs
-//     const saveResult = await saveDocumentToServer(documents);
-//     const newEnseignant = await enseignantDao.createEnseignant(userData);
-//     return newEnseignant;
-//   } catch (error) {
-//     console.error("Error registering enseignant:", error);
-//     throw error;
-//   }
-// };
+function getEnseignantModel(dbConnection) {
+  return (
+    dbConnection.models.Enseignant ||
+    dbConnection.model("Enseignant", enseignantSchema)
+  );
+}
 
-const registerEnseignantDao = async (userData, documents = []) => {
+const registerEnseignantDao = async (
+  enseignantData,
+  documents = [],
+  useNew
+) => {
   try {
-    // Save the documents and collect their paths
+    const db = await getDb(useNew);
     const savedFiles = await saveDocumentToServer(documents);
 
-    // Attach file paths to user data if necessary
     if (savedFiles.length > 0) {
-      userData.savedFiles = savedFiles; // Adjust key based on schema requirements
+      enseignantData.savedFiles = savedFiles;
     }
-
-    // Create the enseignant
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
-    const newEnseignant = await enseignantDao.createEnseignant({
-      ...userData,
-      password: hashedPassword,
-    });
+    console.log("enseignantData services", enseignantData);
+    const hashedPassword = await bcrypt.hash(enseignantData.password, 10);
+    const newEnseignant = await enseignantDao.createEnseignant(
+      {
+        ...enseignantData,
+        password: hashedPassword,
+      },
+      db
+    );
+    console.log("newEnseignant", newEnseignant);
     return newEnseignant;
   } catch (error) {
     console.error("Error registering enseignant:", error);
@@ -40,41 +42,19 @@ const registerEnseignantDao = async (userData, documents = []) => {
   }
 };
 
-// Function to save documents
-// async function saveDocumentToServer(documents) {
-//   let counter = 0;
-//   for (const file of documents) {
-//     await saveAdministrativeFile(file.base64String, file.name, file.path);
-//     counter++;
-//     console.log("File number " + counter + " saved");
-//   }
-//   return counter === documents.length;
-// }
-
 async function saveDocumentToServer(documents) {
   const savedPaths = [];
   for (const file of documents) {
     try {
       const savedPath = await saveAdministrativeFile(file);
-      savedPaths.push(savedPath); // Collect the saved file path
+      savedPaths.push(savedPath);
     } catch (error) {
       console.error(`Failed to save file ${file.name}:`, error);
-      // Optionally, continue saving other files instead of stopping
     }
   }
-  return savedPaths; // Return the list of successfully saved file paths
+  return savedPaths;
 }
 
-// async function saveAdministrativeFile(base64String, fileName, filePath) {
-//   const binaryData = Buffer.from(base64String, "base64");
-//   const fullFilePath = path.join(filePath, fileName);
-
-//   // Ensure the directory exists
-//   await fs.promises.mkdir(filePath, { recursive: true });
-
-//   await fs.promises.writeFile(fullFilePath, binaryData, "binary");
-//   console.log("File saved successfully at:", fullFilePath);
-// }
 async function saveAdministrativeFile(file) {
   if (!file || !file.base64String) {
     throw new Error("Invalid document: Missing base64String");
@@ -82,45 +62,46 @@ async function saveAdministrativeFile(file) {
 
   const { base64String, name, path: filePath } = file;
 
-  // Convert base64 to binary data
   const buffer = Buffer.from(base64String, "base64");
 
-  // Construct the full file path
   const fullFilePath = path.join(filePath, name);
 
   try {
-    // Ensure the directory exists
     await fs.promises.mkdir(filePath, { recursive: true });
 
-    // Write the file
     await fs.promises.writeFile(fullFilePath, buffer);
-    console.log("File saved successfully at:", fullFilePath);
 
-    return fullFilePath; // Return the saved file path
+    return fullFilePath;
   } catch (error) {
     console.error(`Error saving file ${name}:`, error);
     throw error;
   }
 }
 
-const getEnseignatsDao = async () => {
-  const result = await enseignantDao.getEnseignants();
+const getEnseignatsDao = async (useNew) => {
+  const db = await getDb(useNew);
+  const result = await enseignantDao.getEnseignants(db);
   return result;
 };
 
-const deleteEnseignantDao = async (id) => {
-  return await enseignantDao.deleteEnseignant(id);
+const deleteEnseignantDao = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await enseignantDao.deleteEnseignant(id, db);
 };
-const updateEnseignantDao = async (id, updateData) => {
-  return await enseignantDao.updateEnseignant(id, updateData);
-};
-
-const getEnseignantDaoById = async (id) => {
-  return await enseignantDao.getEnseignantById(id);
+const updateEnseignantDao = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return await enseignantDao.updateEnseignant(id, updateData, db);
 };
 
-const assignPapierToTeacher = async (enseignantId, papierIds) => {
+const getEnseignantDaoById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await enseignantDao.getEnseignantById(id, db);
+};
+
+const assignPapierToTeacher = async (enseignantId, papierIds, useNew) => {
   try {
+    const db = await getDb(useNew);
+    const Enseignant = await getEnseignantModel(dbName);
     const enseignant = await Enseignant.findById(enseignantId);
     if (!enseignant) {
       throw new Error("Enseignant not found");
@@ -137,22 +118,25 @@ const assignPapierToTeacher = async (enseignantId, papierIds) => {
   }
 };
 
-const fetchAllTeachersPeriods = async () => {
+const fetchAllTeachersPeriods = async (useNew) => {
   try {
-    const teachersPeriods = await enseignantDao.fetchAllTeachersPeriods();
+    const db = await getDb(useNew);
+    const teachersPeriods = await enseignantDao.fetchAllTeachersPeriods(db);
 
     return teachersPeriods;
   } catch (error) {
     throw new Error("Error processing teachers' periods: " + error.message);
   }
 };
-const getTeachersGroupedByGrade = async () => {
-  const result = await enseignantDao.getTeachersGroupedByGrade();
+const getTeachersGroupedByGrade = async (useNew) => {
+  const db = await getDb(useNew);
+  const result = await enseignantDao.getTeachersGroupedByGrade(db);
   return result;
 };
 
-const login = async (cin, password) => {
-  const teacher = await enseignantDao.getTeacherByCIN(cin);
+const login = async (cin, password, useNew) => {
+  const db = await getDb(useNew);
+  const teacher = await enseignantDao.getTeacherByCIN(cin, db);
 
   if (!teacher) {
     throw new Error("teacher not found");
@@ -161,7 +145,7 @@ const login = async (cin, password) => {
   if (await bcrypt.compare(password, teacher.password)) {
     const accessToken = jwt.sign({ login: teacher.num_cin }, "yourSecretKey");
 
-    await enseignantDao.updateJwtToken(teacher._id, String(accessToken));
+    await enseignantDao.updateJwtToken(teacher._id, String(accessToken), db);
 
     let updatedTeacher = await enseignantDao.getEnseignantById(teacher._id);
 
@@ -170,12 +154,17 @@ const login = async (cin, password) => {
     throw new Error("Incorrect password");
   }
 };
-const getEtudiantByCin = async (cin_teacher) => {
-  return enseignantDao.getTeacherByCIN(cin_teacher);
+
+const getEtudiantByCin = async (cin_teacher, useNew) => {
+  const db = await getDb(useNew);
+  return enseignantDao.getTeacherByCIN(cin_teacher, db);
 };
-const logoutTeacher = async (teacherId) => {
-  return await enseignantDao.logoutTeacher(teacherId);
+
+const logoutTeacher = async (teacherId, useNew) => {
+  const db = await getDb(useNew);
+  return await enseignantDao.logoutTeacher(teacherId, db);
 };
+
 module.exports = {
   registerEnseignantDao,
   getEnseignatsDao,
@@ -187,5 +176,5 @@ module.exports = {
   getTeachersGroupedByGrade,
   login,
   getEtudiantByCin,
-  logoutTeacher
+  logoutTeacher,
 };

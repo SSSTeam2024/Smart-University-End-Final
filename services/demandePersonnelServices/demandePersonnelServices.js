@@ -1,24 +1,35 @@
-const demandePersonnelDao = require('../../dao/DemandePersonnelDao/DemandePersonnelDao');
+const demandePersonnelDao = require("../../dao/DemandePersonnelDao/DemandePersonnelDao");
 
+const { getDb } = require("../../config/dbSwitcher");
 
-const createDemandePersonnel = async (demandePersonnelData) => {
-  return demandePersonnelDao.createDemandePersonnel(demandePersonnelData);
+const createDemandePersonnel = async (demandePersonnelData, useNew) => {
+  const db = await getDb(useNew);
+  return demandePersonnelDao.createDemandePersonnel(demandePersonnelData, db);
 };
 
-const getAllDemandePersonnels = async () => {
-  return demandePersonnelDao.getAllDemandePersonnels();
+const getAllDemandePersonnels = async (useNew) => {
+  const db = await getDb(useNew);
+  return demandePersonnelDao.getAllDemandePersonnels(db);
 };
 
-const getDemandePersonnelById = async (id) => {
-  return demandePersonnelDao.getDemandePersonnelById(id);
+const getDemandePersonnelById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return demandePersonnelDao.getDemandePersonnelById(id, db);
 };
 
-const updateDemandePersonnel = async (id, updateData) => {
-  return demandePersonnelDao.updateDemandePersonnel(id, updateData);
+const updateDemandePersonnel = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return demandePersonnelDao.updateDemandePersonnel(id, updateData, db);
 };
 
-const deleteDemandePersonnel = async (id) => {
-  return demandePersonnelDao.deleteDemandePersonnel(id);
+const deleteDemandePersonnel = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return demandePersonnelDao.deleteDemandePersonnel(id, db);
+};
+
+const deleteManyDemandePersonnel = async (useNew, ids) => {
+  const db = await getDb(useNew);
+  return demandePersonnelDao.deleteManyDemandePersonnel(db, ids);
 };
 
 module.exports = {
@@ -26,5 +37,6 @@ module.exports = {
   getAllDemandePersonnels,
   getDemandePersonnelById,
   updateDemandePersonnel,
-  deleteDemandePersonnel
+  deleteDemandePersonnel,
+  deleteManyDemandePersonnel,
 };

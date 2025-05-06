@@ -73,4 +73,5 @@ const personnelSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Personnel", personnelSchema);
+// module.exports = mongoose.model("Personnel", personnelSchema);
+module.exports = personnelSchema;

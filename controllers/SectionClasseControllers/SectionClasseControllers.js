@@ -1,5 +1,9 @@
 const sectionClasseService = require("../../services/SectionClasseServices/SectionClasseServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addSectionClasse = async (req, res) => {
   try {
     const {
@@ -10,13 +14,16 @@ const addSectionClasse = async (req, res) => {
       mention_classe,
     } = req.body;
 
-    const sectionClasse = await sectionClasseService.registerSectionClasse({
-      name_section_ar,
-      name_section_fr,
-      abreviation,
-      departements,
-      mention_classe,
-    });
+    const sectionClasse = await sectionClasseService.registerSectionClasse(
+      {
+        name_section_ar,
+        name_section_fr,
+        abreviation,
+        departements,
+        mention_classe,
+      },
+      useNewDb(req)
+    );
     res.json(sectionClasse);
   } catch (error) {
     console.error(error);
@@ -35,13 +42,17 @@ const updateSectionClasseById = async (req, res) => {
     } = req.body;
 
     const updatedSectionClasse =
-      await sectionClasseService.updateSetionClasseDao(sectionClasseId, {
-        name_section_ar,
-        name_section_fr,
-        abreviation,
-        departements,
-        mention_classe,
-      });
+      await sectionClasseService.updateSetionClasseDao(
+        sectionClasseId,
+        {
+          name_section_ar,
+          name_section_fr,
+          abreviation,
+          departements,
+          mention_classe,
+        },
+        useNewDb(req)
+      );
 
     if (!updatedSectionClasse) {
       return res.status(404).send("Section Classe not found!");
@@ -58,7 +69,8 @@ const getSectionClasseById = async (req, res) => {
     const sectionClasseId = req.params.id;
 
     const getSectionClasse = await sectionClasseService.getSectionClasseDaoById(
-      sectionClasseId
+      sectionClasseId,
+      useNewDb(req)
     );
 
     if (!getSectionClasse) {
@@ -72,7 +84,9 @@ const getSectionClasseById = async (req, res) => {
 };
 const getAllSectionClasse = async (req, res) => {
   try {
-    const sectionsClasse = await sectionClasseService.getSectionsClasseDao();
+    const sectionsClasse = await sectionClasseService.getSectionsClasseDao(
+      useNewDb(req)
+    );
     res.json(sectionsClasse);
   } catch (error) {
     console.error(error);
@@ -86,7 +100,8 @@ const deleteSectionClasseById = async (req, res) => {
     console.log(`Received request to delete section with ID: ${sectionId}`);
 
     const deletedSection = await sectionClasseService.deleteSectionClassetDao(
-      sectionId
+      sectionId,
+      useNewDb(req)
     );
 
     if (!deletedSection) {

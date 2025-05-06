@@ -1,5 +1,6 @@
-const reclamationDao = require('../../dao/ReclamationEtudiantDao/ReclamationEtudiantDao');
+const reclamationDao = require("../../dao/ReclamationEtudiantDao/ReclamationEtudiantDao");
 const fs = require("fs").promises;
+const { getDb } = require("../../config/dbSwitcher");
 
 async function saveMediaToServer(documents) {
   try {
@@ -27,33 +28,47 @@ async function saveFile(base64String, fileName, filePath) {
     throw err;
   }
 }
-const createReclamation= async (reclamationData, documents) => {
+const createReclamation = async (reclamationData, documents, useNew) => {
   try {
+    const db = await getDb(useNew);
     const saveResult = await saveMediaToServer(documents);
     if (!saveResult) {
       throw new Error("Not all files were saved successfully.");
     }
-    return await reclamationDao.createReclamation(reclamationData);
+    return await reclamationDao.createReclamation(reclamationData, db);
   } catch (error) {
     console.error("Error creating recalamation etudiant:", error);
     throw error;
   }
 };
 
-const getAllReclamations = async () => {
-  return reclamationDao.getAllReclamations();
+// const getAllReclamations = async () => {
+//   return reclamationDao.getAllReclamations();
+// };
+
+const getAllReclamations = async (dbName) => {
+  const db = await getDb(dbName);
+  return reclamationDao.getAllReclamations(db);
 };
 
-const getReclamationById = async (id) => {
-  return reclamationDao.getReclamationById(id);
+const getReclamationById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return reclamationDao.getReclamationById(id, db);
 };
 
-const updateReclamation = async (id, updateData) => {
-  return reclamationDao.updateReclamation(id, updateData);
+const updateReclamation = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return reclamationDao.updateReclamation(id, updateData, db);
 };
 
-const deleteReclamation = async (id) => {
-  return reclamationDao.deleteReclamation(id);
+const deleteReclamation = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return reclamationDao.deleteReclamation(id, db);
+};
+
+const deleteManyReclamation = async (dbName, ids) => {
+  const db = await getDb(dbName);
+  return reclamationDao.deleteManyReclamationsEtudiants(db, ids);
 };
 
 module.exports = {
@@ -61,5 +76,6 @@ module.exports = {
   getAllReclamations,
   getReclamationById,
   updateReclamation,
-  deleteReclamation
+  deleteReclamation,
+  deleteManyReclamation,
 };

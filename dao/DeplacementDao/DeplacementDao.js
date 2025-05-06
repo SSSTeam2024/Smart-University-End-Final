@@ -1,24 +1,44 @@
-const Deplacement = require('../../model/Deplacement/Deplacement');
+const DeplacementSchema = require("../../model/Deplacement/Deplacement");
 
-const createDeplacement = async (deplacementData) => {
+function getDeplacementModel(dbConnection) {
+  return (
+    dbConnection.models.Deplacement ||
+    dbConnection.model("Deplacement", DeplacementSchema)
+  );
+}
+
+const createDeplacement = async (deplacementData, dbName) => {
+  const Deplacement = await getDeplacementModel(dbName);
   const deplacement = new Deplacement(deplacementData);
   return deplacement.save();
 };
 
-const getAllDeplacements = async () => {
-  return Deplacement.find().populate('personnel').populate('enseignant');
+const getAllDeplacements = async (dbName) => {
+  const Deplacement = await getDeplacementModel(dbName);
+  return Deplacement.find().populate("personnel").populate("enseignant");
 };
 
-const getDeplacementById = async (id) => {
+const getDeplacementById = async (id, dbName) => {
+  const Deplacement = await getDeplacementModel(dbName);
   return Deplacement.findById(id);
 };
 
-const updateDeplacement = async (id, updateData) => {
+const updateDeplacement = async (id, updateData, dbName) => {
+  const Deplacement = await getDeplacementModel(dbName);
   return Deplacement.findByIdAndUpdate(id, updateData, { new: true });
 };
 
-const deleteDeplacement = async (id) => {
+const deleteDeplacement = async (id, dbName) => {
+  const Deplacement = await getDeplacementModel(dbName);
   return Deplacement.findByIdAndDelete(id);
+};
+
+const deleteManyDeplacements = async (dbName, ids) => {
+  const deplacementModel = await getDeplacementModel(dbName);
+  const query = {
+    _id: { $in: ids },
+  };
+  return await deplacementModel.deleteMany(query);
 };
 
 module.exports = {
@@ -26,5 +46,6 @@ module.exports = {
   getAllDeplacements,
   getDeplacementById,
   updateDeplacement,
-  deleteDeplacement
+  deleteDeplacement,
+  deleteManyDeplacements,
 };

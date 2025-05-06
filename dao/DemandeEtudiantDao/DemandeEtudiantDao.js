@@ -1,77 +1,71 @@
-const DemandeEtudiant = require('../../model/DemandeEtudiantModel/DemandeEtudiantModel');
-const puppeteer = require('puppeteer');
+const DemandeEtudiantSchema = require("../../model/DemandeEtudiantModel/DemandeEtudiantModel");
 
-// const createDemandeEtudiant = async (DemandeEtudiantData) => {
-//   const demandeEtudiant = new DemandeEtudiant(DemandeEtudiantData);
-//   return demandeEtudiant.save();
-// };
+function getDemandeEtudiantModel(dbConnection) {
+  return (
+    dbConnection.models.DemandeEtudiant ||
+    dbConnection.model("DemandeEtudiant", DemandeEtudiantSchema)
+  );
+}
 
-const createDemandeEtudiant = async (demandeEtudiantData) => {
+const createDemandeEtudiant = async (demandeEtudiantData, dbName) => {
+  const DemandeEtudiant = await getDemandeEtudiantModel(dbName);
   const demandeEtudiant = new DemandeEtudiant(demandeEtudiantData);
   await demandeEtudiant.save();
-  // await generatePDF(demandeEtudiant); // Call to generate PDF
   return demandeEtudiant;
 };
-const generatePDF = async (demandeEtudiant) => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
 
-  // Generate HTML content for the PDF
-  const htmlContent = `
-    <h1>Demande Etudiant</h1>
-    <p>Titre: ${demandeEtudiant.title}</p>
-    <p>Description: ${demandeEtudiant.description}</p>
-    <p>Langue: ${demandeEtudiant.langue}</p>
-    <p>Nombre de copies: ${demandeEtudiant.nombre_copie}</p>
-    <p>Status: ${demandeEtudiant.status}</p>
-    <p>Student ID: ${demandeEtudiant.studentId}</p>
-  `;
-
-  await page.setContent(htmlContent);
-  await page.pdf({
-    path: `files/pdfDemandeEtudiant/pdfs/demande_${demandeEtudiant._id}.pdf`,
-    format: 'A4',
-  });
-
-  await browser.close();
-};
-const getAllDemandeEtudiants = async () => {
-  return DemandeEtudiant.find().populate({
-    path: "studentId",
-    populate: [{
-      path: "groupe_classe",
-      populate: {
-        path: "departement",
-      },
-    },
-    {
-      path: "etat_compte",
-    },
-    {
-      path: "type_inscription",
-    }
-    ],
-  }).populate("piece_demande").populate("generated_doc");
+const getAllDemandeEtudiants = async (dbName) => {
+  const DemandeEtudiant = await getDemandeEtudiantModel(dbName);
+  return DemandeEtudiant.find()
+    .populate({
+      path: "studentId",
+      populate: [
+        {
+          path: "groupe_classe",
+          populate: {
+            path: "departement",
+          },
+        },
+        {
+          path: "etat_compte",
+        },
+        {
+          path: "type_inscription",
+        },
+      ],
+    })
+    .populate("piece_demande")
+    .populate("generated_doc");
 };
 
-const getDemandeEtudiantById = async (id) => {
-  return DemandeEtudiant.findById(id).populate('studentId').populate("piece_demande").populate("generated_doc");
+const getDemandeEtudiantById = async (id, dbName) => {
+  const DemandeEtudiant = await getDemandeEtudiantModel(dbName);
+  return DemandeEtudiant.findById(id)
+    .populate("studentId")
+    .populate("piece_demande")
+    .populate("generated_doc");
 };
 
-const updateDemandeEtudiant = async (id, updateData) => {
-  updateData.updatedAt = Date.now(); // Ensure updatedAt is updated
+const updateDemandeEtudiant = async (id, updateData, dbName) => {
+  const DemandeEtudiant = await getDemandeEtudiantModel(dbName);
+  updateData.updatedAt = Date.now();
 
-  return DemandeEtudiant.findByIdAndUpdate(id, updateData, { new: true, runValidators: true })
-    .populate('studentId')
+  return DemandeEtudiant.findByIdAndUpdate(id, updateData, {
+    new: true,
+    runValidators: true,
+  })
+    .populate("studentId")
     .exec();
 };
 
-const deleteDemandeEtudiant = async (id) => {
-  return DemandeEtudiant.findByIdAndDelete(id).populate('studentId');
+const deleteDemandeEtudiant = async (id, dbName) => {
+  const DemandeEtudiant = await getDemandeEtudiantModel(dbName);
+  return DemandeEtudiant.findByIdAndDelete(id).populate("studentId");
 };
 
-const getDemandesByStudentId = async (studentId) => {
+const getDemandesByStudentId = async (studentId, dbName) => {
   try {
+    const DemandeEtudiant = await getDemandeEtudiantModel(dbName);
     return await DemandeEtudiant.find({ studentId })
       .populate("studentId")
       .populate("piece_demande")
@@ -82,11 +76,20 @@ const getDemandesByStudentId = async (studentId) => {
   }
 };
 
+const deleteManyDemandeEtudiants = async (dbName, ids) => {
+  const demandeEtudiantModel = await getDemandeEtudiantModel(dbName);
+  const query = {
+    _id: { $in: ids },
+  };
+  return await demandeEtudiantModel.deleteMany(query);
+};
+
 module.exports = {
   createDemandeEtudiant,
   getAllDemandeEtudiants,
   getDemandeEtudiantById,
   updateDemandeEtudiant,
   deleteDemandeEtudiant,
-  getDemandesByStudentId
+  getDemandesByStudentId,
+  deleteManyDemandeEtudiants,
 };

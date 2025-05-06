@@ -1,16 +1,24 @@
-const moduleParcours = require("../../model/ModulesParcoursModel/ModulesParcoursModel");
+const moduleParcoursSchema = require("../../model/ModulesParcoursModel/ModulesParcoursModel");
 
-const createModuleParcours = async (userData) => {
+function getModuleParcoursModel(dbConnection) {
+  return (
+    dbConnection.models.ModuleParcours ||
+    dbConnection.model("ModuleParcours", moduleParcoursSchema)
+  );
+}
+
+const createModuleParcours = async (userData, dbName) => {
   try {
-    console.log("dao", userData);
+    const moduleParcours = await getModuleParcoursModel(dbName);
     return await moduleParcours.create(userData);
   } catch (error) {
     throw error;
   }
 };
 
-const getAllModulesParcours = async () => {
+const getAllModulesParcours = async (dbName) => {
   try {
+    const moduleParcours = await getModuleParcoursModel(dbName);
     return await moduleParcours
       .find()
       .populate("parcours")
@@ -21,8 +29,9 @@ const getAllModulesParcours = async () => {
     throw error;
   }
 };
-const updateModuleParcours = async (id, updateData) => {
+const updateModuleParcours = async (id, updateData, dbName) => {
   try {
+    const moduleParcours = await getModuleParcoursModel(dbName);
     return await moduleParcours.findByIdAndUpdate(id, updateData, {
       new: true,
     });
@@ -32,13 +41,15 @@ const updateModuleParcours = async (id, updateData) => {
   }
 };
 
-const deleteModuleParcours = async (id) => {
+const deleteModuleParcours = async (id, dbName) => {
+  const moduleParcours = await getModuleParcoursModel(dbName);
   return await moduleParcours.findByIdAndDelete(id);
 };
 
 // add matiere to module
-const addMatiereToModule = async (moduleId, matiereId) => {
+const addMatiereToModule = async (moduleId, matiereId, dbName) => {
   try {
+    const moduleParcours = await getModuleParcoursModel(dbName);
     return await moduleParcours.findByIdAndUpdate(
       moduleId,
       { $push: { matieres: matiereId } },
@@ -49,7 +60,8 @@ const addMatiereToModule = async (moduleId, matiereId) => {
   }
 };
 
-const getModuleeByCode = async (code_Ue) => {
+const getModuleeByCode = async (code_Ue, dbName) => {
+  const moduleParcours = await getModuleParcoursModel(dbName);
   return await moduleParcours.findOne({ code_Ue });
 };
 

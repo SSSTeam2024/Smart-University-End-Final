@@ -1,24 +1,49 @@
-const AvisEtudiant = require('../../model/AvisEtudiant/AvisEtudiantModel');
+const AvisEtudiantSchema = require("../../model/AvisEtudiant/AvisEtudiantModel");
 
-const createAvisEtudiant = async (avisEtudiantData) => {
-  const avisEtudiant = new AvisEtudiant(avisEtudiantData);
+function getAvisEtudiantModel(dbConnection) {
+  return (
+    dbConnection.models.AvisEtudiant ||
+    dbConnection.model("AvisEtudiant", AvisEtudiantSchema)
+  );
+}
+
+const createAvisEtudiant = async (avisEtudiantData, dbName) => {
+  const avisEtudiantModel = await getAvisEtudiantModel(dbName);
+  const avisEtudiant = new avisEtudiantModel(avisEtudiantData);
   return avisEtudiant.save();
 };
 
-const getAllAvisEtudiants = async () => {
-  return AvisEtudiant.find().populate('groupe_classe').populate('auteurId');
+const getAllAvisEtudiants = async (dbName) => {
+  const avisEtudiants = await getAvisEtudiantModel(dbName);
+  return await avisEtudiants
+    .find()
+    .populate("groupe_classe")
+    .populate("auteurId");
 };
 
-const getAvisEtudiantById = async (id) => {
-  return AvisEtudiant.findById(id).populate('groupe_classe');
+const getAvisEtudiantById = async (id, dbName) => {
+  const avisEtudiantModel = await getAvisEtudiantModel(dbName);
+  return AvisEtudiant.findById(id).populate("groupe_classe");
 };
 
-const updateAvisEtudiant = async (id, updateData) => {
-  return AvisEtudiant.findByIdAndUpdate(id, updateData, { new: true }).populate('groupe_classe');
+const updateAvisEtudiant = async (id, updateData, dbName) => {
+  const avisEtudiantModel = await getAvisEtudiantModel(dbName);
+  return AvisEtudiant.findByIdAndUpdate(id, updateData, { new: true }).populate(
+    "groupe_classe"
+  );
 };
 
-const deleteAvisEtudiant = async (id) => {
+const deleteAvisEtudiant = async (id, dbName) => {
+  const avisEtudiantModel = await getAvisEtudiantModel(dbName);
   return AvisEtudiant.findByIdAndDelete(id);
+};
+
+const deleteAvisEtudiants = async (dbName, ids) => {
+  const avisEtudiantModel = await getAvisEtudiantModel(dbName);
+  const query = {
+    _id: { $in: ids },
+  };
+  return await avisEtudiantModel.deleteMany(query);
 };
 
 module.exports = {
@@ -26,5 +51,6 @@ module.exports = {
   getAllAvisEtudiants,
   getAvisEtudiantById,
   updateAvisEtudiant,
-  deleteAvisEtudiant
+  deleteAvisEtudiant,
+  deleteAvisEtudiants,
 };

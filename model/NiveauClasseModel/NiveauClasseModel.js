@@ -11,4 +11,5 @@ const niveauClasseSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("NiveauClasse", niveauClasseSchema);
+// module.exports = mongoose.model("NiveauClasse", niveauClasseSchema);
+module.exports = niveauClasseSchema;

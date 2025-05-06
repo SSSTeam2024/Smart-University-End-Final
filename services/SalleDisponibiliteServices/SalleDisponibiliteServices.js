@@ -1,8 +1,10 @@
 const disponibilitSalleDao = require("../../dao/SalleDisponibiliteDao/SalleDisponibiliteDao");
+const { getDb } = require("../../config/dbSwitcher");
 
-const createSalleDisponibilite = async (salleId) => {
+const createSalleDisponibilite = async (salleId, useNew) => {
   try {
-    let result = await remplirDisponibiliteJoursSemaine(salleId);
+    const db = await getDb(useNew);
+    let result = await remplirDisponibiliteJoursSemaine(salleId, db);
     return result;
   } catch (error) {
     console.error("Error in salle disponibilite service:", error);
@@ -10,7 +12,8 @@ const createSalleDisponibilite = async (salleId) => {
   }
 };
 
-const remplirDisponibiliteJoursSemaine = async (salleId) => {
+const remplirDisponibiliteJoursSemaine = async (salleId, useNew) => {
+  const db = await getDb(useNew);
   const timeSlots = [
     "08:00-08:30",
     "08:30-09:00",
@@ -57,7 +60,7 @@ const remplirDisponibiliteJoursSemaine = async (salleId) => {
         isAvailable: "0",
       };
 
-      await disponibilitSalleDao.createDisponibiliteSalle(disponibilite);
+      await disponibilitSalleDao.createDisponibiliteSalle(disponibilite, db);
       creationCounter++;
     }
   }
@@ -74,8 +77,9 @@ const updateDisponibiliteSalle = async (
   j,
   availabilityStatus,
   occupationType,
+  useNew
 ) => {
-  
+  const db = await getDb(useNew);
   let jour = "";
 
   switch (j) {
@@ -103,46 +107,55 @@ const updateDisponibiliteSalle = async (
 
   // If we want to update to "available": search for occupied
   // If we want to update to "occupied": search for available
-  let searchedAvailability = '0';
-  if(availabilityStatus === '0'){ //  we want to update to "available"
-    searchedAvailability = '1'; // search for occupied
+  let searchedAvailability = "0";
+  if (availabilityStatus === "0") {
+    //  we want to update to "available"
+    searchedAvailability = "1"; // search for occupied
   } // if not search for available
-  
+
   let allAvailableRooms = await getDisponibiliteSallesByTimeInterval({
     heure_debut,
     heure_fin,
     jour,
-    searchedAvailability
+    searchedAvailability,
+    db,
   });
-  let conserenedRoomAvailabilities = allAvailableRooms.filter(availability => availability.roomId._id.toString() === idSalle);
+  let conserenedRoomAvailabilities = allAvailableRooms.filter(
+    (availability) => availability.roomId._id.toString() === idSalle
+  );
 
-  
   let availabilityCounter = 0;
-  for(let consernedAvailability of conserenedRoomAvailabilities){
+  for (let consernedAvailability of conserenedRoomAvailabilities) {
     availabilityCounter += 1;
-    await disponibilitSalleDao.updateDisponibiliteSalle(consernedAvailability._id, availabilityStatus, occupationType)
+    await disponibilitSalleDao.updateDisponibiliteSalle(
+      consernedAvailability._id,
+      availabilityStatus,
+      occupationType,
+      db
+    );
   }
 
-  if(availabilityCounter === conserenedRoomAvailabilities.length){
+  if (availabilityCounter === conserenedRoomAvailabilities.length) {
     return true;
   }
 };
 
-const getDisponibiliteSallesByTimeInterval = async (data) => {
+const getDisponibiliteSallesByTimeInterval = async (data, useNew) => {
+  const db = await getDb(useNew);
   let times = getHalfHourIntervals(data.heure_debut, data.heure_fin);
   times.push(data.heure_fin);
   let finalDisponibilities = [];
   for (let i = 0; i < times.length - 1; i++) {
-    
     let disponibilte_data = {
       timeSlot1: times[i],
       timeSlot2: times[i + 1],
       jour: data.jour,
-      availability: data.searchedAvailability
+      availability: data.searchedAvailability,
     };
     let disponibilites =
       await disponibilitSalleDao.getDisponibiliteSalleByTimeInterval(
-        disponibilte_data
+        disponibilte_data,
+        db
       );
     for (let d of disponibilites) {
       finalDisponibilities.push(d);
@@ -152,12 +165,12 @@ const getDisponibiliteSallesByTimeInterval = async (data) => {
   return finalDisponibilities;
 };
 
-const getFullyOrPartialAvailableRoomsByTimeInterval = async (data) => {
+const getFullyOrPartialAvailableRoomsByTimeInterval = async (data, useNew) => {
+  const db = await getDb(useNew);
   let times = getHalfHourIntervals(data.heure_debut, data.heure_fin);
   times.push(data.heure_fin);
   let finalDisponibilities = [];
   for (let i = 0; i < times.length - 1; i++) {
-    
     let disponibilte_data = {
       timeSlot1: times[i],
       timeSlot2: times[i + 1],
@@ -165,7 +178,8 @@ const getFullyOrPartialAvailableRoomsByTimeInterval = async (data) => {
     };
     let disponibilites =
       await disponibilitSalleDao.getFullyOrPartialAvailableRoomsByTimeInterval(
-        disponibilte_data
+        disponibilte_data,
+        db
       );
     for (let d of disponibilites) {
       finalDisponibilities.push(d);
@@ -175,8 +189,9 @@ const getFullyOrPartialAvailableRoomsByTimeInterval = async (data) => {
   return finalDisponibilities;
 };
 
-const getAllDisponibiliteSalles = async () => {
-  const result = await disponibilitSalleDao.getAllDisponibiliteSalles();
+const getAllDisponibiliteSalles = async (useNew) => {
+  const db = await getDb(useNew);
+  const result = await disponibilitSalleDao.getAllDisponibiliteSalles(db);
   return result;
 };
 
@@ -195,8 +210,9 @@ function getHalfHourIntervals(startTime, endTime) {
   return times;
 }
 
-const deleteDisponibilityBySalleId = async (salleId) => {
-  return await disponibilitSalleDao.deleteDisponibility(salleId);
+const deleteDisponibilityBySalleId = async (salleId, useNew) => {
+  const db = await getDb(useNew);
+  return await disponibilitSalleDao.deleteDisponibility(salleId, db);
 };
 
 module.exports = {

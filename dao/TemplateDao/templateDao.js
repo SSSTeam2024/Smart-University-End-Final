@@ -1,14 +1,23 @@
-const Template = require("../../model/TemplateModel/templateModel")
+const templateSchema = require("../../model/TemplateModel/templateModel");
 
-const createTemplate = async (templateBody) => {
+function getTemplateModel(dbConnection) {
+  return (
+    dbConnection.models.Template ||
+    dbConnection.model("Template", templateSchema)
+  );
+}
+
+const createTemplate = async (templateBody, dbName) => {
+  const Template = await getTemplateModel(dbName);
   return await Template.create(templateBody);
 };
 
-const getTemplates = async () => {
-  return await Template.find()
+const getTemplates = async (dbName) => {
+  const Template = await getTemplateModel(dbName);
+  return await Template.find();
 };
 
 module.exports = {
-    createTemplate,
-    getTemplates,
+  createTemplate,
+  getTemplates,
 };

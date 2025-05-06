@@ -2,54 +2,24 @@ const userDao = require("../../dao/userDao/userDao");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
+const { getDb } = require("../../config/dbSwitcher");
 
-// const createUser = async (userData, documents) => {
-//   // console.log(userData);
-//   // console.log(documents);
-//   let saveResult = await saveDocumentsToServer(documents);
-//   console.log(saveResult);
-//   const hashedPassword = await bcrypt.hash(userData.password, 10);
-//   return await userDao.createUser({
-//     ...userData,
-//     password: hashedPassword,
-//   });
-// };
-
-// async function saveDocumentsToServer(documents) {
-//   let counter = 0;
-//   for (const file of documents) {
-//     console.log(file);
-//     await saveFile(file.base64String, file.name, file.path);
-//     counter++;
-//     console.log("File number " + counter + " saved");
-//   }
-//   if (counter == documents.length) return true;
-// }
-
-// async function saveFile(base64String, fileName, file_path) {
-//   //const base64Data = await base64String.replace(/^data:image\/\w+;base64,/, '');
-//   const binaryData = Buffer.from(base64String, "base64");
-//   const filePath = file_path + fileName;
-//   fs.writeFile(filePath, binaryData, "binary", (err) => {
-//     if (err) {
-//       console.error("Error saving the file:", err);
-//     } else {
-//       console.log("File saved successfully!");
-//     }
-//   });
-// }
-const createUser = async (userData) => {
-  console.log("user data", userData);
+const createUser = async (userData, dbName) => {
+  const db = await getDb(dbName);
   const hashedPassword = await bcrypt.hash(userData.password, 10);
-  return await userDao.createUser({
-    ...userData,
-    password: hashedPassword,
-  });
+  return await userDao.createUser(
+    {
+      ...userData,
+      password: hashedPassword,
+    },
+    db
+  );
 };
 
 // login service acccount
-const loginUser = async (login, password) => {
-  const user = await userDao.findUserByLogin(login);
+const loginUser = async (login, password, dbName) => {
+  const db = await getDb(dbName);
+  const user = await userDao.findUserByLogin(login, db);
 
   if (!user) {
     throw new Error("user not found");
@@ -57,9 +27,8 @@ const loginUser = async (login, password) => {
 
   if (await bcrypt.compare(password, user.password)) {
     const accessToken = jwt.sign({ login: user.login }, "yourSecretKey");
-    // console.log(typeof accessToken);
-    await userDao.updateJwtToken(user._id, String(accessToken));
-    let updatedUser = await userDao.getUserById(user._id);
+    await userDao.updateJwtToken(user._id, String(accessToken), db);
+    let updatedUser = await userDao.getUserById(user._id, db);
     return updatedUser;
   } else {
     throw new Error("Incorrect password");
@@ -67,39 +36,48 @@ const loginUser = async (login, password) => {
 };
 
 //forgot password
-const updatePassword = async (id, password) => {
-  console.log(password);
+const updatePassword = async (id, password, dbName) => {
+  const db = await getDb(dbName);
   const hashedPassword = await bcrypt.hash(password.password, 10);
-  return await userDao.updatePassword(id, hashedPassword);
+  return await userDao.updatePassword(id, hashedPassword, db);
 };
 
-const getUsers = async () => {
-  return await userDao.getAllUsers();
+const getUsers = async (dbName) => {
+  const db = await getDb(dbName);
+  return await userDao.getAllUsers(db);
 };
 
-const deleteUser = async (id) => {
-  return await userDao.deleteUser(id);
+const deleteUser = async (id, dbName) => {
+  const db = await getDb(dbName);
+  return await userDao.deleteUser(id, db);
 };
 
-const getUserByEmail = async (email) => {
-  return await userDao.getUserByEmail(email);
+const getUserByEmail = async (email, dbName) => {
+  const db = await getDb(dbName);
+  return await userDao.getUserByEmail(email, db);
 };
 
-const updateUser = async (id, updateData) => {
-  return await userDao.updateUser(id, updateData);
+const updateUser = async (id, updateData, dbName) => {
+  const db = await getDb(dbName);
+  return await userDao.updateUser(id, updateData, db);
 };
+
 // get User by token
-const getUserByToken = async (token) => {
-  // console.log("Token Service", token)
-  return await userDao.findUserByToken(token);
+const getUserByToken = async (token, dbName) => {
+  const db = await getDb(dbName);
+  return await userDao.findUserByToken(token, db);
 };
+
 //logout
-const logout = async (id) => {
-  return await userDao.logout(id);
+const logout = async (id, dbName) => {
+  const db = await getDb(dbName);
+  return await userDao.logout(id, db);
 };
-const getUserById = async (_id) => {
+
+const getUserById = async (_id, dbName) => {
   try {
-    return await userDao.getUserById(_id);
+    const db = await getDb(dbName);
+    return await userDao.getUserById(_id, db);
   } catch (err) {
     throw new Error(`Error fetching user by ID: ${err.message}`);
   }

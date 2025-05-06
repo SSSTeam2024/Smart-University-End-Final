@@ -1,34 +1,41 @@
-const leaveBalanceDao = require('../../dao/CongeDao/LeaveBalanceDao');
+const leaveBalanceDao = require("../../dao/CongeDao/LeaveBalanceDao");
 
+const { getDb } = require("../../config/dbSwitcher");
 
-const createLeaveBalance = async (leaveBalanceData) => {
-  return leaveBalanceDao.createLeaveBalance(leaveBalanceData);
+const createLeaveBalance = async (leaveBalanceData, useNew) => {
+  const db = await getDb(useNew);
+  return leaveBalanceDao.createLeaveBalance(leaveBalanceData, db);
 };
-const createOrUpdateLeaveBalance = async (leaveBalanceData) => {
-  return leaveBalanceDao.createOrUpdateLeaveBalance(leaveBalanceData);
-};
-
-const getAllLeaveBalance = async () => {
-  return leaveBalanceDao.getAllLeaveBalance();
-};
-
-const getLeaveBalanceById = async (id) => {
-  return leaveBalanceDao.getLeaveBalanceById(id);
+const createOrUpdateLeaveBalance = async (leaveBalanceData, useNew) => {
+  const db = await getDb(useNew);
+  return leaveBalanceDao.createOrUpdateLeaveBalance(leaveBalanceData, db);
 };
 
-const updateLeaveBalance = async (id, updateData) => {
-  return leaveBalanceDao.updateLeaveBalance(id, updateData);
+const getAllLeaveBalance = async (useNew) => {
+  const db = await getDb(useNew);
+  return leaveBalanceDao.getAllLeaveBalance(db);
 };
 
-const deleteLeaveBalance = async (id) => {
-  return leaveBalanceDao.deleteLeaveBalance(id);
+const getLeaveBalanceById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return leaveBalanceDao.getLeaveBalanceById(id, db);
+};
+
+const updateLeaveBalance = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return leaveBalanceDao.updateLeaveBalance(id, updateData, db);
+};
+
+const deleteLeaveBalance = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return leaveBalanceDao.deleteLeaveBalance(id, db);
 };
 
 module.exports = {
-    createLeaveBalance,
-    createOrUpdateLeaveBalance,
-    getAllLeaveBalance,
-    getLeaveBalanceById,
-    updateLeaveBalance,
-    deleteLeaveBalance
+  createLeaveBalance,
+  createOrUpdateLeaveBalance,
+  getAllLeaveBalance,
+  getLeaveBalanceById,
+  updateLeaveBalance,
+  deleteLeaveBalance,
 };

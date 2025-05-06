@@ -7,10 +7,13 @@ const ficheVoeuxSchema = new mongoose.Schema(
         matieres: String,
         classe: [
           {
-            subject_id: { type: mongoose.Schema.Types.ObjectId, ref: "Matiere" },
-            class_id: { type: mongoose.Schema.Types.ObjectId, ref: "Classe" }
-          }
-        ]
+            subject_id: {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "Matiere",
+            },
+            class_id: { type: mongoose.Schema.Types.ObjectId, ref: "Classe" },
+          },
+        ],
       },
     ],
     jours: [
@@ -22,9 +25,10 @@ const ficheVoeuxSchema = new mongoose.Schema(
     enseignant: { type: mongoose.Schema.Types.ObjectId, ref: "Enseignant" },
 
     semestre: String,
-    remarque: String
+    remarque: String,
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("ficheVoeux", ficheVoeuxSchema);
+// module.exports = mongoose.model("ficheVoeux", ficheVoeuxSchema);
+module.exports = ficheVoeuxSchema;

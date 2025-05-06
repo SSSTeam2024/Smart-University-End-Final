@@ -1,5 +1,9 @@
 const matiereService = require("../../services/MatiereServices/MatiereServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addMatiere = async (req, res) => {
   try {
     const {
@@ -32,7 +36,7 @@ const addMatiere = async (req, res) => {
     // Insert all matieres into the database
     const createdMatieres = await Promise.all(
       matieresToCreate.map(async (matiere) =>
-        matiereService.registerMatiere(matiere)
+        matiereService.registerMatiere(matiere, useNewDb(req))
       )
     );
 
@@ -63,18 +67,22 @@ const updateMatiereById = async (req, res) => {
       types,
     } = req.body;
 
-    const updatedMatiere = await matiereService.updateMatiereDao(matiereId, {
-      code_matiere,
-      matiere,
-      type,
-      semestre,
-      volume,
-      nbr_elimination,
-      regime_matiere,
-      credit_matiere,
-      coefficient_matiere,
-      types,
-    });
+    const updatedMatiere = await matiereService.updateMatiereDao(
+      matiereId,
+      {
+        code_matiere,
+        matiere,
+        type,
+        semestre,
+        volume,
+        nbr_elimination,
+        regime_matiere,
+        credit_matiere,
+        coefficient_matiere,
+        types,
+      },
+      useNewDb(req)
+    );
 
     if (!updatedMatiere) {
       return res.status(404).send("Matiere not found!");
@@ -90,7 +98,10 @@ const getMatiereById = async (req, res) => {
   try {
     const matiereId = req.params.id;
 
-    const getMatiere = await matiereService.getMatiereDaoById(matiereId);
+    const getMatiere = await matiereService.getMatiereDaoById(
+      matiereId,
+      useNewDb(req)
+    );
 
     if (!getMatiere) {
       return res.status(404).send("Matiere not found");
@@ -103,7 +114,7 @@ const getMatiereById = async (req, res) => {
 };
 const getAllMatieres = async (req, res) => {
   try {
-    const matieres = await matiereService.getMatieresDao();
+    const matieres = await matiereService.getMatieresDao(useNewDb(req));
     res.json(matieres);
   } catch (error) {
     console.error(error);
@@ -115,7 +126,10 @@ const deleteMatiereById = async (req, res) => {
   try {
     const matiereId = req.params.id;
 
-    const deletedMatiere = await matiereService.deleteMatiereDao(matiereId);
+    const deletedMatiere = await matiereService.deleteMatiereDao(
+      matiereId,
+      useNewDb(req)
+    );
 
     if (!deletedMatiere) {
       return res.status(404).send("Matiere not found");
@@ -135,9 +149,12 @@ const getMatiereByCode = async (req, res) => {
       return res.status(400).json({ message: "code_matiere is required" });
     }
 
-    const matiereByCode = await matiereService.getMatiereByCode({
-      code_matiere,
-    });
+    const matiereByCode = await matiereService.getMatiereByCode(
+      {
+        code_matiere,
+      },
+      useNewDb(req)
+    );
 
     if (!matiereByCode) {
       return res.json(null);

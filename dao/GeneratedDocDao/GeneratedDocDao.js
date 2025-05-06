@@ -1,14 +1,23 @@
-const GeneratedDocModel = require("../../model/GeneratedDocModel/GeneratedDocModel");
+const GeneratedDocModelSchema = require("../../model/GeneratedDocModel/GeneratedDocModel");
 
-const saveGenerated = async (generatedDocData) => {
+function getGeneratedDocModelModel(dbConnection) {
+  return (
+    dbConnection.models.GeneratedDocModel ||
+    dbConnection.model("GeneratedDocModel", GeneratedDocModelSchema)
+  );
+}
+
+const saveGenerated = async (generatedDocData, dbName) => {
+  const GeneratedDocModel = await getGeneratedDocModelModel(dbName);
   const generatedDoc = new GeneratedDocModel(generatedDocData);
   return generatedDoc.save();
 };
 
-const getGenerartedDocsByModelId = async (model_id) => {
+const getGenerartedDocsByModelId = async (model_id, dbName) => {
   const query = {
     model: model_id,
   };
+  const GeneratedDocModel = await getGeneratedDocModelModel(dbName);
   return await GeneratedDocModel.find(query)
     .populate("model")
     .populate("enseignant")
@@ -16,30 +25,20 @@ const getGenerartedDocsByModelId = async (model_id) => {
     .populate("personnel");
 };
 
-const getGenerartedDocsByQrCode = async (num_qr_code) => {
+const getGenerartedDocsByQrCode = async (num_qr_code, dbName) => {
   const query = {
     num_qr_code: num_qr_code,
   };
-  return await GeneratedDocModel.find(query).populate("model").populate("enseignant").populate("etudiant").populate("personnel");
+  const GeneratedDocModel = await getGeneratedDocModelModel(dbName);
+  return await GeneratedDocModel.find(query)
+    .populate("model")
+    .populate("enseignant")
+    .populate("etudiant")
+    .populate("personnel");
 };
-
-// const getAllAbsencesPersonnels = async () => {
-//   return AbsencePersonnel.find().populate('personnel');
-// };
-
-// const updateAbsencePersonnel = async (id, updateData) => {
-//   return AbsencePersonnel.findByIdAndUpdate(id, updateData, { new: true });
-// };
-
-// const deleteAbsencePersonnel = async (id) => {
-//   return AbsencePersonnel.findByIdAndDelete(id);
-// };
 
 module.exports = {
   saveGenerated,
   getGenerartedDocsByModelId,
-  getGenerartedDocsByQrCode
-  // getAllAbsencesPersonnels,
-  // updateAbsencePersonnel,
-  // deleteAbsencePersonnel
+  getGenerartedDocsByQrCode,
 };

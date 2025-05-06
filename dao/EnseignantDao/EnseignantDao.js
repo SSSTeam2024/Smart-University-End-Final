@@ -1,13 +1,37 @@
-const enseignantModel = require("../../model/EnseignantModel/EnseignantModel");
-const PapierAdministratif = require("../../model/PapierAdministratif/PapierAdministratifModel");
-const teacherPeriodModel = require("../../model/TeacherPeriodModel/TeacherPeriodModel");
+const papierAdministratifSchema = require("../../model/PapierAdministratif/PapierAdministratifModel");
+const teacherPeriodSchema = require("../../model/TeacherPeriodModel/TeacherPeriodModel");
+const enseignantSchema = require("../../model/EnseignantModel/EnseignantModel");
 const mongoose = require("mongoose");
 
-const createEnseignant = async (enseignant) => {
-  return await enseignantModel.create(enseignant);
+function getEnseignantModel(dbConnection) {
+  return (
+    dbConnection.models.Enseignant ||
+    dbConnection.model("Enseignant", enseignantSchema)
+  );
+}
+
+function getTeacherPeriodtModel(dbConnection) {
+  return (
+    dbConnection.models.TeacherPeriod ||
+    dbConnection.model("TeacherPeriod", teacherPeriodSchema)
+  );
+}
+
+function getPapierAdministratifModel(dbConnection) {
+  return (
+    dbConnection.models.PapierAdministratif ||
+    dbConnection.model("PapierAdministratif", papierAdministratifSchema)
+  );
+}
+
+const createEnseignant = async (enseignant, dbName) => {
+  console.log("dbName", dbName);
+  const Enseignant = await getEnseignantModel(dbName);
+  return await Enseignant.create(enseignant);
 };
 
-const getEnseignants = async () => {
+const getEnseignants = async (dbName) => {
+  const enseignantModel = await getEnseignantModel(dbName);
   return await enseignantModel
     .find()
     .populate("etat_compte")
@@ -17,117 +41,39 @@ const getEnseignants = async () => {
     .populate("departements");
 };
 
-const updateEnseignant = async (id, updateData) => {
+const updateEnseignant = async (id, updateData, dbName) => {
+  const enseignantModel = await getEnseignantModel(dbName);
   return await enseignantModel.findByIdAndUpdate(id, updateData, { new: true });
 };
 
-const deleteEnseignant = async (id) => {
+const deleteEnseignant = async (id, dbName) => {
+  const enseignantModel = await getEnseignantModel(dbName);
   return await enseignantModel.findByIdAndDelete(id);
 };
 
-const getEnseignantById = async (id) => {
+const getEnseignantById = async (id, dbName) => {
   try {
-    const enseignant = await enseignantModel.findById(id)
+    const enseignantModel = await getEnseignantModel(dbName);
+    const enseignant = await enseignantModel
+      .findById(id)
       .populate("specilaite")
       .populate("grade")
       .populate("poste")
       .populate("departements");
-    return enseignant
-  }
-  catch (error) {
-    console.error('Error fetching enseignant:', error);
+    return enseignant;
+  } catch (error) {
+    console.error("Error fetching enseignant:", error);
     throw error;
   }
-
 };
 
-// DAO: Handle multiple papier_administratif IDs from different parent documents
-// const assignPapierToTeacher = async (enseignantId, papierIds) => {
-//   try {
-//     const enseignant = await enseignantModel.findById(enseignantId);
-//     if (!enseignant) {
-//       throw new Error('Teacher not found');
-//     }
-
-//     console.log('Teacher found:', enseignant);
-
-//     // Query PapierAdministratif documents based on the given papierIds
-//     const papierAdministratifs = await PapierAdministratif.find({
-//       _id: { $in: papierIds }
-//     });
-
-//     if (!papierAdministratifs.length) {
-//       throw new Error('No Papier Administratif documents found');
-//     }
-
-//     console.log('PapierAdministratifs found:', papierAdministratifs);
-
-//     // Create a set to hold unique file IDs to avoid duplicates
-//     const uniqueFileIds = new Set();
-
-//     // Iterate over the found PapierAdministratif documents and add their _id
-//     papierAdministratifs.forEach(papier => {
-//       uniqueFileIds.add(papier._id);
-//     });
-
-//     // Convert the set to an array
-//     const uniqueFileIdArray = Array.from(uniqueFileIds);
-
-//     // Add unique sub-document IDs to the teacher's files_papier_administratif
-//     uniqueFileIdArray.forEach(fileId => {
-//       if (!enseignant.files_papier_administratif.includes(fileId)) {
-//         enseignant.files_papier_administratif.push(fileId);
-//       }
-//     });
-
-//     // Save the updated teacher
-//     await enseignant.save();
-
-//     return enseignant.populate('files_papier_administratif');
-//   } catch (error) {
-//     throw new Error('Error while assigning Papier Administratif to Teacher: ' + error.message);
-//   }
-// };
-
-// const assignPapierToTeacher = async (enseignantId, papierIds) => {
-//   try {
-//     const enseignant = await enseignantModel.findById(enseignantId);
-//     if (!enseignant) {
-//       throw new Error('Teacher not found');
-//     }
-
-//     // Retrieve the PapierAdministratif documents based on the given IDs
-//     const papierAdministratifs = await PapierAdministratif.find({ _id: { $in: papierIds } });
-//     if (papierAdministratifs.length === 0) {
-//       throw new Error('No Papier Administratif documents found');
-//     }
-
-//     // Create a set to track unique file IDs
-//     const uniqueFileIds = new Set(papierAdministratifs.map(papier => papier._id));
-
-//     // Add unique IDs to the teacher's files_papier_administratif array
-//     uniqueFileIds.forEach(fileId => {
-//       if (!enseignant.files_papier_administratif.includes(fileId)) {
-//         enseignant.files_papier_administratif.push(fileId);
-//       }
-//     });
-
-//     // Save the updated teacher document
-//     await enseignant.save();
-
-//     // Return the enseignant document populated with the associated papier_administratif files
-//     return enseignant.populate('files_papier_administratif');
-//   } catch (error) {
-//     throw new Error('Error while assigning Papier Administratif to Teacher: ' + error.message);
-//   }
-// };
-
-const assignPapierToTeacher = async (paperData, teacherId) => {
+const assignPapierToTeacher = async (paperData, teacherId, dbName) => {
   try {
     if (!teacherId || !Array.isArray(paperData) || paperData.length === 0) {
       throw new Error("Invalid input: Teacher ID or paper data");
     }
-
+    const enseignantModel = await getEnseignantModel(dbName);
+    const PapierAdministratif = await getPapierAdministratifModel(dbName);
     const paperIds = paperData.map((paper) => {
       if (!paper.papier_administratif) {
         throw new Error("Invalid papier_administratif ID");
@@ -159,8 +105,9 @@ const assignPapierToTeacher = async (paperData, teacherId) => {
   }
 };
 
-const fetchAllTeachersPeriods = async () => {
+const fetchAllTeachersPeriods = async (dbName) => {
   try {
+    const teacherPeriodModel = await getTeacherPeriodtModel(dbName);
     const teachersPeriods = await teacherPeriodModel
       .find()
       .populate("id_teacher")
@@ -173,30 +120,30 @@ const fetchAllTeachersPeriods = async () => {
     );
   }
 };
-const getTeachersGroupedByGrade = async () => {
+const getTeachersGroupedByGrade = async (dbName) => {
   try {
+    const enseignantModel = await getEnseignantModel(dbName);
     const teachersByGrade = await enseignantModel.aggregate([
-      // Join the Grade collection
       {
         $lookup: {
-          from: "gradeenseignants", // Collection name for Grade
-          localField: "grade", // Field in the enseignant collection
-          foreignField: "_id", // Field in the grade collection
-          as: "GradeDetails", // Output array field
+          from: "gradeenseignants",
+          localField: "grade",
+          foreignField: "_id",
+          as: "GradeDetails",
         },
       },
-      // Unwind the GradeDetails array
+
       {
         $unwind: {
           path: "$GradeDetails",
           preserveNullAndEmptyArrays: true,
         },
       },
-      // Group enseignants by grade
+
       {
         $group: {
-          _id: "$GradeDetails._id", // Group by grade's ID
-          gradeLabel: { $first: "$GradeDetails" }, // grade's name
+          _id: "$GradeDetails._id",
+          gradeLabel: { $first: "$GradeDetails" },
           teachers: {
             $push: {
               id: "$_id",
@@ -205,17 +152,13 @@ const getTeachersGroupedByGrade = async () => {
           },
         },
       },
-      // // Optionally sort by author's name
-      // {
-      //   $sort: { gradeLabel: 1 },
-      // },
       {
         $project: {
           _id: 1,
           gradeLabel: 1,
           teachers: {
             $filter: {
-              input: "$teachers", // Filter to remove null posts
+              input: "$teachers",
               as: "teacher",
               cond: { $ne: ["$$teacher.id", null] },
             },
@@ -230,8 +173,9 @@ const getTeachersGroupedByGrade = async () => {
   }
 };
 
-const getTeacherByCIN = async (cin_teacher) => {
+const getTeacherByCIN = async (cin_teacher, dbName) => {
   try {
+    const enseignantModel = await getEnseignantModel(dbName);
     const teacher = await enseignantModel.findOne({
       num_cin: cin_teacher,
     });
@@ -242,7 +186,8 @@ const getTeacherByCIN = async (cin_teacher) => {
   }
 };
 
-const updateJwtToken = async (id, token) => {
+const updateJwtToken = async (id, token, dbName) => {
+  const enseignantModel = await getEnseignantModel(dbName);
   return await enseignantModel.findByIdAndUpdate(
     { _id: id },
     {
@@ -253,9 +198,14 @@ const updateJwtToken = async (id, token) => {
   );
 };
 
-const logoutTeacher = async (teacherId) => {
+const logoutTeacher = async (teacherId, dbName) => {
   try {
-    return await enseignantModel.findByIdAndUpdate(teacherId, { api_token: null }, { new: true });
+    const enseignantModel = await getEnseignantModel(dbName);
+    return await enseignantModel.findByIdAndUpdate(
+      teacherId,
+      { api_token: null },
+      { new: true }
+    );
   } catch (error) {
     console.error("Error logging out teacher:", error);
     throw error;
@@ -273,5 +223,5 @@ module.exports = {
   getTeachersGroupedByGrade,
   getTeacherByCIN,
   updateJwtToken,
-  logoutTeacher
+  logoutTeacher,
 };

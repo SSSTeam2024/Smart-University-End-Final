@@ -1,6 +1,10 @@
 const CourrierEntrantServices = require("../../services/CourrierEntrantServices/CourrierEntrantServices");
 const globalFunctions = require("../../utils/globalFunctions");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addCourrierEntrant = async (req, res) => {
   try {
     const {
@@ -44,7 +48,8 @@ const addCourrierEntrant = async (req, res) => {
         date_livraison,
         file,
       },
-      documents
+      documents,
+      useNewDb(req)
     );
     res.json(CourrierEntrant);
   } catch (error) {
@@ -102,7 +107,8 @@ const updateCourrierEntrantById = async (req, res) => {
       await CourrierEntrantServices.updateCourrierEntrant(
         CourrierEntrantId,
         courrierEntrantBody,
-        documents
+        documents,
+        useNewDb(req)
       );
 
     if (!updatedCourrierEntrant) {
@@ -117,8 +123,9 @@ const updateCourrierEntrantById = async (req, res) => {
 
 const getAllCourrierEntrant = async (req, res) => {
   try {
-    const CourrierEntrant =
-      await CourrierEntrantServices.getAllCourrierEntrant();
+    const CourrierEntrant = await CourrierEntrantServices.getAllCourrierEntrant(
+      useNewDb(req)
+    );
     res.json(CourrierEntrant);
   } catch (error) {
     console.error(error);
@@ -129,7 +136,7 @@ const getAllCourrierEntrant = async (req, res) => {
 const getLastCourrierEntrant = async (req, res) => {
   try {
     const lastCourrierEntrant =
-      await CourrierEntrantServices.getLastCourrierEntrant();
+      await CourrierEntrantServices.getLastCourrierEntrant(useNewDb(req));
     if (!lastCourrierEntrant) {
       return res.status(404).json({ message: "No courrier entrant found" });
     }
@@ -145,7 +152,10 @@ const deleteCourrierEntrantById = async (req, res) => {
     const CourrierEntrantId = req.params.id;
 
     const deletedCourrierEntrant =
-      await CourrierEntrantServices.deleteCourrierEntrant(CourrierEntrantId);
+      await CourrierEntrantServices.deleteCourrierEntrant(
+        CourrierEntrantId,
+        useNewDb(req)
+      );
 
     if (!deletedCourrierEntrant) {
       return res.status(404).send("Courrier Entrant not found");

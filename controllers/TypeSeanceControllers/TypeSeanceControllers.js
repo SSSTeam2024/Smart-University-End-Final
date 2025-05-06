@@ -1,15 +1,22 @@
 const typeSeanceService = require("../../services/TypeSeanceServices/TypeSeanceServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const createTypeSeance = async (req, res) => {
   try {
     const { seance_ar, seance_fr, abreviation, charge } = req.body;
-   
-    const typeSeanceJson = await typeSeanceService.createTypeSeance({
-      seance_ar,
-      seance_fr,
-      abreviation,
-      charge,
-    });
+
+    const typeSeanceJson = await typeSeanceService.createTypeSeance(
+      {
+        seance_ar,
+        seance_fr,
+        abreviation,
+        charge,
+      },
+      useNewDb(req)
+    );
     res.json(typeSeanceJson);
   } catch (error) {
     console.error(error);
@@ -18,12 +25,16 @@ const createTypeSeance = async (req, res) => {
 const updateTypeSeance = async (req, res) => {
   try {
     const { _id, seance_ar, seance_fr, abreviation, charge } = req.body;
-    const updatedTypeSeance = await typeSeanceService.updateTypeSeance(_id, {
-      seance_ar,
-      seance_fr,
-      abreviation,
-      charge,
-    });
+    const updatedTypeSeance = await typeSeanceService.updateTypeSeance(
+      _id,
+      {
+        seance_ar,
+        seance_fr,
+        abreviation,
+        charge,
+      },
+      useNewDb(req)
+    );
 
     if (!updatedTypeSeance) {
       return res.status(404).send("Type Seance not found!");
@@ -38,7 +49,7 @@ const updateTypeSeance = async (req, res) => {
 
 const getTypeSeances = async (req, res) => {
   try {
-    const typeSeances = await typeSeanceService.getTypeSeances();
+    const typeSeances = await typeSeanceService.getTypeSeances(useNewDb(req));
     res.json(typeSeances);
   } catch (error) {
     console.error(error);
@@ -51,7 +62,8 @@ const deleteTypeSeance = async (req, res) => {
     const typeSeanceId = req.params.id;
 
     const deletedTypeSeance = await typeSeanceService.deleteTypeSeance(
-      typeSeanceId
+      typeSeanceId,
+      useNewDb(req)
     );
 
     if (!deletedTypeSeance) {

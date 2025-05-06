@@ -1,10 +1,19 @@
-const personnelModel = require("../../model/PersonnelModel/PersonnelModel");
+const personnelSchema = require("../../model/PersonnelModel/PersonnelModel");
 
-const createPersonnel = async (personnel) => {
+function getPersonnelModel(dbConnection) {
+  return (
+    dbConnection.models.Personnel ||
+    dbConnection.model("Personnel", personnelSchema)
+  );
+}
+
+const createPersonnel = async (personnel, dbName) => {
+  const personnelModel = getPersonnelModel(dbName);
   return await personnelModel.create(personnel);
 };
 
-const getPersonnels = async () => {
+const getPersonnels = async (dbName) => {
+  const personnelModel = getPersonnelModel(dbName);
   return await personnelModel
     .find()
     .populate("etat_compte")
@@ -14,15 +23,18 @@ const getPersonnels = async () => {
     .populate("service");
 };
 
-const updatePersonnel = async (id, updateData) => {
+const updatePersonnel = async (id, updateData, dbName) => {
+  const personnelModel = getPersonnelModel(dbName);
   return await personnelModel.findByIdAndUpdate(id, updateData, { new: true });
 };
 
-const deletePersonnel = async (id) => {
+const deletePersonnel = async (id, dbName) => {
+  const personnelModel = getPersonnelModel(dbName);
   return await personnelModel.findByIdAndDelete(id);
 };
 
-const getPersonnelById = async (id) => {
+const getPersonnelById = async (id, dbName) => {
+  const personnelModel = getPersonnelModel(dbName);
   return await personnelModel
     .findById(id)
     .populate("etat_compte")
@@ -32,8 +44,9 @@ const getPersonnelById = async (id) => {
     .populate("service");
 };
 
-const assignPapierToPersonnel = async (personnelId, papierIds) => {
+const assignPapierToPersonnel = async (personnelId, papierIds, dbName) => {
   try {
+    const personnelModel = getPersonnelModel(dbName);
     const personnel = await personnelModel.findById(personnelId);
     if (!personnel) {
       throw new Error("Personnel not found");

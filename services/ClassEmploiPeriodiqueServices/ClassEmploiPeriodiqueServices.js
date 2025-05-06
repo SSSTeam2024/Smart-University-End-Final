@@ -2,21 +2,26 @@ const classEmploiPeriodiqueDao = require("../../dao/ClassEmploiPeriodiqueDao/Cla
 const sessionService = require("../../services/SeanceServices/SeanceServices");
 const sessionDao = require("../../dao/SeanceDao/SeanceDao");
 const teacherPeriodService = require("../../services/TeacherPeriodServices/TeacherPeriodServices");
+const { getDb } = require("../../config/dbSwitcher");
 
-const createClassEmploiPeriodique = async (params) => {
+const createClassEmploiPeriodique = async (params, useNew) => {
   try {
+    const db = await getDb(useNew);
     const lastActiveSchedule =
       await classEmploiPeriodiqueDao.getClassEmploiPeriodiqueByState(
         params.id_classe,
-        params.semestre
+        params.semestre,
+        db
       );
     let creationResult =
-      await classEmploiPeriodiqueDao.createClassEmploiPeriodique(params);
+      await classEmploiPeriodiqueDao.createClassEmploiPeriodique(params, db);
     if (lastActiveSchedule.length > 0) {
-      console.log("not first one");
       let lastActiveScheduleSessions =
-        await sessionService.getAllSeancesByIdEmploi(lastActiveSchedule[0]._id);
-      await cloneSessions(lastActiveScheduleSessions, creationResult._id);
+        await sessionService.getAllSeancesByIdEmploi(
+          lastActiveSchedule[0]._id,
+          db
+        );
+      await cloneSessions(lastActiveScheduleSessions, creationResult._id, db);
     }
 
     return creationResult;
@@ -26,7 +31,8 @@ const createClassEmploiPeriodique = async (params) => {
   }
 };
 
-const cloneSessions = async (sessions, periodicScheduleId) => {
+const cloneSessions = async (sessions, periodicScheduleId, useNew) => {
+  const db = await getDb(useNew);
   if (sessions.length > 0) {
     for (const element of sessions) {
       let session = {
@@ -46,22 +52,20 @@ const cloneSessions = async (sessions, periodicScheduleId) => {
         session.heure_debut,
         session.heure_fin
       );
-      console.log("hoursNumber: ", hoursNumber);
 
       let result = await teacherPeriodService.getTeacherPeriodByIdClassPeriod(
         periodicScheduleId,
-        session.enseignant._id
+        session.enseignant._id,
+        db
       );
 
-      console.log("result", result);
-
       if (result.length > 0) {
-        console.log(result[0].nbr_heure);
         let newHoursNumber = hoursNumber + Number(result[0].nbr_heure);
-        console.log("newHoursNumber: ", String(newHoursNumber));
+
         await teacherPeriodService.updateTeacherPeriod(
           result[0]._id,
-          String(newHoursNumber)
+          String(newHoursNumber),
+          db
         );
       } else {
         const req_data = {
@@ -70,7 +74,7 @@ const cloneSessions = async (sessions, periodicScheduleId) => {
           nbr_heure: String(hoursNumber),
           semestre: session.semestre,
         };
-        await teacherPeriodService.createTeacherPeriod(req_data);
+        await teacherPeriodService.createTeacherPeriod(req_data, db);
       }
       await sessionDao.createSeance(session);
     }
@@ -93,22 +97,29 @@ const getHoursNumber = (start, end) => {
   return durationMinutes / 60;
 };
 
-const updateClassEmploiPeriodique = async (id, updateData) => {
+const updateClassEmploiPeriodique = async (id, updateData, useNew) => {
   return await classEmploiPeriodiqueDao.updateClassEmploiPeriodique(
     id,
-    updateData
+    updateData,
+    db
   );
 };
 
-const getClassEmploiPeriodique = async (id) => {
-  const result = await classEmploiPeriodiqueDao.getClassEmploiPeriodique(id);
+const getClassEmploiPeriodique = async (id, useNew) => {
+  const db = await getDb(useNew);
+  const result = await classEmploiPeriodiqueDao.getClassEmploiPeriodique(
+    id,
+    db
+  );
   return result;
 };
 
-const getEmploiPeriodiqueByClasse = async (classId, semestre) => {
+const getEmploiPeriodiqueByClasse = async (classId, semestre, useNew) => {
+  const db = await getDb(useNew);
   const result = await classEmploiPeriodiqueDao.getEmploiPeriodiqueByClass(
     classId,
-    semestre
+    semestre,
+    db
   );
   return result;
 };

@@ -1,8 +1,15 @@
-const PapierAdministratif = require('../../model/PapierAdministratif/PapierAdministratifModel');
+const papierAdministratifSchema = require("../../model/PapierAdministratif/PapierAdministratifModel");
 
+function getPapierAdministratifModel(dbConnection) {
+  return (
+    dbConnection.models.PapierAdministratif ||
+    dbConnection.model("PapierAdministratif", papierAdministratifSchema)
+  );
+}
 
-const addPapierAdministratif = async (papier_administratif) => {
+const addPapierAdministratif = async (papier_administratif, dbName) => {
   try {
+    const PapierAdministratif = await getPapierAdministratifModel(dbName);
     const papier = await PapierAdministratif.create(papier_administratif);
     return papier;
   } catch (error) {
@@ -10,31 +17,33 @@ const addPapierAdministratif = async (papier_administratif) => {
   }
 };
 
-
-const getPapierAdministratifs = async () => {
+const getPapierAdministratifs = async (dbName) => {
+  const PapierAdministratif = await getPapierAdministratifModel(dbName);
   const result = await PapierAdministratif.find();
   return result;
 };
 
-
-const  updatePapierAdministratif = async (id, updateData) => {
-  return await PapierAdministratif.findByIdAndUpdate(id, updateData, { new: true });
+const updatePapierAdministratif = async (id, updateData, dbName) => {
+  const PapierAdministratif = await getPapierAdministratifModel(dbName);
+  return await PapierAdministratif.findByIdAndUpdate(id, updateData, {
+    new: true,
+  });
 };
 
-const deletePapierAdministratif = async (id) => {
+const deletePapierAdministratif = async (id, dbName) => {
+  const PapierAdministratif = await getPapierAdministratifModel(dbName);
   return await PapierAdministratif.findByIdAndDelete(id);
 };
 
-const getPapierAdministratifById = async (id) => {
+const getPapierAdministratifById = async (id, dbName) => {
+  const PapierAdministratif = await getPapierAdministratifModel(dbName);
   return await PapierAdministratif.findById(id);
 };
-
-
 
 module.exports = {
   addPapierAdministratif,
   getPapierAdministratifById,
   deletePapierAdministratif,
   updatePapierAdministratif,
-  getPapierAdministratifs
+  getPapierAdministratifs,
 };

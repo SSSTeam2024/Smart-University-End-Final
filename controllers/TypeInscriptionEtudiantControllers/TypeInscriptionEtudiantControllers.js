@@ -1,17 +1,24 @@
 const typeInscriptionEtudiantService = require("../../services/TypeInscriptionEtudiantServices/TypeInscriptionEtudiantServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addTypeInscriptionEtudiant = async (req, res) => {
   try {
     const { value_type_inscription, type_ar, type_fr, files_type_inscription } =
       req.body;
 
     const typeInscriptionEtudiant =
-      await typeInscriptionEtudiantService.registerTypeInscriptionEtudiantt({
-        value_type_inscription,
-        type_ar,
-        type_fr,
-        files_type_inscription,
-      });
+      await typeInscriptionEtudiantService.registerTypeInscriptionEtudiantt(
+        {
+          value_type_inscription,
+          type_ar,
+          type_fr,
+          files_type_inscription,
+        },
+        useNewDb(req)
+      );
     res.json(typeInscriptionEtudiant);
   } catch (error) {
     console.error(error);
@@ -37,7 +44,8 @@ const updateTypeInscriptionEtudiantById = async (req, res) => {
           type_ar,
           type_fr,
           files_type_inscription,
-        }
+        },
+        useNewDb(req)
       );
 
     if (!updatedTypeInscriptionEtudiant) {
@@ -56,7 +64,8 @@ const getTypeInscriptionEtudiantById = async (req, res) => {
 
     const gettypeInscriptionEtudiant =
       await typeInscriptionEtudiantService.getTypeInscriptionEtudianttDaoById(
-        typeInscriptionEtudiantId
+        typeInscriptionEtudiantId,
+        useNewDb(req)
       );
 
     if (!gettypeInscriptionEtudiant) {
@@ -71,7 +80,9 @@ const getTypeInscriptionEtudiantById = async (req, res) => {
 const getAllTypeInscriptionEtudiantt = async (req, res) => {
   try {
     const typeInscriptionEtudiants =
-      await typeInscriptionEtudiantService.getTypeInscriptionsEtudianttDao();
+      await typeInscriptionEtudiantService.getTypeInscriptionsEtudianttDao(
+        useNewDb(req)
+      );
     res.json(typeInscriptionEtudiants);
   } catch (error) {
     console.error(error);
@@ -85,7 +96,8 @@ const deleteTypeInscriptionEtudianttById = async (req, res) => {
 
     const deletedTypeInscriptionEtudiant =
       await typeInscriptionEtudiantService.deleteTypeInscriptionEtudianttDao(
-        typeInscriptionEtudianttId
+        typeInscriptionEtudianttId,
+        useNewDb(req)
       );
 
     if (!typeInscriptionEtudianttId) {
@@ -101,7 +113,7 @@ const deleteTypeInscriptionEtudianttById = async (req, res) => {
 const getTypeInscriptionByValue = async (req, res) => {
   try {
     const { type_fr, type_ar } = req.body;
-    
+
     if (!type_fr || !type_ar) {
       return res
         .status(400)
@@ -109,10 +121,13 @@ const getTypeInscriptionByValue = async (req, res) => {
     }
 
     const typeValue =
-      await typeInscriptionEtudiantService.getTypeInscriptionByValue({
-        type_fr,
-        type_ar,
-      });
+      await typeInscriptionEtudiantService.getTypeInscriptionByValue(
+        {
+          type_fr,
+          type_ar,
+        },
+        useNewDb(req)
+      );
 
     if (!typeValue) {
       return res.json(null);

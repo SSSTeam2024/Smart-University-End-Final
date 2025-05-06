@@ -1,29 +1,35 @@
 const fs = require("fs");
 const CourrierEntrantDao = require("../../dao/CourrierEntrantDao/CourrierEntrantDao");
 const globalFunctions = require("../../utils/globalFunctions");
+const { getDb } = require("../../config/dbSwitcher");
 
-const createCourrierEntrant = async (courrierEntrant, documents) => {
+const createCourrierEntrant = async (courrierEntrant, documents, useNew) => {
+  const db = await getDb(useNew);
   let saveResult = await saveDocumentsToServer(documents);
-  return await CourrierEntrantDao.createCourrierEntrant(courrierEntrant);
+  return await CourrierEntrantDao.createCourrierEntrant(courrierEntrant, db);
 };
 
-const updateCourrierEntrant = async (id, updateData, documents) => {
+const updateCourrierEntrant = async (id, updateData, documents, useNew) => {
+  const db = await getDb(useNew);
   let saveResult = await saveDocumentsToServer(documents);
-  return await CourrierEntrantDao.updateCourrierEntrant(id, updateData);
+  return await CourrierEntrantDao.updateCourrierEntrant(id, updateData, db);
 };
 
-const getAllCourrierEntrant = async () => {
-  const result = await CourrierEntrantDao.getCourrierEntrants();
+const getAllCourrierEntrant = async (useNew) => {
+  const db = await getDb(useNew);
+  const result = await CourrierEntrantDao.getCourrierEntrants(db);
   return result;
 };
 
-const getLastCourrierEntrant = async () => {
-  const result = await CourrierEntrantDao.getLastCourrierEntrant();
+const getLastCourrierEntrant = async (useNew) => {
+  const db = await getDb(useNew);
+  const result = await CourrierEntrantDao.getLastCourrierEntrant(db);
   return result;
 };
 
-const deleteCourrierEntrant = async (id) => {
-  return await CourrierEntrantDao.deleteCourrierEntrant(id);
+const deleteCourrierEntrant = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await CourrierEntrantDao.deleteCourrierEntrant(id, db);
 };
 
 async function saveFile(base64String, fileName, file_path) {

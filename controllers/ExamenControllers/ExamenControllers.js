@@ -1,5 +1,9 @@
 const examenService = require("../../services/ExamenServices/ExamenServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const createExamen = async (req, res) => {
   try {
     const {
@@ -12,15 +16,18 @@ const createExamen = async (req, res) => {
       epreuve,
     } = req.body;
 
-    const examen = await examenService.createExamen({
-      annee_universitaire,
-      semestre,
-      session,
-      type_examen,
-      period,
-      group_enseignant,
-      epreuve,
-    });
+    const examen = await examenService.createExamen(
+      {
+        annee_universitaire,
+        semestre,
+        session,
+        type_examen,
+        period,
+        group_enseignant,
+        epreuve,
+      },
+      useNewDb(req)
+    );
     res.json(examen);
   } catch (error) {
     console.error(error);
@@ -40,15 +47,19 @@ const updateExamenById = async (req, res) => {
       epreuve,
     } = req.body;
 
-    const updatedExamen = await examenService.updateExamen(examenId, {
-      annee_universitaire,
-      semestre,
-      session,
-      type_examen,
-      period,
-      enseignant,
-      epreuve,
-    });
+    const updatedExamen = await examenService.updateExamen(
+      examenId,
+      {
+        annee_universitaire,
+        semestre,
+        session,
+        type_examen,
+        period,
+        enseignant,
+        epreuve,
+      },
+      useNewDb(req)
+    );
 
     if (!updatedExamen) {
       return res.status(404).send("Examen not found!");
@@ -64,7 +75,10 @@ const getExamenById = async (req, res) => {
   try {
     const examenId = req.params.id;
 
-    const getExamen = await examenService.getExamenById(examenId);
+    const getExamen = await examenService.getExamenById(
+      examenId,
+      useNewDb(req)
+    );
 
     if (!getExamen) {
       return res.status(404).send("Examen not found");
@@ -76,9 +90,19 @@ const getExamenById = async (req, res) => {
   }
 };
 
+// const getExamens = async (req, res) => {
+//   try {
+//     const examens = await examenService.getAllExamens();
+//     res.json(examens);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send(error.message);
+//   }
+// };
+
 const getExamens = async (req, res) => {
   try {
-    const examens = await examenService.getAllExamens();
+    const examens = await examenService.getAllExamens(useNewDb(req));
     res.json(examens);
   } catch (error) {
     console.error(error);
@@ -90,7 +114,10 @@ const deleteExamenById = async (req, res) => {
   try {
     const examenId = req.params.id;
 
-    const deletedExamen = await examenService.deleteExamen(examenId);
+    const deletedExamen = await examenService.deleteExamen(
+      useNewDb(req),
+      examenId
+    );
 
     if (!deletedExamen) {
       return res.status(404).send("Examen not found");
@@ -109,7 +136,8 @@ const getExamensBySemesterAndRegime = async (req, res) => {
     // Call the service function
     const examens = await examenService.getExamensBySemesterAndRegime(
       semester,
-      regime
+      regime,
+      useNewDb(req)
     );
 
     // Send the response
@@ -130,16 +158,19 @@ const editCalendrierExamens = async (req, res) => {
       nbre_exclus,
       notes,
     } = req.body;
-    
-    const sentResult = await examenService.editCalendrierExamens({
-      id_Calendrier,
-      epreuveId,
-      epreuve_status,
-      nbre_present,
-      nbre_absent,
-      nbre_exclus,
-      notes,
-    });
+
+    const sentResult = await examenService.editCalendrierExamens(
+      {
+        id_Calendrier,
+        epreuveId,
+        epreuve_status,
+        nbre_present,
+        nbre_absent,
+        nbre_exclus,
+        notes,
+      },
+      useNewDb(req)
+    );
     res.json({ success: sentResult });
   } catch (error) {
     console.error(error);

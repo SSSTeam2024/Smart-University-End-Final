@@ -5,17 +5,15 @@ const cors = require("cors");
 const AppRouter = require("./routes/appRouter");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
 const path = require("path");
 
 const app = express();
 const httpServer = createServer(app);
 
-// Middleware setup
 dotenv.config();
 app.use(
   cors({
-    origin: "*", // or specify your frontend origin
+    origin: "*",
     optionsSuccessStatus: 200,
   })
 );
@@ -27,7 +25,6 @@ app.use(bodyParser.json());
 app.use("/files", express.static(path.join(__dirname, "files")));
 app.use("/api", AppRouter);
 
-// Endpoint to generate PDF from HTML
 app.post("/generate-pdf", async (req, res) => {
   const { htmlContent } = req.body;
 
@@ -50,7 +47,6 @@ app.post("/generate-pdf", async (req, res) => {
 
     await browser.close();
 
-    // Set the response headers to download the PDF
     res.set({
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename=generated-document.pdf`,
@@ -63,13 +59,6 @@ app.post("/generate-pdf", async (req, res) => {
   }
 });
 
-// MongoDB connection
-mongoose
-  .connect(process.env.MONGO_URL, {})
-  .then(() => console.log("MongoDB connected!"))
-  .catch((err) => console.log(err));
-
-// Start server
 httpServer.listen(7000, () => {
   console.log("Backend server is running!");
 });

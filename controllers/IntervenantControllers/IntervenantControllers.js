@@ -1,5 +1,9 @@
 const IntervenantServices = require("../../services/IntervenantServices/IntervenantServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addIntervenant = async (req, res) => {
   try {
     const {
@@ -14,17 +18,20 @@ const addIntervenant = async (req, res) => {
       abbreviation,
     } = req.body;
 
-    const Intervenant = await IntervenantServices.createIntervenant({
-      nom_fr,
-      nom_ar,
-      cin,
-      matricule,
-      phone,
-      email,
-      site,
-      address,
-      abbreviation,
-    });
+    const Intervenant = await IntervenantServices.createIntervenant(
+      {
+        nom_fr,
+        nom_ar,
+        cin,
+        matricule,
+        phone,
+        email,
+        site,
+        address,
+        abbreviation,
+      },
+      useNewDb(req)
+    );
     res.json(Intervenant);
   } catch (error) {
     console.error(error);
@@ -58,7 +65,8 @@ const updateIntervenantById = async (req, res) => {
         site,
         address,
         abbreviation,
-      }
+      },
+      useNewDb(req)
     );
 
     if (!updatedIntervenant) {
@@ -73,7 +81,9 @@ const updateIntervenantById = async (req, res) => {
 
 const getAllIntervenant = async (req, res) => {
   try {
-    const Intervenant = await IntervenantServices.getAllIntervenant();
+    const Intervenant = await IntervenantServices.getAllIntervenant(
+      useNewDb(req)
+    );
     res.json(Intervenant);
   } catch (error) {
     console.error(error);
@@ -86,7 +96,8 @@ const deleteIntervenantById = async (req, res) => {
     const IntervenantId = req.params.id;
 
     const deletedIntervenant = await IntervenantServices.deleteIntervenant(
-      IntervenantId
+      IntervenantId,
+      useNewDb(req)
     );
 
     if (!deletedIntervenant) {

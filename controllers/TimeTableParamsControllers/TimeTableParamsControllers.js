@@ -1,5 +1,9 @@
 const timeTableParamsService = require("../../services/TimeTableParamsServices/TimeTableParamsServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addTimeTableParams = async (req, res) => {
   try {
     const {
@@ -13,16 +17,19 @@ const addTimeTableParams = async (req, res) => {
       semestre2_start,
     } = req.body;
 
-    const timeTableParams = await timeTableParamsService.createTimeTableParams({
-      day_start_time,
-      day_end_time,
-      daily_pause_start,
-      daily_pause_end,
-      semestre1_end,
-      semestre1_start,
-      semestre2_end,
-      semestre2_start,
-    });
+    const timeTableParams = await timeTableParamsService.createTimeTableParams(
+      {
+        day_start_time,
+        day_end_time,
+        daily_pause_start,
+        daily_pause_end,
+        semestre1_end,
+        semestre1_start,
+        semestre2_end,
+        semestre2_start,
+      },
+      useNewDb(req)
+    );
     res.json(timeTableParams);
   } catch (error) {
     console.error(error);
@@ -43,16 +50,19 @@ const updateTimeTableParams = async (req, res) => {
     } = req.body;
 
     const updatedTimeTableParams =
-      await timeTableParamsService.updateTimeTableParams({
-        day_start_time,
-        day_end_time,
-        daily_pause_start,
-        daily_pause_end,
-        semestre1_end,
-        semestre1_start,
-        semestre2_end,
-        semestre2_start,
-      });
+      await timeTableParamsService.updateTimeTableParams(
+        {
+          day_start_time,
+          day_end_time,
+          daily_pause_start,
+          daily_pause_end,
+          semestre1_end,
+          semestre1_start,
+          semestre2_end,
+          semestre2_start,
+        },
+        useNewDb(req)
+      );
 
     if (!updatedTimeTableParams) {
       return res.status(404).send("Params not found!");
@@ -66,7 +76,9 @@ const updateTimeTableParams = async (req, res) => {
 
 const getTimeTableParams = async (req, res) => {
   try {
-    const params = await timeTableParamsService.getTimeTableParams();
+    const params = await timeTableParamsService.getTimeTableParams(
+      useNewDb(req)
+    );
     res.json(params);
   } catch (error) {
     console.error(error);

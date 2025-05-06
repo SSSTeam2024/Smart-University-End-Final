@@ -10,4 +10,4 @@ const teacherPeriodSchema = new mongoose.Schema({
   semestre: String,
 });
 
-module.exports = mongoose.model("TeacherPeriod", teacherPeriodSchema);
+module.exports = teacherPeriodSchema;

@@ -1,7 +1,15 @@
-const RattrapageModel = require("../../model/RattrapageModel/RattrapageModel");
+const RattrapageSchema = require("../../model/RattrapageModel/RattrapageModel");
 
-const createRattrapage = async (data) => {
+function getRattrapageModel(dbConnection) {
+  return (
+    dbConnection.models.Rattrapage ||
+    dbConnection.model("Rattrapage", RattrapageSchema)
+  );
+}
+
+const createRattrapage = async (data, dbName) => {
   try {
+    const RattrapageModel = await getRattrapageModel(dbName);
     return await RattrapageModel.create(data);
   } catch (error) {
     console.error("Error creating catch-up session:", error);
@@ -9,7 +17,8 @@ const createRattrapage = async (data) => {
   }
 };
 
-const getRattrapages = async () => {
+const getRattrapages = async (dbName) => {
+  const RattrapageModel = await getRattrapageModel(dbName);
   const result = await RattrapageModel.find()
     .populate("salle")
     .populate("classe")
@@ -18,8 +27,14 @@ const getRattrapages = async () => {
   return result;
 };
 
-const updateEtatAndStatusRattrapage = async (rattrapageId, etat, status) => {
+const updateEtatAndStatusRattrapage = async (
+  rattrapageId,
+  etat,
+  status,
+  dbName
+) => {
   try {
+    const RattrapageModel = await getRattrapageModel(dbName);
     const updatedRattrapage = await RattrapageModel.findByIdAndUpdate(
       rattrapageId,
       { etat, status },
@@ -34,15 +49,9 @@ const updateEtatAndStatusRattrapage = async (rattrapageId, etat, status) => {
   }
 };
 
-// const updateTypeSeance = async (id, updateData) => {
-//   return await TypeSeanceModel.findByIdAndUpdate(id, updateData, { new: true });
-// };
-
-// const deleteTypeSeance = async (id) => {
-//   return await TypeSeanceModel.findByIdAndDelete(id);
-// };
-const getRattrapagesByClassId = async (classId) => {
+const getRattrapagesByClassId = async (classId, dbName) => {
   try {
+    const RattrapageModel = await getRattrapageModel(dbName);
     return await RattrapageModel.find({ classe: classId })
       .populate("matiere")
       .populate("enseignant")
@@ -54,8 +63,9 @@ const getRattrapagesByClassId = async (classId) => {
   }
 };
 
-const getRattrapagesByTeacherId = async (teacherId) => {
+const getRattrapagesByTeacherId = async (teacherId, dbName) => {
   try {
+    const RattrapageModel = await getRattrapageModel(dbName);
     return await RattrapageModel.find({ enseignant: teacherId })
       .populate("matiere")
       .populate("enseignant")
@@ -66,10 +76,20 @@ const getRattrapagesByTeacherId = async (teacherId) => {
     throw error;
   }
 };
+
+const deleteManyRattrapages = async (dbName, ids) => {
+  const rattrapagesModel = await getRattrapageModel(dbName);
+  const query = {
+    _id: { $in: ids },
+  };
+  return await rattrapagesModel.deleteMany(query);
+};
+
 module.exports = {
   createRattrapage,
   getRattrapages,
   updateEtatAndStatusRattrapage,
   getRattrapagesByClassId,
-  getRattrapagesByTeacherId
+  getRattrapagesByTeacherId,
+  deleteManyRattrapages,
 };

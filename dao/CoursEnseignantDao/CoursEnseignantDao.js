@@ -1,7 +1,15 @@
-const CoursEnseignant = require("../../model/CoursEnseignantModel/CoursEnseignantModel");
+const CoursEnseignantSchema = require("../../model/CoursEnseignantModel/CoursEnseignantModel");
 
-const addCoursEnseignant = async (coursEnseignantData) => {
+function getCoursEnseignantModel(dbConnection) {
+  return (
+    dbConnection.models.CoursEnseignant ||
+    dbConnection.model("CoursEnseignant", CoursEnseignantSchema)
+  );
+}
+
+const addCoursEnseignant = async (coursEnseignantData, dbName) => {
   try {
+    const CoursEnseignant = await getCoursEnseignantModel(dbName);
     const newCoursEnseignant = await CoursEnseignant.create(
       coursEnseignantData
     );
@@ -11,45 +19,52 @@ const addCoursEnseignant = async (coursEnseignantData) => {
   }
 };
 
-const getCoursEnseignants = async () => {
+const getCoursEnseignants = async (dbName) => {
+  const CoursEnseignant = await getCoursEnseignantModel(dbName);
   const result = await CoursEnseignant.find()
     .populate("classe")
     .populate("enseignant");
   return result;
 };
 
-const updateCoursEnseignant = async (id, updateData) => {
+const updateCoursEnseignant = async (id, updateData, dbName) => {
+  const CoursEnseignant = await getCoursEnseignantModel(dbName);
   return await CoursEnseignant.findByIdAndUpdate(id, updateData, { new: true });
 };
 
-const deleteCoursEnseignant = async (id) => {
+const deleteCoursEnseignant = async (id, dbName) => {
+  const CoursEnseignant = await getCoursEnseignantModel(dbName);
   return await CoursEnseignant.findByIdAndDelete(id)
     .populate("classe")
     .populate("enseignant");
 };
 
-const getCoursEnseignantById = async (id) => {
+const getCoursEnseignantById = async (id, dbName) => {
+  const CoursEnseignant = await getCoursEnseignantModel(dbName);
   return await CoursEnseignant.findById(id);
 };
 
-const getCoursEnseignantByIdClasse = async (id) => {
+const getCoursEnseignantByIdClasse = async (id, dbName) => {
+  const CoursEnseignant = await getCoursEnseignantModel(dbName);
   return await CoursEnseignant.find({ classe: { $in: [id] } })
     .populate("classe")
     .populate("enseignant");
 };
 
-const getSupportCoursByTeacherId = async (enseignantId) => {
+const getSupportCoursByTeacherId = async (enseignantId, dbName) => {
   try {
+    const CoursEnseignant = await getCoursEnseignantModel(dbName);
     return await CoursEnseignant.find({ enseignant: enseignantId })
       .populate("enseignant")
-      .populate("classe")
+      .populate("classe");
   } catch (error) {
     console.error("Error fetching support cours by teacher ID:", error);
     throw error;
   }
 };
 
-const deleteSupportCoursEnseignant = async (id) => {
+const deleteSupportCoursEnseignant = async (id, dbName) => {
+  const CoursEnseignant = await getCoursEnseignantModel(dbName);
   return await CoursEnseignant.findByIdAndDelete(id);
 };
 
@@ -61,5 +76,5 @@ module.exports = {
   getCoursEnseignants,
   getCoursEnseignantByIdClasse,
   getSupportCoursByTeacherId,
-  deleteSupportCoursEnseignant
+  deleteSupportCoursEnseignant,
 };

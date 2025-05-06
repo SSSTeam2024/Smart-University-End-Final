@@ -1,54 +1,65 @@
-const avisEnseignantService = require('../../services/AvisEnseignantServices/AvisEnseignantServices');
+const avisEnseignantService = require("../../services/AvisEnseignantServices/AvisEnseignantServices");
 const globalFunctions = require("../../utils/globalFunctions");
-
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
 const createAvisEnseignant = async (req, res) => {
   try {
     const {
       title,
       description,
       auteurId,
-      departement=[],
+      departement = [],
       lien,
       pdfBase64String,
       pdfExtension,
-      galleryBase64Strings=[],
-      galleryExtensions=[],
-      date_avis
+      galleryBase64Strings = [],
+      galleryExtensions = [],
+      date_avis,
     } = req.body;
 
-   
     const pdfPath = "files/avisEnseignantFiles/pdf/";
     const galleryPath = "files/avisEnseignantFiles/photo/";
 
-    const pdfFilename = globalFunctions.generateUniqueFilename(pdfExtension, 'avisEnseignantPDF');
-    const galleryFilenames = galleryExtensions.map((ext, index) => 
-      globalFunctions.generateUniqueFilename(ext, `avisEnseignantPHOTO_${index}`)
+    const pdfFilename = globalFunctions.generateUniqueFilename(
+      pdfExtension,
+      "avisEnseignantPDF"
     );
-   
+    const galleryFilenames = galleryExtensions.map((ext, index) =>
+      globalFunctions.generateUniqueFilename(
+        ext,
+        `avisEnseignantPHOTO_${index}`
+      )
+    );
+
     let documents = [
       {
         base64String: pdfBase64String,
         name: pdfFilename,
         extension: pdfExtension,
-        path: pdfPath
+        path: pdfPath,
       },
       ...galleryBase64Strings.map((base64String, index) => ({
         base64String: base64String,
         extension: galleryExtensions[index],
         name: galleryFilenames[index],
-        path: galleryPath
-      }))
+        path: galleryPath,
+      })),
     ];
-    const avisEnseignant = await avisEnseignantService.createAvisEnseignant({
-      title,
-      description,
-      auteurId,
-      departement,
-      lien,
-      pdf: pdfFilename,
-      gallery: galleryFilenames,
-      date_avis
-    }, documents);
+    const avisEnseignant = await avisEnseignantService.createAvisEnseignant(
+      {
+        title,
+        description,
+        auteurId,
+        departement,
+        lien,
+        pdf: pdfFilename,
+        gallery: galleryFilenames,
+        date_avis,
+      },
+      documents,
+      useNewDb(req)
+    );
 
     res.status(201).json(avisEnseignant);
   } catch (error) {
@@ -59,7 +70,10 @@ const createAvisEnseignant = async (req, res) => {
 
 const getAllAvisEnseignants = async (req, res) => {
   try {
-    const avisEnseignants = await avisEnseignantService.getAllAvisEnseignants();
+    const avisEnseignants = await avisEnseignantService.getAllAvisEnseignants(
+      useNewDb(req)
+    );
+
     res.status(200).json(avisEnseignants);
   } catch (error) {
     console.error("Error fetching all AvisEnseignants:", error);
@@ -69,9 +83,12 @@ const getAllAvisEnseignants = async (req, res) => {
 
 const getAvisEnseignantById = async (req, res) => {
   try {
-    const avisEnseignant = await avisEnseignantService.getAvisEnseignantById(req.body._id);
+    const avisEnseignant = await avisEnseignantService.getAvisEnseignantById(
+      req.body._id,
+      useNewDb(req)
+    );
     if (!avisEnseignant) {
-      return res.status(404).json({ message: 'AvisEnseignant not found' });
+      return res.status(404).json({ message: "AvisEnseignant not found" });
     }
     res.status(200).json(avisEnseignant);
   } catch (error) {
@@ -82,84 +99,126 @@ const getAvisEnseignantById = async (req, res) => {
 
 const updateAvisEnseignant = async (req, res) => {
   try {
-      const {
-          _id,
-          title,
+    const {
+      _id,
+      title,
       description,
       auteurId,
-      departement=[],
+      departement = [],
       lien,
       pdfBase64String,
       pdfExtension,
-      galleryBase64Strings=[],
-      galleryExtensions=[],
-      date_avis
-      } = req.body;
+      galleryBase64Strings = [],
+      galleryExtensions = [],
+      date_avis,
+    } = req.body;
 
-      const pdfPath = "files/avisEnseignantFiles/pdf/";
-      const galleryPath = "files/avisEnseignantFiles/photo/";
+    const pdfPath = "files/avisEnseignantFiles/pdf/";
+    const galleryPath = "files/avisEnseignantFiles/photo/";
 
-      let documents = [];
-      
-      if (pdfBase64String && pdfExtension) {
-          const pdfFilename = globalFunctions.generateUniqueFilename(pdfExtension, 'AvisEnseignantPDF');
-          documents.push({
-              base64String: pdfBase64String,
-              name: pdfFilename,
-              extension: pdfExtension,
-              path: pdfPath
-          });
-      }
+    let documents = [];
 
-      if (galleryBase64Strings.length > 0 && galleryExtensions.length > 0) {
-          const galleryFilenames = galleryExtensions.map((ext, index) => 
-              globalFunctions.generateUniqueFilename(ext, `AvisEnseignantPHOTO_${index}`)
-          );
+    if (pdfBase64String && pdfExtension) {
+      const pdfFilename = globalFunctions.generateUniqueFilename(
+        pdfExtension,
+        "AvisEnseignantPDF"
+      );
+      documents.push({
+        base64String: pdfBase64String,
+        name: pdfFilename,
+        extension: pdfExtension,
+        path: pdfPath,
+      });
+    }
 
-          galleryBase64Strings.forEach((base64String, index) => {
-              documents.push({
-                  base64String: base64String,
-                  extension: galleryExtensions[index],
-                  name: galleryFilenames[index],
-                  path: galleryPath
-              });
-          });
-      }
+    if (galleryBase64Strings.length > 0 && galleryExtensions.length > 0) {
+      const galleryFilenames = galleryExtensions.map((ext, index) =>
+        globalFunctions.generateUniqueFilename(
+          ext,
+          `AvisEnseignantPHOTO_${index}`
+        )
+      );
 
-      const updatedAvisEnseignant = await avisEnseignantService.updateAvisEnseignant(_id, {
+      galleryBase64Strings.forEach((base64String, index) => {
+        documents.push({
+          base64String: base64String,
+          extension: galleryExtensions[index],
+          name: galleryFilenames[index],
+          path: galleryPath,
+        });
+      });
+    }
+
+    const updatedAvisEnseignant =
+      await avisEnseignantService.updateAvisEnseignant(
+        _id,
+        {
           title,
           description,
           category,
-          departement:[],
+          departement: [],
           auteurId,
           address,
           lien,
-          pdf: documents.find(doc => doc.path === pdfPath)?.name,
-          gallery: documents.filter(doc => doc.path === galleryPath).map(doc => doc.name),
-          date_avis
-      }, documents);
+          pdf: documents.find((doc) => doc.path === pdfPath)?.name,
+          gallery: documents
+            .filter((doc) => doc.path === galleryPath)
+            .map((doc) => doc.name),
+          date_avis,
+        },
+        documents,
+        useNewDb(req)
+      );
 
-      if (!updatedAvisEnseignant) {
-          return res.status(404).json({ message: 'Avis Enseignant not found' });
-      }
+    if (!updatedAvisEnseignant) {
+      return res.status(404).json({ message: "Avis Enseignant not found" });
+    }
 
-      res.status(200).json(updatedAvisEnseignant);
+    res.status(200).json(updatedAvisEnseignant);
   } catch (error) {
-      console.error("Error updating Avis Enseignant :", error);
-      res.status(500).json({ message: error.message });
+    console.error("Error updating Avis Enseignant :", error);
+    res.status(500).json({ message: error.message });
   }
 };
 
 const deleteAvisEnseignant = async (req, res) => {
   try {
-    const deletedAvisEnseignant = await avisEnseignantService.deleteAvisEnseignant(req.body._id);
+    const deletedAvisEnseignant =
+      await avisEnseignantService.deleteAvisEnseignant(
+        req.body._id,
+        useNewDb(req)
+      );
     if (!deletedAvisEnseignant) {
-      return res.status(404).json({ message: 'AvisEnseignant not found' });
+      return res.status(404).json({ message: "AvisEnseignant not found" });
     }
-    res.status(200).json({ message: 'AvisEnseignant deleted successfully' });
+    res.status(200).json({ message: "AvisEnseignant deleted successfully" });
   } catch (error) {
     console.error("Error deleting AvisEnseignant:", error);
     res.status(500).json({ message: error.message });
+  }
+};
+
+const deleteManyAvisEnseignants = async (req, res) => {
+  try {
+    const avisIds = req.body.ids;
+
+    if (!avisIds || avisIds.length === 0) {
+      return res.status(400).send("No IDs provided");
+    }
+
+    const deleteAvisResult = await avisEnseignantService.deleteAvisEnseignants(
+      useNewDb(req),
+      avisIds
+    );
+
+    if (deleteAvisResult.deletedCount === 0) {
+      return res.status(404).send("No Avis found with provided IDs");
+    }
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
   }
 };
 
@@ -168,5 +227,6 @@ module.exports = {
   getAllAvisEnseignants,
   getAvisEnseignantById,
   updateAvisEnseignant,
-  deleteAvisEnseignant
+  deleteAvisEnseignant,
+  deleteManyAvisEnseignants,
 };

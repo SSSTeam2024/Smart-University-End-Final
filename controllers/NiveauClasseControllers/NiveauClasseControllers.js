@@ -1,17 +1,24 @@
 const niveauClasseService = require("../../services/NiveauClasseServices/NiveauClasseServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addNiveauClasse = async (req, res) => {
   try {
     const { abreviation, name_niveau_fr, name_niveau_ar, sections, cycles } =
       req.body;
 
-    const niveauClasse = await niveauClasseService.registerNiveauClasse({
-      abreviation,
-      name_niveau_fr,
-      name_niveau_ar,
-      sections,
-      cycles,
-    });
+    const niveauClasse = await niveauClasseService.registerNiveauClasse(
+      {
+        abreviation,
+        name_niveau_fr,
+        name_niveau_ar,
+        sections,
+        cycles,
+      },
+      useNewDb(req)
+    );
     res.json(niveauClasse);
   } catch (error) {
     console.error(error);
@@ -32,7 +39,8 @@ const updateNiveauClasseById = async (req, res) => {
         name_niveau_ar,
         sections,
         cycles,
-      }
+      },
+      useNewDb(req)
     );
 
     if (!updatedNiveauClasse) {
@@ -50,7 +58,8 @@ const getNiveauClasseById = async (req, res) => {
     const niveauClasseId = req.params.id;
 
     const getNiveauClasse = await niveauClasseService.getNiveauClasseDaoById(
-      niveauClasseId
+      niveauClasseId,
+      useNewDb(req)
     );
 
     if (!getNiveauClasse) {
@@ -64,7 +73,9 @@ const getNiveauClasseById = async (req, res) => {
 };
 const getAllNiveauxClasse = async (req, res) => {
   try {
-    const niveauxClasse = await niveauClasseService.getNiveauxClasseDao();
+    const niveauxClasse = await niveauClasseService.getNiveauxClasseDao(
+      useNewDb(req)
+    );
     res.json(niveauxClasse);
   } catch (error) {
     console.error(error);
@@ -77,7 +88,8 @@ const deleteNiveauClasseById = async (req, res) => {
     const niveauClasseId = req.params.id;
 
     const deletedNiveauClasse = await niveauClasseService.deleteNiveauClasse(
-      niveauClasseId
+      niveauClasseId,
+      useNewDb(req)
     );
 
     if (!deletedNiveauClasse) {
@@ -95,7 +107,8 @@ async function getSectionsByIdNiveau(req, res) {
 
   try {
     const sections = await niveauClasseService.getSectionsByIdNiveau(
-      niveauClasseId
+      niveauClasseId,
+      useNewDb(req)
     );
     res.status(200).json(sections);
   } catch (error) {
@@ -108,7 +121,8 @@ async function getCyclesByIdNiveau(req, res) {
 
   try {
     const cycles = await niveauClasseService.getCyclesByIdNiveau(
-      niveauClasseId
+      niveauClasseId,
+      useNewDb(req)
     );
     res.status(200).json(cycles);
   } catch (error) {
@@ -126,10 +140,13 @@ const getNiveauByValue = async (req, res) => {
         .json({ message: "name_niveau_fr and name_niveau_ar are required" });
     }
 
-    const niveauValue = await niveauClasseService.getNiveauByValue({
-      name_niveau_fr,
-      name_niveau_ar,
-    });
+    const niveauValue = await niveauClasseService.getNiveauByValue(
+      {
+        name_niveau_fr,
+        name_niveau_ar,
+      },
+      useNewDb(req)
+    );
 
     if (!niveauValue) {
       return res.json(null);

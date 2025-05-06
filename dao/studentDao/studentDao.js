@@ -1,10 +1,20 @@
-const etudiantModel = require("../../model/EtudiantModel/EtudiantModel");
+const etudiantSchema = require("../../model/EtudiantModel/EtudiantModel");
 
-const createEudiant = async (etudiant) => {
+function getEtudiantModel(dbConnection) {
+  return (
+    dbConnection.models.Etudiant ||
+    dbConnection.model("Etudiant", etudiantSchema)
+  );
+}
+
+const createEudiant = async (etudiant, dbName) => {
+  const etudiantModel = await getEtudiantModel(dbName);
   return await etudiantModel.create(etudiant);
 };
-const getEtudiantById = async (id) => {
+
+const getEtudiantById = async (id, dbName) => {
   try {
+    const etudiantModel = await getEtudiantModel(dbName);
     const etudiant = await etudiantModel
       .findById(id)
       .populate("etat_compte")
@@ -40,8 +50,9 @@ const getEtudiantById = async (id) => {
   }
 };
 
-const getEtudiants = async () => {
+const getEtudiants = async (dbName) => {
   try {
+    const etudiantModel = await getEtudiantModel(dbName);
     const etudiants = await etudiantModel
       .find()
       .populate("etat_compte")
@@ -77,16 +88,19 @@ const getEtudiants = async () => {
   }
 };
 
-const deleteEtudiant = async (id) => {
+const deleteEtudiant = async (id, dbName) => {
+  const etudiantModel = await getEtudiantModel(dbName);
   return await etudiantModel.findByIdAndDelete(id);
 };
 
-const updateEtudiant = async (id, updateData) => {
+const updateEtudiant = async (id, updateData, dbName) => {
+  const etudiantModel = await getEtudiantModel(dbName);
   return await etudiantModel.findByIdAndUpdate(id, updateData, { new: true });
 };
 
-const updateGroupeClasse = async (studentIds, groupeClasseId) => {
+const updateGroupeClasse = async (studentIds, groupeClasseId, dbName) => {
   try {
+    const etudiantModel = await getEtudiantModel(dbName);
     const result = await etudiantModel.updateMany(
       { _id: { $in: studentIds } },
       { $set: { groupe_classe: groupeClasseId } }
@@ -98,8 +112,9 @@ const updateGroupeClasse = async (studentIds, groupeClasseId) => {
   }
 };
 
-const getEtudiantsByIdClasse = async (classeId) => {
+const getEtudiantsByIdClasse = async (classeId, dbName) => {
   try {
+    const etudiantModel = await getEtudiantModel(dbName);
     const etudiants = await etudiantModel.find({
       groupe_classe: classeId,
     });
@@ -110,8 +125,9 @@ const getEtudiantsByIdClasse = async (classeId) => {
   }
 };
 
-const getEtudiantByCIN = async (cin_etudiant) => {
+const getEtudiantByCIN = async (cin_etudiant, dbName) => {
   try {
+    const etudiantModel = await getEtudiantModel(dbName);
     const etudiant = await etudiantModel.findOne({
       num_CIN: cin_etudiant,
     });
@@ -122,8 +138,9 @@ const getEtudiantByCIN = async (cin_etudiant) => {
   }
 };
 
-const getEtudiantByCinAndCode = async (cin_etudiant, codesecret) => {
+const getEtudiantByCinAndCode = async (cin_etudiant, codesecret, dbName) => {
   try {
+    const etudiantModel = await getEtudiantModel(dbName);
     const etudiant = await etudiantModel.findOne({
       num_CIN: cin_etudiant,
       code_acces: codesecret,
@@ -141,12 +158,14 @@ const getEtudiantByCinAndCode = async (cin_etudiant, codesecret) => {
   }
 };
 
-const findEtudiantByToken = async (token) => {
+const findEtudiantByToken = async (token, dbName) => {
   let api_token = token;
+  const etudiantModel = await getEtudiantModel(dbName);
   return await etudiantModel.findOne({ api_token });
 };
 
-const updateJwtToken = async (id, token) => {
+const updateJwtToken = async (id, token, dbName) => {
+  const etudiantModel = await getEtudiantModel(dbName);
   return await etudiantModel.findByIdAndUpdate(
     { _id: id },
     {
@@ -157,9 +176,14 @@ const updateJwtToken = async (id, token) => {
   );
 };
 
-const logoutEtudiant = async (studentId) => {
+const logoutEtudiant = async (studentId, dbName) => {
   try {
-    return await etudiantModel.findByIdAndUpdate(studentId, { api_token: null }, { new: true });
+    const etudiantModel = await getEtudiantModel(dbName);
+    return await etudiantModel.findByIdAndUpdate(
+      studentId,
+      { api_token: null },
+      { new: true }
+    );
   } catch (error) {
     console.error("Error logging out student:", error);
     throw error;
@@ -178,5 +202,5 @@ module.exports = {
   getEtudiantByCinAndCode,
   findEtudiantByToken,
   updateJwtToken,
-  logoutEtudiant
+  logoutEtudiant,
 };

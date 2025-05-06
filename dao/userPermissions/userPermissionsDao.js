@@ -1,25 +1,48 @@
-const Permission = require('../../model/permissionsModel/permissionModel');
-const User = require ('../../model/userModel/userModel')
-const UserPermissionHistory = require('../../model/userPermissionHistoryModel/userPermissionHistoryModel');
-const mongoose = require('mongoose');
+const userPermissionSchema = require("../../model/permissionsModel/permissionModel");
+const userSchema = require("../../model/userModel/userModel");
+const userPermissionHistorySchema = require("../../model/userPermissionHistoryModel/userPermissionHistoryModel");
 
-const createPermission = async (permissionData) => {
-  if (typeof permissionData !== 'object' || !permissionData.name || !permissionData.path || !permissionData.section || !permissionData.sub_section ) {
-    throw new Error('Invalid permission data');
+function getUserModel(dbConnection) {
+  return dbConnection.models.User || dbConnection.model("User", userSchema);
+}
+
+function getUserPermissionHistoryModel(dbConnection) {
+  return (
+    dbConnection.models.UserPermissionHistory ||
+    dbConnection.model("UserPermissionHistory", userPermissionHistorySchema)
+  );
+}
+
+function getUserPermissionModel(dbConnection) {
+  return (
+    dbConnection.models.Permission ||
+    dbConnection.model("Permission", userPermissionSchema)
+  );
+}
+
+const createPermission = async (permissionData, dbName) => {
+  if (
+    typeof permissionData !== "object" ||
+    !permissionData.name ||
+    !permissionData.path ||
+    !permissionData.section ||
+    !permissionData.sub_section
+  ) {
+    throw new Error("Invalid permission data");
   }
+  const Permission = getUserPermissionModel(dbName);
   return await Permission.create(permissionData);
 };
 
-
-const createPermissions = async (permissionsData) => {
+const createPermissions = async (permissionsData, dbName) => {
   if (!Array.isArray(permissionsData) || permissionsData.length === 0) {
-    throw new Error('Invalid permissions data. Must be a non-empty array.');
+    throw new Error("Invalid permissions data. Must be a non-empty array.");
   }
 
   // Validate each permission object
   const invalidPermissions = permissionsData.filter(
     (permission) =>
-      typeof permission !== 'object' ||
+      typeof permission !== "object" ||
       !permission.name ||
       !permission.path ||
       !permission.section ||
@@ -27,40 +50,48 @@ const createPermissions = async (permissionsData) => {
   );
 
   if (invalidPermissions.length > 0) {
-    throw new Error('Some permissions data are invalid.');
+    throw new Error("Some permissions data are invalid.");
   }
-
+  console.log("permissionsData dao", permissionsData);
   // Insert all permissions in one query
+  const Permission = getUserPermissionModel(dbName);
   return await Permission.insertMany(permissionsData);
 };
 
-const getAllPermissions = async () => {
+const getAllPermissions = async (dbName) => {
+  const Permission = getUserPermissionModel(dbName);
   return await Permission.find({});
 };
-const deletePermission = async (id) => {
+const deletePermission = async (id, dbName) => {
+  const Permission = getUserPermissionModel(dbName);
   return await Permission.findByIdAndDelete(id);
 };
-const getPermissionById = async (id) => {
+const getPermissionById = async (id, dbName) => {
+  const Permission = getUserPermissionModel(dbName);
   return await Permission.findById(id);
-}
-const updatePermission = async (id, updateData) => {
+};
+const updatePermission = async (id, updateData, dbName) => {
+  const Permission = getUserPermissionModel(dbName);
   return await Permission.findByIdAndUpdate(id, updateData, { new: true });
 };
 
-const assignPermissionsToUser = async (userId, permissionIds) => {
+const assignPermissionsToUser = async (userId, permissionIds, dbName) => {
   try {
+    const User = getUserModel(dbName);
     const user = await User.findById(userId);
     if (!user) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
-
+    const Permission = getUserPermissionModel(dbName);
     const permissions = await Permission.find({ _id: { $in: permissionIds } });
     if (permissions.length !== permissionIds.length) {
-      throw new Error('One or more permissions not found');
+      throw new Error("One or more permissions not found");
     }
 
     // Filter out duplicate permission IDs
-    const newPermissions = permissionIds.filter(permissionId => !user.permissions.includes(permissionId));
+    const newPermissions = permissionIds.filter(
+      (permissionId) => !user.permissions.includes(permissionId)
+    );
     user.permissions = [...user.permissions, ...newPermissions];
 
     await user.save();
@@ -69,37 +100,46 @@ const assignPermissionsToUser = async (userId, permissionIds) => {
     throw error;
   }
 };
-const deletePermissionsFromUser = async (userId, permissionIdsToDelete) => {
+const deletePermissionsFromUser = async (
+  userId,
+  permissionIdsToDelete,
+  dbName
+) => {
   try {
-      const user = await User.findById(userId);
-      if (!user) {
-          throw new Error('User not found');
-      }
+    const User = getUserModel(dbName);
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
 
-      // Remove permissions from user
-      user.permissions = user.permissions.filter(permission => !permissionIdsToDelete.includes(permission.toString()));
+    // Remove permissions from user
+    user.permissions = user.permissions.filter(
+      (permission) => !permissionIdsToDelete.includes(permission.toString())
+    );
 
-      await user.save();
-      return user;
+    await user.save();
+    return user;
   } catch (error) {
-      throw error;
+    throw error;
   }
 };
 
-const getPermissionsByUserId = async (userId) => {
-  return await User.findById(userId).populate('permissions').exec();
+const getPermissionsByUserId = async (userId, dbName) => {
+  const User = getUserModel(dbName);
+  return await User.findById(userId).populate("permissions").exec();
 };
 
-const updatePermissionsForUser = async (userId, permissionIds) => {
+const updatePermissionsForUser = async (userId, permissionIds, dbName) => {
   try {
+    const User = getUserModel(dbName);
     const user = await User.findById(userId);
     if (!user) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
-
+    const Permission = getUserPermissionModel(dbName);
     const permissions = await Permission.find({ _id: { $in: permissionIds } });
     if (permissions.length !== permissionIds.length) {
-      throw new Error('One or more permissions not found');
+      throw new Error("One or more permissions not found");
     }
 
     // Update user's permissions with the new set
@@ -110,120 +150,68 @@ const updatePermissionsForUser = async (userId, permissionIds) => {
   } catch (error) {
     throw error;
   }
-}
+};
 
-
-
-// const updatePermissionsForUserHistory = async (userId, permissionIds) => {
-//   try {
-//     const user = await User.findById(userId).populate('permissions');
-
-//     if (!user) {
-//       throw new Error('User not found');
-//     }
-
-//     const currentPermissionIds = user.permissions.map(p => p._id.toString());
-
-//     const removedPermissionIds = currentPermissionIds.filter(id => !permissionIds.includes(id));
-//     const addedPermissionIds = permissionIds.filter(id => !currentPermissionIds.includes(id));
-
-//     const oldDate = user.updatedAt;
-//     const newDate = new Date();
-
-//     // Update user permissions
-//     user.permissions = permissionIds.map(permissionId => new mongoose.Types.ObjectId(permissionId));
-//     await user.save();
-
-//     // Record history for removed permissions
-//     for (const permissionId of removedPermissionIds) {
-//       await UserPermissionHistory.create({
-//         user_id: userId,
-//         permission_id: permissionId,
-//         assigned_at: oldDate,
-//         updated_at: newDate
-//       });
-//     }
-
-//     // Record history for added permissions
-//     for (const permissionId of addedPermissionIds) {
-//       await UserPermissionHistory.create({
-//         user_id: userId,
-//         permission_id: permissionId,
-//         assigned_at: oldDate,
-//         updated_at: newDate
-//       });
-//     }
-//   } catch (error) {
-//     throw error;
-//   }
-// };
-
-
-// Function to update user permissions and record history
-const updatePermissionsForUserHistory = async (userId, permissionIds) => {
+const updatePermissionsForUserHistory = async (
+  userId,
+  permissionIds,
+  dbName
+) => {
   try {
     // Find the current user and their permissions
-    const user = await User.findById(userId).select('permissions updated_at');
-    const currentPermissionIds = user.permissions.map(p => p.toString());
-
-    const removedPermissionIds = currentPermissionIds.filter(id => !permissionIds.includes(id));
-    const addedPermissionIds = permissionIds.filter(id => !currentPermissionIds.includes(id));
+    const User = getUserModel(dbName);
+    const user = await User.findById(userId).select("permissions updated_at");
+    const currentPermissionIds = user.permissions.map((p) => p.toString());
 
     const now = new Date();
 
-    // Record history for the current permissions before any changes
+    const UserPermissionHistory = getUserPermissionHistoryModel(dbName);
+
     if (currentPermissionIds.length > 0) {
       await UserPermissionHistory.create({
         user_id: userId,
         permissions: currentPermissionIds,
-        assigned_at: user.updated_at || now,  // Use the last updated time or current time if not available
-        removed_at: now  // Current time as removal time for old permissions
+        assigned_at: user.updated_at || now,
+        removed_at: now,
       });
     }
 
-    // Update user permissions
     user.permissions = permissionIds;
-    user.updated_at = now;  // Update the timestamp
+    user.updated_at = now;
     await user.save();
 
-    // Record history for the new permissions
     await UserPermissionHistory.create({
       user_id: userId,
       permissions: permissionIds,
-      assigned_at: now  // The updated time of the user's permissions
+      assigned_at: now,
     });
-
   } catch (error) {
     throw error;
   }
 };
 
-
-const fetchUserPermissionHistory = async (userId) => {
+const fetchUserPermissionHistory = async (userId, dbName) => {
   try {
+    const UserPermissionHistory = getUserPermissionHistoryModel(dbName);
     return await UserPermissionHistory.find({ user_id: userId })
-      .populate('permissions')  // Populate the 'permissions' field
+      .populate("permissions")
       .sort({ assigned_at: -1 });
   } catch (error) {
     throw error;
   }
 };
 
-
-
-
 module.exports = {
   createPermission,
   getAllPermissions,
   deletePermission,
   getPermissionById,
-  updatePermission, 
+  updatePermission,
   assignPermissionsToUser,
   getPermissionsByUserId,
   deletePermissionsFromUser,
   updatePermissionsForUser,
-  updatePermissionsForUserHistory, 
+  updatePermissionsForUserHistory,
   fetchUserPermissionHistory,
-  createPermissions
-
+  createPermissions,
 };

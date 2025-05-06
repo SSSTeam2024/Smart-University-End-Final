@@ -1,29 +1,39 @@
 const templateBodyDao = require("../../dao/TemplateBodyDao/templateBodyDao");
+const { getDb } = require("../../config/dbSwitcher");
 
-const createTemplateBody = async (templateBodyData) => {
-  return await templateBodyDao.createTemplateBody(templateBodyData);
+const createTemplateBody = async (templateBodyData, useNew) => {
+  const db = await getDb(useNew);
+  return await templateBodyDao.createTemplateBody(templateBodyData, db);
 };
 
-const getTemplateBodys = async () => {
-  const result = await templateBodyDao.getTemplateBodys();
+const getTemplateBodys = async (useNew) => {
+  const db = await getDb(useNew);
+  const result = await templateBodyDao.getTemplateBodys(db);
   return result;
 };
-const getTemplateBodyById = async (id) => {
+
+const getTemplateBodyById = async (id, useNew) => {
   try {
-    return await templateBodyDao.getTemplateBodyById(id);
+    const db = await getDb(useNew);
+    return await templateBodyDao.getTemplateBodyById(id, db);
   } catch (error) {
     console.error("Error fetching template body by ID:", error);
     throw error;
   }
 };
 
-const deleteTemplateBody = async (id) => {
-  const result = await templateBodyDao.deleteTemplateBody(id);
+const deleteTemplateBody = async (id, useNew) => {
+  const db = await getDb(useNew);
+  const result = await templateBodyDao.deleteTemplateBody(id, db);
   return result;
 };
 
-const getTemplateBodyByContext = async (intended_for) => {
-  const result = await templateBodyDao.getTemplateBodyByContext(intended_for);
+const getTemplateBodyByContext = async (intended_for, useNew) => {
+  const db = await getDb(useNew);
+  const result = await templateBodyDao.getTemplateBodyByContext(
+    intended_for,
+    db
+  );
   return result;
 };
 
@@ -32,5 +42,5 @@ module.exports = {
   getTemplateBodys,
   getTemplateBodyById,
   deleteTemplateBody,
-  getTemplateBodyByContext
+  getTemplateBodyByContext,
 };

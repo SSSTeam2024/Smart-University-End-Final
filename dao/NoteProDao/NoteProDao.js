@@ -1,37 +1,53 @@
-const NotePro = require('../../model/NoteProModel/NotePro');
+const NoteProSchema = require("../../model/NoteProModel/NotePro");
 
-const createNotePro = async (noteProData) => {
+function getNoteProModel(dbConnection) {
+  return (
+    dbConnection.models.NotePro || dbConnection.model("NotePro", NoteProSchema)
+  );
+}
+
+const createNotePro = async (noteProData, dbName) => {
+  const NotePro = await getNoteProModel(dbName);
   const notePro = new NotePro(noteProData);
   return notePro.save();
 };
 
-const getAllNotesPro = async () => {
-  return NotePro.find().populate('personnel');
+const getAllNotesPro = async (dbName) => {
+  const NotePro = await getNoteProModel(dbName);
+  return NotePro.find().populate("personnel");
 };
 
-const getNoteProById = async (id) => {
+const getNoteProById = async (id, dbName) => {
+  const NotePro = await getNoteProModel(dbName);
   return NotePro.findById(id);
 };
 
-const getNoteProByYear = async (annee) => {
-   const query = {
+const getNoteProByYear = async (annee, dbName) => {
+  const NotePro = await getNoteProModel(dbName);
+  const query = {
     annee: annee,
-    };
-    return await NotePro.find(query);
+  };
+  return await NotePro.find(query);
 };
 
-const updateNotePro = async (id, updateData) => {
+const updateNotePro = async (id, updateData, dbName) => {
+  const NotePro = await getNoteProModel(dbName);
   return NotePro.findByIdAndUpdate(id, updateData, { new: true });
 };
 
-// const deleteDeplacement = async (id) => {
-//   return Deplacement.findByIdAndDelete(id);
-// };
+const deleteManyNotePro = async (dbName, ids) => {
+  const noteProModel = await getNoteProModel(dbName);
+  const query = {
+    _id: { $in: ids },
+  };
+  return await noteProModel.deleteMany(query);
+};
 
 module.exports = {
   createNotePro,
   getAllNotesPro,
   getNoteProById,
   updateNotePro,
-  getNoteProByYear
+  getNoteProByYear,
+  deleteManyNotePro,
 };

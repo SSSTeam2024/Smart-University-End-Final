@@ -15,4 +15,5 @@ const intervenantSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Intervenant", intervenantSchema);
+// module.exports = mongoose.model("Intervenant", intervenantSchema);
+module.exports = intervenantSchema;

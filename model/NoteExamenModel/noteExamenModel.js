@@ -22,4 +22,4 @@ const noteExamenSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("NoteExamen", noteExamenSchema);
+module.exports = noteExamenSchema;

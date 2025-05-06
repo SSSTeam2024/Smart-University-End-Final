@@ -19,4 +19,5 @@ const sectionClasseSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("SectionClasse", sectionClasseSchema);
+// module.exports = mongoose.model("SectionClasse", sectionClasseSchema);
+module.exports = sectionClasseSchema;

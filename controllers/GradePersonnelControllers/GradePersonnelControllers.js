@@ -1,13 +1,20 @@
 const GradePersonnelService = require("../../services/GradePersonnelServices/GradePersonnelServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addGradePersonnel = async (req, res) => {
   try {
     const { grade_ar, grade_fr } = req.body;
 
-    const gradePersonnel = await GradePersonnelService.registerGradePersonnel({
-      grade_ar,
-      grade_fr,
-    });
+    const gradePersonnel = await GradePersonnelService.registerGradePersonnel(
+      {
+        grade_ar,
+        grade_fr,
+      },
+      useNewDb(req)
+    );
     res.json(gradePersonnel);
   } catch (error) {
     console.error(error);
@@ -20,10 +27,14 @@ const updateGradePersonnelById = async (req, res) => {
     const { grade_ar, grade_fr } = req.body;
 
     const updatedGradePersonnel =
-      await GradePersonnelService.updateGradePersonnelDao(GradePersonnelId, {
-        grade_ar,
-        grade_fr,
-      });
+      await GradePersonnelService.updateGradePersonnelDao(
+        GradePersonnelId,
+        {
+          grade_ar,
+          grade_fr,
+        },
+        useNewDb(req)
+      );
 
     if (!updatedGradePersonnel) {
       return res.status(404).send("Grade Personnel not found!");
@@ -40,7 +51,10 @@ const getGradePersonnelById = async (req, res) => {
     const GradePersonnelId = req.params.id;
 
     const getGradePersonnel =
-      await GradePersonnelService.getGradePersonnelDaoById(GradePersonnelId);
+      await GradePersonnelService.getGradePersonnelDaoById(
+        GradePersonnelId,
+        useNewDb(req)
+      );
 
     if (!getGradePersonnel) {
       return res.status(404).send("Grade Personnel not found");
@@ -54,7 +68,9 @@ const getGradePersonnelById = async (req, res) => {
 
 const getAllGradePersonnel = async (req, res) => {
   try {
-    const GradePersonnels = await GradePersonnelService.getGradesPersonnelDao();
+    const GradePersonnels = await GradePersonnelService.getGradesPersonnelDao(
+      useNewDb(req)
+    );
     res.json(GradePersonnels);
   } catch (error) {
     console.error(error);
@@ -67,7 +83,10 @@ const deleteGradePersonnelById = async (req, res) => {
     const GradePersonnelId = req.params.id;
 
     const deletedGradePersonnel =
-      await GradePersonnelService.deleteGradePersonnelDao(GradePersonnelId);
+      await GradePersonnelService.deleteGradePersonnelDao(
+        GradePersonnelId,
+        useNewDb(req)
+      );
 
     if (!deletedGradePersonnel) {
       return res.status(404).send("Grade Personnel not found");
@@ -88,10 +107,13 @@ const getGradeByValue = async (req, res) => {
         .json({ message: "grade_fr and grade_ar are required" });
     }
 
-    const gradeValue = await GradePersonnelService.getGradeByValue({
-      grade_fr,
-      grade_ar,
-    });
+    const gradeValue = await GradePersonnelService.getGradeByValue(
+      {
+        grade_fr,
+        grade_ar,
+      },
+      useNewDb(req)
+    );
 
     if (!gradeValue) {
       return res.json(null);

@@ -1,34 +1,34 @@
 const ficheVoeuxDao = require("../../dao/FicheVoeuxDao/FicheVoeuxDao");
-
-const createficheVoeux = async (data) => {
+const { getDb } = require("../../config/dbSwitcher");
+const createficheVoeux = async (data, useNew) => {
   try {
-    return await ficheVoeuxDao.createficheVoeux(data);
+    const db = await getDb(useNew);
+    return await ficheVoeuxDao.createficheVoeux(data, db);
   } catch (error) {
     console.error("Error in fiche de voeux service:", error);
     throw error;
   }
 };
 
-const updateFicheVoeux = async (id, updateData) => {
-  return await ficheVoeuxDao.updateFicheVoeux(id, updateData);
+const updateFicheVoeux = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return await ficheVoeuxDao.updateFicheVoeux(id, updateData, db);
 };
 
-
-const getFichesVoeux = async () => {
-  const result = await ficheVoeuxDao.getFichesVoeux();
+const getFichesVoeux = async (useNew) => {
+  const db = await getDb(useNew);
+  const result = await ficheVoeuxDao.getFichesVoeux(db);
   return result;
 };
 
-const deleteFicheVoeuxById = async (id) => {
-  return await ficheVoeuxDao.deleteFicheVoeuxById(id);
-
+const deleteFicheVoeuxById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await ficheVoeuxDao.deleteFicheVoeuxById(id, db);
 };
-
-
 
 module.exports = {
   createficheVoeux,
   getFichesVoeux,
   deleteFicheVoeuxById,
-  updateFicheVoeux
+  updateFicheVoeux,
 };

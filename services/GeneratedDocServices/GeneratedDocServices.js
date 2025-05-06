@@ -1,34 +1,22 @@
 const generatedDocDao = require("../../dao/GeneratedDocDao/GeneratedDocDao");
+const { getDb } = require("../../config/dbSwitcher");
 
-const saveGeneratedDoc = async (generatedDocData) => {
-  return await generatedDocDao.saveGenerated(generatedDocData);
+const saveGeneratedDoc = async (generatedDocData, useNew) => {
+  const db = await getDb(useNew);
+  return await generatedDocDao.saveGenerated(generatedDocData, db);
 };
 
-const getGeneratedDocsByModelId = async (model_id) => {
-  return await generatedDocDao.getGenerartedDocsByModelId(model_id);
+const getGeneratedDocsByModelId = async (model_id, useNew) => {
+  const db = await getDb(useNew);
+  return await generatedDocDao.getGenerartedDocsByModelId(model_id, db);
 };
-const getGenerartedDocsByQrCode = async (num_qr_code) => {
-  return await generatedDocDao.getGenerartedDocsByQrCode(num_qr_code);
+const getGenerartedDocsByQrCode = async (num_qr_code, useNew) => {
+  const db = await getDb(useNew);
+  return await generatedDocDao.getGenerartedDocsByQrCode(num_qr_code, db);
 };
-
-// const getAllAbsencesPersonnels = async () => {
-//   return absencePersonnelDao.getAllAbsencesPersonnels();
-// };
-
-// const updateAbsencePersonnel = async (id, updateData) => {
-
-//     return await absencePersonnelDao.updateAbsencePersonnel(id, updateData);
-// };
-
-// const deleteAbsencePersonnel = async (id) => {
-//   return absencePersonnelDao.deleteAbsencePersonnel(id);
-// };
 
 module.exports = {
   saveGeneratedDoc,
   getGeneratedDocsByModelId,
-  getGenerartedDocsByQrCode
-  // getAllAbsencesPersonnels,
-  // updateAbsencePersonnel,
-  // deleteAbsencePersonnel
+  getGenerartedDocsByQrCode,
 };

@@ -7,4 +7,5 @@ const voieEnvoiSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("VoieEnvoi", voieEnvoiSchema);
+// module.exports = mongoose.model("VoieEnvoi", voieEnvoiSchema);
+module.exports = voieEnvoiSchema;

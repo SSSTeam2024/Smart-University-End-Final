@@ -3,10 +3,7 @@ const DemandeTirageController = require("../../controllers/DemandeTirageControll
 
 const router = express.Router();
 
-router.post(
-  "/create-demande-tirage",
-  DemandeTirageController.addDemandeTirage
-);
+router.post("/create-demande-tirage", DemandeTirageController.addDemandeTirage);
 router.get(
   "/get-all-demandes-tirage",
   DemandeTirageController.getAllDemandeTirage
@@ -30,5 +27,15 @@ router.put(
 //   AbsenceEtudiantController.getAllAbsenceClasse
 // );
 
-router.get("/get-demande-tirage-by-id-teacher/:enseignantId", DemandeTirageController.getDemandesTirageByTeacherId);
+router.get(
+  "/get-demande-tirage-by-id-teacher/:enseignantId",
+  DemandeTirageController.getDemandesTirageByTeacherId
+);
+
+// Delete many Demandes Tirages
+router.delete(
+  "/delete-many",
+  DemandeTirageController.deleteManyDemandesTirages
+);
+
 module.exports = router;

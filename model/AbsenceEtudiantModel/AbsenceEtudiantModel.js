@@ -44,4 +44,5 @@ const AbsenceEtudiantSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("AbsenceEtudiant", AbsenceEtudiantSchema);
+// module.exports = mongoose.model("AbsenceEtudiant", AbsenceEtudiantSchema);
+module.exports = AbsenceEtudiantSchema;

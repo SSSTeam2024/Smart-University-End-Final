@@ -2,11 +2,13 @@ const classeDao = require("../../dao/ClasseDao/ClasseDao");
 const Classe = require("../../model/ClasseModels/ClasseModels");
 const Matiere = require("../../model/MatiereModel/MatiereModel");
 const seanceService = require("../../services/SeanceServices/SeanceServices");
+const { getDb } = require("../../config/dbSwitcher");
 
-const createClasse = async (classeData) => {
+const createClasse = async (classeData, useNew) => {
   try {
-    const createdClasse = await Classe.create(classeData);
-    const populatedClasse = await Classe.findById(createdClasse._id)
+    const db = await getDb(useNew);
+    const createdClasse = await Classe.create(classeData, db);
+    const populatedClasse = await Classe.findById(createdClasse._id, db)
       .populate({
         path: "niveau_classe",
         populate: {
@@ -24,32 +26,31 @@ const createClasse = async (classeData) => {
   }
 };
 
-const updateClasse = async (id, updateData) => {
-  return await classeDao.updateClasse(id, updateData);
+const updateClasse = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return await classeDao.updateClasse(id, updateData, db);
 };
 
-const getClasseById = async (id) => {
-  return await classeDao.getClasseById(id);
+const getClasseById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await classeDao.getClasseById(id, db);
 };
 
-const getClasses = async () => {
-  const result = await classeDao.getClasses();
+const getClasses = async (useNew) => {
+  const db = await getDb(useNew);
+  const result = await classeDao.getClasses(db);
   return result;
 };
 
-const deleteClasseById = async (id) => {
+const deleteClasseById = async (id, useNew) => {
   try {
-    console.log(`Attempting to delete classe with ID: ${id}`);
-
+    const db = await getDb(useNew);
     // Delete the classe by its ID
-    const deletedClasse = await classeDao.deleteClasse(id);
+    const deletedClasse = await classeDao.deleteClasse(id, db);
 
     if (!deletedClasse) {
-      console.log(`Classe with ID ${id} not found`);
       throw new Error("Classe not found");
     }
-
-    console.log(`Classe with ID ${id} deleted successfully`);
 
     // Update the matieres to remove the deleted classe from the classes array
     const updateResult = await Matiere.updateMany(
@@ -57,7 +58,6 @@ const deleteClasseById = async (id) => {
       { $pull: { classes: id } }
     );
 
-    console.log("Update result:", updateResult);
     if (updateResult.modifiedCount === 0) {
       console.warn(
         `No matieres were updated to remove the deleted classe ID ${id}`
@@ -71,11 +71,13 @@ const deleteClasseById = async (id) => {
   }
 };
 
-async function assignMatieresToClasse(classeId, matiereIds) {
+async function assignMatieresToClasse(classeId, matiereIds, useNew) {
   try {
+    const db = await getDb(useNew);
     const updatedClasse = await classeDao.assignMatieresToClasse(
       classeId,
-      matiereIds
+      matiereIds,
+      db
     );
     const populatedClasse = await Classe.findById(classeId)
       .populate("matieres")
@@ -87,16 +89,22 @@ async function assignMatieresToClasse(classeId, matiereIds) {
   }
 }
 
-async function getAssignedMatieres(classeId) {
+async function getAssignedMatieres(classeId, useNew) {
   try {
-    return await classeDao.getAssignedMatieres(classeId);
+    const db = await getDb(useNew);
+    return await classeDao.getAssignedMatieres(classeId, db);
   } catch (error) {
     throw new Error(`Error fetching assigned matieres: ${error.message}`);
   }
 }
 
-const getClassesByTeacherId = async (idTeacher, semestre) => {
-  let sessions = await seanceService.getSeancesByTeacher(idTeacher, semestre);
+const getClassesByTeacherId = async (idTeacher, semestre, useNew) => {
+  const db = await getDb(useNew);
+  let sessions = await seanceService.getSeancesByTeacher(
+    idTeacher,
+    semestre,
+    db
+  );
   let classes = sessions.map((s) => s.classe);
 
   const uniqueClasses = classes.reduce((accumulator, current) => {
@@ -110,19 +118,26 @@ const getClassesByTeacherId = async (idTeacher, semestre) => {
   return uniqueClasses;
 };
 
-const getClasseByValue = async ({ nom_classe_ar, nom_classe_fr }) => {
-  return await classeDao.getClasseByValue(nom_classe_ar, nom_classe_fr);
+const getClasseByValue = async ({ nom_classe_ar, nom_classe_fr }, useNew) => {
+  const db = await getDb(useNew);
+  return await classeDao.getClasseByValue(nom_classe_ar, nom_classe_fr, db);
 };
 
-const assignParcoursToClasse = async (classeId, parcoursId, semestres) => {
+const assignParcoursToClasse = async (
+  classeId,
+  parcoursId,
+  semestres,
+  useNew
+) => {
   if (!classeId || !parcoursId || !semestres) {
     throw new Error("Classe ID, Parcours ID, and Semestres are required");
   }
-
+  const db = await getDb(useNew);
   return await classeDao.assignParcoursToClasse(
     classeId,
     parcoursId,
-    semestres
+    semestres,
+    db
   );
 };
 module.exports = {

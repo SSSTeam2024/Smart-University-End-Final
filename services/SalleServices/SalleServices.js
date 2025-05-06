@@ -1,17 +1,27 @@
 const salleDao = require("../../dao/SalleDao/SalleDao");
-const DepartementModel = require("../../model/departementModel/DepartementModel");
-const SalleDisponibiliteService = require("../../services/SalleDisponibiliteServices/SalleDisponibiliteServices");
+const departementSchema = require("../../model/departementModel/DepartementModel");
 const seanceDao = require("../../dao/SeanceDao/SeanceDao");
 const classEmploiPeriodiqueDao = require("../../dao/ClassEmploiPeriodiqueDao/ClassEmploiPeriodiqueDao");
 const rattrapageService = require("../RattrapageServices/RattrapageServices");
 
-const createSalle = async (userData) => {
+const { getDb } = require("../../config/dbSwitcher");
+
+function getDepartementModel(dbConnection) {
+  return (
+    dbConnection.models.Departement ||
+    dbConnection.model("Departement", departementSchema)
+  );
+}
+
+const createSalle = async (userData, useNew) => {
   try {
-    const salle = await salleDao.createSalle(userData);
+    const db = await getDb(useNew);
+    const salle = await salleDao.createSalle(userData, db);
+    const DepartementModel = await getDepartementModel(dbName, db);
+
     await DepartementModel.findByIdAndUpdate(userData.departement, {
       $push: { salles: salle._id },
     });
-    // await SalleDisponibiliteService.createSalleDisponibilite(salle._id);
     return await salle.populate("departement");
   } catch (error) {
     console.error("Error in salle service:", error);
@@ -19,12 +29,14 @@ const createSalle = async (userData) => {
   }
 };
 
-const updateSalle = async (id, updateData) => {
-  return await salleDao.updateSalle(id, updateData);
+const updateSalle = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return await salleDao.updateSalle(id, updateData, db);
 };
 
-const getSalleById = async (id) => {
-  return await salleDao.getSalleById(id);
+const getSalleById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await salleDao.getSalleById(id, db);
 };
 
 const getSallesByDayAndTime = async (
@@ -34,15 +46,15 @@ const getSallesByDayAndTime = async (
   session_type,
   date_fin_emploi_period,
   date_debut_emploi_period,
-  semestre
+  semestre,
+  useNew
 ) => {
-  //let sessions = await seanceDao.getSeanceByDayAndTime(day);
-
+  const db = await getDb(useNew);
   let emploiClassPeriodique =
     await classEmploiPeriodiqueDao.getAllClassEmploiPeriodiqueBySemestre(
-      semestre
+      semestre,
+      db
     );
-
 
   const givenStart = parseDate(date_debut_emploi_period);
   const givenEnd = parseDate(date_fin_emploi_period);
@@ -53,17 +65,16 @@ const getSallesByDayAndTime = async (
     return intervalStart <= givenEnd && intervalEnd >= givenStart;
   });
 
-  // console.log("intersectingIntervals", intersectingIntervals);
-
   let sessions = [];
 
   for (const interval of intersectingIntervals) {
-    // console.log("interval", interval);
-    let day_sessions = await seanceDao.getSeanceByDayAndTime(interval._id, day);
-    // console.log("day_sessions", day_sessions);
+    let day_sessions = await seanceDao.getSeanceByDayAndTime(
+      interval._id,
+      day,
+      db
+    );
     sessions = sessions.concat(day_sessions);
   }
-  // console.log("sessions", sessions);
 
   let filteredSessions = sessions.filter(
     (s) =>
@@ -82,8 +93,7 @@ const getSallesByDayAndTime = async (
       (s.heure_debut < start_time && s.heure_fin === end_time)
   );
 
-  //console.log("filteredSessions", filteredSessions);
-  let allSalles = await salleDao.getSalles();
+  let allSalles = await salleDao.getSalles(db);
   let occupiedRooms = [];
   for (const filteredSession of filteredSessions) {
     occupiedRooms.push({
@@ -91,7 +101,6 @@ const getSallesByDayAndTime = async (
       session_type: filteredSession.type_seance,
     });
   }
-  //console.log("occupiedRooms", occupiedRooms);
 
   const availableRooms = [];
 
@@ -108,9 +117,6 @@ const getSallesByDayAndTime = async (
       availableRooms.push(room);
     }
   }
-
-  //console.log("availableRooms1", availableRooms);
-
   if (session_type === "1/15") {
     for (const occupiedRoom of occupiedRooms) {
       if (occupiedRoom.session_type === "1/15") {
@@ -118,9 +124,6 @@ const getSallesByDayAndTime = async (
       }
     }
   }
-
-  //console.log("availableRooms2", availableRooms);
-
   const uniqueAvailableRooms = removeDuplicates(availableRooms, "salle");
 
   return uniqueAvailableRooms;
@@ -133,15 +136,15 @@ const getSallesDispoRattrapage = async (
   end_time,
   date_fin_emploi_period,
   date_debut_emploi_period,
-  semestre
+  semestre,
+  useNew
 ) => {
+  const db = await getDb(useNew);
   let emploiClassPeriodique =
     await classEmploiPeriodiqueDao.getAllClassEmploiPeriodiqueBySemestre(
-      semestre
+      semestre,
+      db
     );
-
-  //console.log("emploiClassPeriodique", emploiClassPeriodique);
-
   const givenStart = parseDate(date_debut_emploi_period);
   const givenEnd = parseDate(date_fin_emploi_period);
 
@@ -151,32 +154,24 @@ const getSallesDispoRattrapage = async (
     return intervalStart <= givenEnd && intervalEnd >= givenStart;
   });
 
-  //console.log("intersectingIntervals", intersectingIntervals);
-
   let normalAndRecoverSessions = [];
 
   for (const interval of intersectingIntervals) {
-    //console.log("interval", interval);
-    let day_sessions = await seanceDao.getSeanceByDayAndTime(interval._id, day);
-    //console.log("day_sessions", day_sessions);
+    let day_sessions = await seanceDao.getSeanceByDayAndTime(
+      interval._id,
+      day,
+      db
+    );
     normalAndRecoverSessions = normalAndRecoverSessions.concat(day_sessions);
   }
-  //console.log("normalAndRecoverSessions", normalAndRecoverSessions);
 
-  let rattrapages = await rattrapageService.getRattrapages();
+  let rattrapages = await rattrapageService.getRattrapages(db);
 
-  //console.log(rattrapages);
-  console.log(date_rattrapage);
   let implicatedRecoverSessions = rattrapages.filter((r) => {
     const date1 = parseDateV2(r.date);
-    console.log(date1);
     const date2 = parseDateV2(date_rattrapage);
-    console.log(date2);
-    console.log(date1.getTime() === date2.getTime());
     return date1.getTime() === date2.getTime();
   });
-
-  console.log(implicatedRecoverSessions);
 
   normalAndRecoverSessions = normalAndRecoverSessions.concat(
     implicatedRecoverSessions
@@ -199,8 +194,7 @@ const getSallesDispoRattrapage = async (
       (s.heure_debut < start_time && s.heure_fin === end_time)
   );
 
-  //console.log("filteredSessions", filteredSessions);
-  let allSalles = await salleDao.getSalles();
+  let allSalles = await salleDao.getSalles(db);
   let occupiedRooms = [];
   for (const filteredSession of filteredNormalAndRecoverSessions) {
     occupiedRooms.push({
@@ -208,7 +202,6 @@ const getSallesDispoRattrapage = async (
       session_type: filteredSession.type_seance,
     });
   }
-  //console.log("occupiedRooms", occupiedRooms);
 
   const availableRooms = [];
 
@@ -225,8 +218,6 @@ const getSallesDispoRattrapage = async (
       availableRooms.push(room);
     }
   }
-
-  //console.log("availableRooms1", availableRooms);
 
   const uniqueAvailableRooms = removeDuplicates(availableRooms, "salle");
 
@@ -256,13 +247,15 @@ const removeDuplicates = (array, key) => {
   });
 };
 
-const getSalles = async () => {
-  const result = await salleDao.getSalles();
+const getSalles = async (useNew) => {
+  const db = await getDb(useNew);
+  const result = await salleDao.getSalles(db);
   return result;
 };
 
-const deleteSalleById = async (id) => {
-  return await salleDao.deleteSalle(id);
+const deleteSalleById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await salleDao.deleteSalle(id, db);
 };
 
 module.exports = {

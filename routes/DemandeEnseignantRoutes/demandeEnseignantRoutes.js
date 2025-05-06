@@ -1,20 +1,45 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const demandeEnseignantController = require('../../controllers/demandeEnseignantControllers/demandeEnseignantControllers');
+const demandeEnseignantController = require("../../controllers/demandeEnseignantControllers/demandeEnseignantControllers");
 
 // Create a new reclamation
-router.post('/add-demande-Enseignant', demandeEnseignantController.createDemandeEnseignant);
+router.post(
+  "/add-demande-Enseignant",
+  demandeEnseignantController.createDemandeEnseignant
+);
 
 // Get all demandeEnseignants
-router.get('/get-all-demande-Enseignants', demandeEnseignantController.getAllDemandeEnseignants);
+router.get(
+  "/get-all-demande-Enseignants",
+  demandeEnseignantController.getAllDemandeEnseignants
+);
 
 // Get a single demandeEnseignant by ID
-router.get('/get-demande-Enseignant/:id', demandeEnseignantController.getDemandeEnseignantById);
+router.get(
+  "/get-demande-Enseignant/:id",
+  demandeEnseignantController.getDemandeEnseignantById
+);
 
 // Update a demandeEnseignant by ID
-router.put('/edit-demande-Enseignant/:id', demandeEnseignantController.updateDemandeEnseignant);
+router.put(
+  "/edit-demande-Enseignant/:id",
+  demandeEnseignantController.updateDemandeEnseignant
+);
 
 // Delete a demandeEnseignant by ID
-router.delete('/delete-demande-Enseignant/:id', demandeEnseignantController.deleteDemandeEnseignant);
-router.get("/get-demande-by-id-teacher/:enseignantId", demandeEnseignantController.getDemandesByTeacherId);
+router.delete(
+  "/delete-demande-Enseignant/:id",
+  demandeEnseignantController.deleteDemandeEnseignant
+);
+
+router.get(
+  "/get-demande-by-id-teacher/:enseignantId",
+  demandeEnseignantController.getDemandesByTeacherId
+);
+
+// Delete many Demandes Etudiant
+router.delete(
+  "/delete-many",
+  demandeEnseignantController.deleteManyDemandeEnseignant
+);
 module.exports = router;

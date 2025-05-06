@@ -9,4 +9,5 @@ const DomaineClasseSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("DomaineClasse", DomaineClasseSchema);
+// module.exports = mongoose.model("DomaineClasse", DomaineClasseSchema);
+module.exports = DomaineClasseSchema;

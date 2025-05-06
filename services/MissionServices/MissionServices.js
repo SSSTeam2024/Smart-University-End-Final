@@ -1,34 +1,40 @@
-const missionDao = require('../../dao/MissionDao/MissionDao');
+const missionDao = require("../../dao/MissionDao/MissionDao");
+const { getDb } = require("../../config/dbSwitcher");
 
-
-
-
-const createMission = async (missionData) => {
+const createMission = async (missionData, useNew) => {
   try {
-    return await missionDao.createMission(missionData);
+    const db = await getDb(useNew);
+    return await missionDao.createMission(missionData, db);
   } catch (error) {
     console.error("Error creating Mission:", error);
     throw error;
   }
 };
 
-const getAllMissions = async () => {
-  return missionDao.getAllMissions();
+const getAllMissions = async (useNew) => {
+  const db = await getDb(useNew);
+  return missionDao.getAllMissions(db);
 };
 
-const getMissionById = async (id) => {
-  return missionDao.getMissionById(id);
+const getMissionById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return missionDao.getMissionById(id, db);
 };
 
+const deleteMission = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return missionDao.deleteMission(id, db);
+};
 
-
-const deleteMission = async (id) => {
-  return missionDao.deleteMission(id);
+const deleteManyMissions = async (useNew, ids) => {
+  const db = await getDb(useNew);
+  return await missionDao.deleteManyMissions(db, ids);
 };
 
 module.exports = {
   createMission,
   getAllMissions,
   getMissionById,
-  deleteMission
+  deleteMission,
+  deleteManyMissions,
 };

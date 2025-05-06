@@ -1,8 +1,13 @@
 const MentionClasseDao = require("../../dao/MentionClasseDao/MentionClasseDao");
+const { getDb } = require("../../config/dbSwitcher");
 
-const createMentionClasse = async (userData) => {
+const createMentionClasse = async (userData, useNew) => {
   try {
-    const MentionClasse = await MentionClasseDao.createMentionClasse(userData);
+    const db = await getDb(useNew);
+    const MentionClasse = await MentionClasseDao.createMentionClasse(
+      userData,
+      db
+    );
 
     return MentionClasse;
   } catch (error) {
@@ -11,22 +16,30 @@ const createMentionClasse = async (userData) => {
   }
 };
 
-const updateMentionClasse = async (id, updateData) => {
-  return await MentionClasseDao.updateMentionClasse(id, updateData);
+const updateMentionClasse = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return await MentionClasseDao.updateMentionClasse(id, updateData, db);
 };
 
-const getMentionsClasse = async () => {
-  return await MentionClasseDao.getMentionsClasse();
+const getMentionsClasse = async (useNew) => {
+  const db = await getDb(useNew);
+  return await MentionClasseDao.getMentionsClasse(db);
 };
 
-const deleteMentionClasse = async (id) => {
-  return await MentionClasseDao.deleteMentionClasse(id);
+const deleteMentionClasse = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await MentionClasseDao.deleteMentionClasse(id, db);
 };
 
-const getMentionByValue = async ({ name_mention_ar, name_mention_fr }) => {
+const getMentionByValue = async (
+  { name_mention_ar, name_mention_fr },
+  useNew
+) => {
+  const db = await getDb(useNew);
   return await MentionClasseDao.getMentionByValue(
     name_mention_ar,
-    name_mention_fr
+    name_mention_fr,
+    db
   );
 };
 

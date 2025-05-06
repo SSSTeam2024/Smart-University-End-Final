@@ -1,5 +1,6 @@
-const deplacementDao = require('../../dao/DeplacementDao/DeplacementDao');
+const deplacementDao = require("../../dao/DeplacementDao/DeplacementDao");
 const fs = require("fs").promises;
+const { getDb } = require("../../config/dbSwitcher");
 
 async function saveMediaToServer(documents) {
   try {
@@ -41,8 +42,13 @@ const createDeplacement = async (deplacementData, documents) => {
   }
 };
 
-const getAllDeplacements = async () => {
-  return deplacementDao.getAllDeplacements();
+// const getAllDeplacements = async () => {
+//   return deplacementDao.getAllDeplacements();
+// };
+
+const getAllDeplacements = async (dbName) => {
+  const db = await getDb(dbName);
+  return deplacementDao.getAllDeplacements(db);
 };
 
 const getDeplacementById = async (id) => {
@@ -71,10 +77,16 @@ const deleteDeplacement = async (id) => {
   return deplacementDao.deleteDeplacement(id);
 };
 
+const deleteManyDeplacements = async (dbName, ids) => {
+  const db = await getDb(dbName);
+  return await deplacementDao.deleteManyDeplacements(db, ids);
+};
+
 module.exports = {
   createDeplacement,
   getAllDeplacements,
   getDeplacementById,
   updateDeplacement,
-  deleteDeplacement
+  deleteDeplacement,
+  deleteManyDeplacements,
 };

@@ -1,13 +1,20 @@
 const EtatEnseignantService = require("../../services/EtatEnseignantServices/EtatEnseignantServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addEtatEnseignant = async (req, res) => {
   try {
     const { etat_ar, etat_fr } = req.body;
 
-    const etatEnseignant = await EtatEnseignantService.registerEtatEnseignant({
-      etat_ar,
-      etat_fr,
-    });
+    const etatEnseignant = await EtatEnseignantService.registerEtatEnseignant(
+      {
+        etat_ar,
+        etat_fr,
+      },
+      useNewDb(req)
+    );
     res.json(etatEnseignant);
   } catch (error) {
     console.log(error);
@@ -20,10 +27,14 @@ const updateEtatEnseignantById = async (req, res) => {
     const { etat_ar, etat_fr } = req.body;
 
     const updatedEtatEnseignant =
-      await EtatEnseignantService.updateEtatEnseignantDao(etatEnseignantId, {
-        etat_ar,
-        etat_fr,
-      });
+      await EtatEnseignantService.updateEtatEnseignantDao(
+        etatEnseignantId,
+        {
+          etat_ar,
+          etat_fr,
+        },
+        useNewDb(req)
+      );
 
     if (!updatedEtatEnseignant) {
       return res.status(404).send("Etat Enseignant not found!");
@@ -40,7 +51,10 @@ const getEtatEnseignantById = async (req, res) => {
     const etatEnseignantId = req.params.id;
 
     const getEtatEnseignant =
-      await EtatEnseignantService.getEtatEnseignantDaoById(etatEnseignantId);
+      await EtatEnseignantService.getEtatEnseignantDaoById(
+        etatEnseignantId,
+        useNewDb(req)
+      );
 
     if (!getEtatEnseignant) {
       return res.status(404).send("Etat Enseignant not found");
@@ -53,7 +67,9 @@ const getEtatEnseignantById = async (req, res) => {
 };
 const getAllEtatEnseignant = async (req, res) => {
   try {
-    const etatEnseignants = await EtatEnseignantService.getEtatsEnseignantDao();
+    const etatEnseignants = await EtatEnseignantService.getEtatsEnseignantDao(
+      useNewDb(req)
+    );
     res.json(etatEnseignants);
   } catch (error) {
     console.error(error);
@@ -66,7 +82,10 @@ const deleteEtatEnseignantById = async (req, res) => {
     const etatEnseignantId = req.params.id;
 
     const deletedEtatEnseignant =
-      await EtatEnseignantService.deleteEtatEnseignantDao(etatEnseignantId);
+      await EtatEnseignantService.deleteEtatEnseignantDao(
+        etatEnseignantId,
+        useNewDb(req)
+      );
 
     if (!deletedEtatEnseignant) {
       return res.status(404).send("Etat Enseignant not found");
@@ -87,10 +106,13 @@ const getEtatByValue = async (req, res) => {
         .json({ message: "etat_fr and etat_ar are required" });
     }
 
-    const etatValue = await EtatEnseignantService.getEtatCompteByValue({
-      etat_fr,
-      etat_ar,
-    });
+    const etatValue = await EtatEnseignantService.getEtatCompteByValue(
+      {
+        etat_fr,
+        etat_ar,
+      },
+      useNewDb(req)
+    );
 
     if (!etatValue) {
       return res.json(null);

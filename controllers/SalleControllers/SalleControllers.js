@@ -1,15 +1,22 @@
 const salleService = require("../../services/SalleServices/SalleServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addSalle = async (req, res) => {
   try {
     const { salle, emplacement, type_salle, departement } = req.body;
 
-    const salleJson = await salleService.createSalle({
-      salle,
-      emplacement,
-      type_salle,
-      departement,
-    });
+    const salleJson = await salleService.createSalle(
+      {
+        salle,
+        emplacement,
+        type_salle,
+        departement,
+      },
+      useNewDb(req)
+    );
     res.json(salleJson);
   } catch (error) {
     console.error(error);
@@ -21,12 +28,16 @@ const updateSalleById = async (req, res) => {
     const salleId = req.params.id;
     const { salle, emplacement, type_salle, departement } = req.body;
 
-    const updatedSalle = await salleService.updateSalle(salleId, {
-      salle,
-      emplacement,
-      type_salle,
-      departement,
-    });
+    const updatedSalle = await salleService.updateSalle(
+      salleId,
+      {
+        salle,
+        emplacement,
+        type_salle,
+        departement,
+      },
+      useNewDb(req)
+    );
 
     if (!updatedSalle) {
       return res.status(404).send("Salle not found!");
@@ -42,7 +53,7 @@ const getSalleById = async (req, res) => {
   try {
     const salleId = req.params.id;
 
-    const getSalle = await salleService.getSalleById(salleId);
+    const getSalle = await salleService.getSalleById(salleId, useNewDb(req));
 
     if (!getSalle) {
       return res.status(404).send("Salle not found");
@@ -55,7 +66,7 @@ const getSalleById = async (req, res) => {
 };
 const getAllSalles = async (req, res) => {
   try {
-    const salles = await salleService.getSalles();
+    const salles = await salleService.getSalles(useNewDb(req));
     res.json(salles);
   } catch (error) {
     console.error(error);
@@ -67,7 +78,10 @@ const deleteSalleById = async (req, res) => {
   try {
     const salleId = req.params.id;
 
-    const deletedSalle = await salleService.deleteSalleById(salleId);
+    const deletedSalle = await salleService.deleteSalleById(
+      salleId,
+      useNewDb(req)
+    );
 
     if (!deletedSalle) {
       return res.status(404).send("Salle not found");
@@ -99,7 +113,8 @@ const getSallesByDayAndTime = async (req, res) => {
       session_type,
       date_fin_emploi_period,
       date_debut_emploi_period,
-      semestre
+      semestre,
+      useNewDb(req)
     );
 
     if (!rooms) {
@@ -131,7 +146,8 @@ const getSallesDispoRattrapage = async (req, res) => {
       end_time,
       date_fin_emploi_period,
       date_debut_emploi_period,
-      semestre
+      semestre,
+      useNewDb(req)
     );
 
     if (!rooms) {

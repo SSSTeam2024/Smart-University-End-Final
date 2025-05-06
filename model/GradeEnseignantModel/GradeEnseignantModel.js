@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 
 const gradeEnseignantSchema = new mongoose.Schema(
   {
-    //value_grade_enseignant: { type: String, unique: true },
     grade_ar: String,
     grade_fr: String,
     charge_horaire: {
@@ -46,4 +45,5 @@ const gradeEnseignantSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("GradeEnseignant", gradeEnseignantSchema);
+// module.exports = mongoose.model("GradeEnseignant", gradeEnseignantSchema);
+module.exports = gradeEnseignantSchema;

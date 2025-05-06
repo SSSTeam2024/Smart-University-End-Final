@@ -1,20 +1,25 @@
-const puppeteer = require('puppeteer');
-const DemandeEtudiant = require('../../model/DemandeEtudiantModel/DemandeEtudiantModel');
+const puppeteer = require("puppeteer");
+const DemandeEtudiantSchema = require("../../model/DemandeEtudiantModel/DemandeEtudiantModel");
 
-// Function to create a new demand and generate its PDF
-const createDemandeEtudiant = async (demandeEtudiantData) => {
+function getDemandeEtudiantModel(dbConnection) {
+  return (
+    dbConnection.models.DemandeEtudiant ||
+    dbConnection.model("DemandeEtudiant", DemandeEtudiantSchema)
+  );
+}
+
+const createDemandeEtudiant = async (demandeEtudiantData, dbName) => {
+  const DemandeEtudiant = await getDemandeEtudiantModel(dbName);
   const demandeEtudiant = new DemandeEtudiant(demandeEtudiantData);
   await demandeEtudiant.save();
-  await generatePDF(demandeEtudiant); // Call to generate PDF
+  await generatePDF(demandeEtudiant);
   return demandeEtudiant;
 };
 
-// Function to generate the PDF
 const generatePDF = async (demandeEtudiant) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
-  // Generate HTML content for the PDF
   const htmlContent = `
     <h1>Demande Etudiant</h1>
     <p>Titre: ${demandeEtudiant.title}</p>
@@ -28,13 +33,12 @@ const generatePDF = async (demandeEtudiant) => {
   await page.setContent(htmlContent);
   await page.pdf({
     path: `./pdfs/demande_${demandeEtudiant._id}.pdf`,
-    format: 'A4',
+    format: "A4",
   });
 
   await browser.close();
 };
 
-// Export the necessary functions
 module.exports = {
   createDemandeEtudiant,
 };

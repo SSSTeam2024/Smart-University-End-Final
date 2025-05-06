@@ -1,15 +1,22 @@
 const typeParcoursService = require("../../services/TypeParcoursServices/TypeParcoursServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const createTypeParcours = async (req, res) => {
   try {
     const { name_type_parcours_fr, name_type_parcours_ar, abreviation } =
       req.body;
 
-    const typeParcours = await typeParcoursService.createTypeParcours({
-      name_type_parcours_fr,
-      name_type_parcours_ar,
-      abreviation,
-    });
+    const typeParcours = await typeParcoursService.createTypeParcours(
+      {
+        name_type_parcours_fr,
+        name_type_parcours_ar,
+        abreviation,
+      },
+      useNewDb(req)
+    );
     res.json(typeParcours);
   } catch (error) {
     console.error(error);
@@ -28,7 +35,8 @@ const updateTypeParcours = async (req, res) => {
         name_type_parcours_fr,
         name_type_parcours_ar,
         abreviation,
-      }
+      },
+      useNewDb(req)
     );
 
     if (!updatedTypeParcours) {
@@ -43,7 +51,9 @@ const updateTypeParcours = async (req, res) => {
 
 const getTypesParcours = async (req, res) => {
   try {
-    const typeParcours = await typeParcoursService.getTypeParcours();
+    const typeParcours = await typeParcoursService.getTypeParcours(
+      useNewDb(req)
+    );
     res.json(typeParcours);
   } catch (error) {
     console.error(error);
@@ -56,7 +66,8 @@ const deleteTypeParcours = async (req, res) => {
     const typeParcoursId = req.params.id;
 
     const deletedTypeParcours = await typeParcoursService.deleteTypeParcours(
-      typeParcoursId
+      typeParcoursId,
+      useNewDb(req)
     );
 
     if (!deletedTypeParcours) {
@@ -78,10 +89,13 @@ const getTypeParcoursByValue = async (req, res) => {
       });
     }
 
-    const typeParcoursValue = await typeParcoursService.getTypeParcoursByValue({
-      name_type_parcours_fr,
-      name_type_parcours_ar,
-    });
+    const typeParcoursValue = await typeParcoursService.getTypeParcoursByValue(
+      {
+        name_type_parcours_fr,
+        name_type_parcours_ar,
+      },
+      useNewDb(req)
+    );
 
     if (!typeParcoursValue) {
       return res.json(null);

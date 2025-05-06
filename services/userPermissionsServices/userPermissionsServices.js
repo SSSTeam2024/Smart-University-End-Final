@@ -1,73 +1,109 @@
-const permissionsDao = require('../../dao/userPermissions/userPermissionsDao');
-const userDao = require('../../dao/userDao/userDao')
+const permissionsDao = require("../../dao/userPermissions/userPermissionsDao");
+const { getDb } = require("../../config/dbSwitcher");
 
-
-
-const createPermission = async (name, path, section, sub_section) => {
+const createPermission = async (name, path, section, sub_section, dbName) => {
+  const db = await getDb(dbName);
   const permissionData = { name, path, section, sub_section };
-  return await permissionsDao.createPermission(permissionData);
+  return await permissionsDao.createPermission(permissionData, dbName, db);
 };
-const createPermissions = async (permissionsData) => {
-  
-  return await permissionsDao.createPermissions(permissionsData);
+
+const createPermissions = async (permissionsData, dbName) => {
+  const db = await getDb(dbName);
+  console.log("permissionsData serv", permissionsData);
+  return await permissionsDao.createPermissions(permissionsData, db);
 };
-const getAllPermissions = async ()=>{
-  return await permissionsDao.getAllPermissions()
-}
-const updatePermission = async (id, updateData)=>{
-  return await permissionsDao.updatePermission(id, updateData)
-}
-const getPermissionById = async (id)=>{
-  return await permissionsDao.getPermissionById()
-}
-const deletePermission = async (id)=>{
-  return await permissionsDao.deletePermission()
-}
-const assignPermissionsToUser = async (userId, permissionIds) => {
+
+const getAllPermissions = async (dbName) => {
+  const db = await getDb(dbName);
+  return await permissionsDao.getAllPermissions(db);
+};
+const updatePermission = async (id, updateData, dbName) => {
+  const db = await getDb(dbName);
+  return await permissionsDao.updatePermission(id, updateData, db);
+};
+const getPermissionById = async (id, dbName) => {
+  const db = await getDb(dbName);
+  return await permissionsDao.getPermissionById(id, db);
+};
+const deletePermission = async (id, dbName) => {
+  const db = await getDb(dbName);
+  return await permissionsDao.deletePermission(id, db);
+};
+const assignPermissionsToUser = async (userId, permissionIds, dbName) => {
   try {
-    return await permissionsDao.assignPermissionsToUser(userId, permissionIds);
+    const db = await getDb(dbName);
+    return await permissionsDao.assignPermissionsToUser(
+      userId,
+      permissionIds,
+      db
+    );
   } catch (error) {
     throw error;
   }
 };
 
-const deletePermissionsFromUser = async (userId, permissionIdsToDelete) => {
+const deletePermissionsFromUser = async (
+  userId,
+  permissionIdsToDelete,
+  dbName
+) => {
   try {
-    console.log("userId service", userId)
-      return await permissionsDao.deletePermissionsFromUser(userId, permissionIdsToDelete);
+    const db = await getDb(dbName);
+    return await permissionsDao.deletePermissionsFromUser(
+      userId,
+      permissionIdsToDelete,
+      db
+    );
   } catch (error) {
-      throw error;
+    throw error;
   }
 };
-const getPermissionsByUserId = async (userId) => {
-  return await permissionsDao.getPermissionsByUserId(userId);
+const getPermissionsByUserId = async (userId, dbName) => {
+  const db = await getDb(dbName);
+  return await permissionsDao.getPermissionsByUserId(userId, db);
 };
 
-const updatePermissionsForUser= async (userId, permissionIds) => {
+const updatePermissionsForUser = async (userId, permissionIds, dbName) => {
   try {
-    return await permissionsDao.updatePermissionsForUser(userId, permissionIds);
-  } catch (error) {
-    throw error;
-  }
-}
-const updatePermissionsForUserHistory = async (userId, permissionIds) => {
-  try {
-    await permissionsDao.updatePermissionsForUserHistory(userId, permissionIds);
+    const db = await getDb(dbName);
+    return await permissionsDao.updatePermissionsForUser(
+      userId,
+      permissionIds,
+      db
+    );
   } catch (error) {
     throw error;
   }
 };
-const getUserPermissionHistory = async (userId) => {
+const updatePermissionsForUserHistory = async (
+  userId,
+  permissionIds,
+  dbName
+) => {
   try {
-    return await permissionsDao.fetchUserPermissionHistory(userId);
+    const db = await getDb(dbName);
+    await permissionsDao.updatePermissionsForUserHistory(
+      userId,
+      permissionIds,
+      db
+    );
+  } catch (error) {
+    throw error;
+  }
+};
+const getUserPermissionHistory = async (userId, dbName) => {
+  try {
+    const db = await getDb(dbName);
+    return await permissionsDao.fetchUserPermissionHistory(userId, db);
   } catch (error) {
     throw error;
   }
 };
 
-module.exports={createPermission,
-   getAllPermissions,
-   updatePermission,
+module.exports = {
+  createPermission,
+  getAllPermissions,
+  updatePermission,
   deletePermission,
   getPermissionById,
   assignPermissionsToUser,
@@ -75,6 +111,6 @@ module.exports={createPermission,
   getPermissionsByUserId,
   updatePermissionsForUser,
   updatePermissionsForUserHistory,
-getUserPermissionHistory,
-createPermissions
-}
+  getUserPermissionHistory,
+  createPermissions,
+};

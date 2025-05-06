@@ -1,17 +1,30 @@
-const timeTableParamsModel = require("../../model/TimeTableParamsModel/TimeTableParamsModel");
+const timeTableParamsSchema = require("../../model/TimeTableParamsModel/TimeTableParamsModel");
 
-const createTimeTableParams = async (params) => {
+function getTimeTableParamsModel(dbConnection) {
+  return (
+    dbConnection.models.TimeTableParams ||
+    dbConnection.model("TimeTableParams", timeTableParamsSchema)
+  );
+}
+
+const createTimeTableParams = async (params, dbName) => {
+  const timeTableParamsModel = await getTimeTableParamsModel(dbName);
   return await timeTableParamsModel.create(params);
 };
 
-const getTimeTableParams = async () => {
+const getTimeTableParams = async (dbName) => {
+  const timeTableParamsModel = await getTimeTableParamsModel(dbName);
   return await timeTableParamsModel.find();
 };
 
-const updateTimeTableParams = async (updateData) => {
+const updateTimeTableParams = async (updateData, dbName) => {
+  const timeTableParamsModel = await getTimeTableParamsModel(dbName);
   let params = await timeTableParamsModel.find();
-  console.log(params);
-  return await timeTableParamsModel.findByIdAndUpdate(params[0]._id, updateData, { new: true });
+  return await timeTableParamsModel.findByIdAndUpdate(
+    params[0]._id,
+    updateData,
+    { new: true }
+  );
 };
 
 module.exports = {

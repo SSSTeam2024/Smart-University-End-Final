@@ -1,9 +1,12 @@
 const userService = require("../../services/userServices/userService");
-const globalFunctions = require("../../utils/globalFunctions");
+const metdataService = require("../../central/metadata");
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await userService.getUsers();
+    const users = await userService.getUsers(useNewDb(req));
     res.json(users);
   } catch (error) {
     res.status(500).send(error.message);
@@ -24,17 +27,20 @@ exports.createUser = async (req, res) => {
       permissions,
     } = req.body;
 
-    let user = await userService.createUser({
-      personnelId,
-      enseignantId,
-      login,
-      service,
-      password,
-      api_token,
-      app_name,
-      status,
-      permissions,
-    });
+    let user = await userService.createUser(
+      {
+        personnelId,
+        enseignantId,
+        login,
+        service,
+        password,
+        api_token,
+        app_name,
+        status,
+        permissions,
+      },
+      useNewDb(req)
+    );
     res.json(user);
   } catch (error) {
     res.status(500).send(error.message);
@@ -57,18 +63,22 @@ exports.updateUser = async (req, res) => {
       status,
     } = req.body;
 
-    let user = await userService.updateUser(userId, {
-      name,
-      email,
-      login,
-      role,
-      departement_id,
-      password,
-      api_token,
-      photo,
-      app_name,
-      status,
-    });
+    let user = await userService.updateUser(
+      userId,
+      {
+        name,
+        email,
+        login,
+        role,
+        departement_id,
+        password,
+        api_token,
+        photo,
+        app_name,
+        status,
+      },
+      useNewDb(req)
+    );
     res.json(user);
   } catch (error) {
     res.status(500).send(error.message);
@@ -78,7 +88,8 @@ exports.updateUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
   try {
     const { login, password } = req.body;
-    const user = await userService.loginUser(login, password);
+    const user = await userService.loginUser(login, password, useNewDb(req));
+    // const newDatabase = metdataService.getNewDbCache();
     res.json({ message: "Login successful", user });
   } catch (error) {
     res.status(401).send(error.message);
@@ -86,24 +97,16 @@ exports.loginUser = async (req, res) => {
 };
 exports.getUserByToken = async (req, res) => {
   try {
-    // const authHeader = req.headers['authorization'];
-    // if (!authHeader) {
-    //     return res.status(401).send('Authorization header missing');
-    // }
-
-    // const token = authHeader.split(' ')[1];
     const { token } = req.body;
     if (!token) {
       return res.status(401).send("Token missing");
     }
-
-    //console.log(`Token from header: ${token}`);
-    const user = await userService.getUserByToken(token);
+    const user = await userService.getUserByToken(token, useNewDb(req));
+    // const newDatabase = metdataService.getNewDbCache();
     if (!user) {
       return res.status(404).send("User not found");
     }
 
-    // console.log(`User: ${user}`);
     res.json(user);
   } catch (error) {
     console.error(`Get user by token error controller: ${error.message}`);
@@ -115,7 +118,7 @@ exports.logoutUser = async (req, res) => {
   try {
     let id = req.params.id;
 
-    await userService.logout(id);
+    await userService.logout(id, useNewDb(req));
 
     res.sendStatus(200);
   } catch (error) {
@@ -124,12 +127,10 @@ exports.logoutUser = async (req, res) => {
 };
 exports.getUserById = async (req, res) => {
   const { id } = req.params;
-  console.log("User ID received from controller:", id);
-
   try {
-    const user = await userService.getUserById(id);
+    const user = await userService.getUserById(id, useNewDb(req));
     if (!user) {
-      console.log("User not found"); // Add this line for debugging
+      console.log("User not found");
 
       return res.status(404).json({ error: "User not found" });
     }
@@ -143,7 +144,7 @@ exports.getUserById = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     const userId = req.params.id;
-    const result = await userService.deleteUser(userId);
+    const result = await userService.deleteUser(userId, useNewDb(req));
     if (result) {
       res.status(204).send();
     } else {
@@ -159,16 +160,15 @@ exports.verifyPassword = async (req, res) => {
     const { hashedPassword, plainPassword } = req.body;
 
     if (!hashedPassword || !plainPassword) {
-      return res
-        .status(400)
-        .json({
-          message: "Both hashedPassword and plainPassword are required.",
-        });
+      return res.status(400).json({
+        message: "Both hashedPassword and plainPassword are required.",
+      });
     }
 
     const isMatch = await userService.verifyPassword(
       hashedPassword,
-      plainPassword
+      plainPassword,
+      useNewDb(req)
     );
 
     res.json({ isMatch });

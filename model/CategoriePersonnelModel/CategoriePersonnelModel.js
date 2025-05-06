@@ -1,12 +1,12 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const categoriePersonnelSchema = new mongoose.Schema({
-  // value: { type: String, unique: true },
-  categorie_ar: String,
-  categorie_fr: String,
+const categoriePersonnelSchema = new mongoose.Schema(
+  {
+    categorie_ar: String,
+    categorie_fr: String,
+  },
+  { timestamps: true }
+);
 
- 
-},
-{ timestamps: true });
-
-module.exports = mongoose.model('CategoriePersonnel', categoriePersonnelSchema);
+// module.exports = mongoose.model('CategoriePersonnel', categoriePersonnelSchema);
+module.exports = categoriePersonnelSchema;

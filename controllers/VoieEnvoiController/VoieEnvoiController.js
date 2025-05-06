@@ -1,12 +1,19 @@
 const VoieEnvoiServices = require("../../services/VoieEnvoiServices/VoieEnvoiServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addVoieEnvoi = async (req, res) => {
   try {
     const { titre } = req.body;
 
-    const VoieEnvoi = await VoieEnvoiServices.createVoieEnvoi({
-      titre,
-    });
+    const VoieEnvoi = await VoieEnvoiServices.createVoieEnvoi(
+      {
+        titre,
+      },
+      useNewDb(req)
+    );
     res.json(VoieEnvoi);
   } catch (error) {
     console.error(error);
@@ -22,7 +29,8 @@ const updateVoieEnvoiById = async (req, res) => {
       VoieEnvoiId,
       {
         titre,
-      }
+      },
+      useNewDb(req)
     );
 
     if (!updatedVoieEnvoi) {
@@ -37,7 +45,7 @@ const updateVoieEnvoiById = async (req, res) => {
 
 const getAllVoieEnvoi = async (req, res) => {
   try {
-    const VoieEnvoi = await VoieEnvoiServices.getAllVoieEnvoi();
+    const VoieEnvoi = await VoieEnvoiServices.getAllVoieEnvoi(useNewDb(req));
     res.json(VoieEnvoi);
   } catch (error) {
     console.error(error);
@@ -50,7 +58,8 @@ const deleteVoieEnvoiById = async (req, res) => {
     const VoieEnvoiId = req.params.id;
 
     const deletedVoieEnvoi = await VoieEnvoiServices.deleteVoieEnvoi(
-      VoieEnvoiId
+      VoieEnvoiId,
+      useNewDb(req)
     );
 
     if (!deletedVoieEnvoi) {

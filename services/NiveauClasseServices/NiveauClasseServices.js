@@ -1,36 +1,20 @@
 const niveauClasseDao = require("../../dao/NiveauClasseDao/NiveauClasseDao");
-const niveauModel = require("../../model/NiveauClasseModel/NiveauClasseModel");
-const SectionClasse = require("../../model/SectionClasseModel/SectionClasseModel");
+const sectionClasseSchema = require("../../model/SectionClasseModel/SectionClasseModel");
+const { getDb } = require("../../config/dbSwitcher");
 
-// const registerNiveauClasse = async (userData) => {
-//   try {
-//     const niveauClasse = await niveauClasseDao.createNiveauClasse(userData);
-//     await Promise.all(
-//       userData.sections.map(async (sectionId) => {
-//         await SectionClasse.findByIdAndUpdate(sectionId, {
-//           $push: { niveau_classe: niveauClasse._id },
-//         });
-//       })
-//     );
+function getSectionClasseModel(dbConnection) {
+  return (
+    dbConnection.models.SectionClasse ||
+    dbConnection.model("SectionClasse", sectionClasseSchema)
+  );
+}
 
-//     await niveauClasse.populate("sections");
-
-//     return niveauClasse;
-//   } catch (error) {
-//     console.error("Error in registering niveau classe:", error);
-//     throw error;
-//   }
-// };
-
-const registerNiveauClasse = async (userData) => {
+const registerNiveauClasse = async (userData, useNew) => {
   try {
-    // Ensure sections is an array to prevent `.map()` from failing
+    const db = await getDb(useNew);
+    const SectionClasse = await getSectionClasseModel(dbName);
     const sections = Array.isArray(userData.sections) ? userData.sections : [];
-
-    // Create NiveauClasse
-    const niveauClasse = await niveauClasseDao.createNiveauClasse(userData);
-
-    // Update SectionClasse references only if sections exist
+    const niveauClasse = await niveauClasseDao.createNiveauClasse(userData, db);
     if (sections.length > 0) {
       await Promise.all(
         sections.map(async (sectionId) => {
@@ -49,36 +33,39 @@ const registerNiveauClasse = async (userData) => {
   }
 };
 
-const updateNiveauClasseDao = async (id, updateData) => {
-  return await niveauClasseDao.updateNiveauClasse(id, updateData);
+const updateNiveauClasseDao = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return await niveauClasseDao.updateNiveauClasse(id, updateData, db);
 };
 
-const getNiveauClasseDaoById = async (id) => {
-  return await niveauClasseDao.getNiveauClasseById(id);
+const getNiveauClasseDaoById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await niveauClasseDao.getNiveauClasseById(id, db);
 };
 
-const getNiveauxClasseDao = async () => {
-  const result = await niveauClasseDao.getNiveauxClasse();
+const getNiveauxClasseDao = async (useNew) => {
+  const db = await getDb(useNew);
+  const result = await niveauClasseDao.getNiveauxClasse(db);
   return result;
 };
 
-const deleteNiveauClasse = async (id) => {
+const deleteNiveauClasse = async (id, useNew) => {
   try {
-    console.log(`Attempting to delete niveau classe with ID: ${id}`);
-    const deletedNiveauClasse = await niveauClasseDao.deleteNiveauClasse(id);
+    const db = await getDb(useNew);
+    const SectionClasse = await getSectionClasseModel(dbName);
+    const deletedNiveauClasse = await niveauClasseDao.deleteNiveauClasse(
+      id,
+      db
+    );
 
     if (!deletedNiveauClasse) {
-      console.log(`Niveau Classe with ID ${id} not found`);
       throw new Error("Niveau Classe not found");
     }
-
-    console.log(`Niveau Classe with ID ${id} deleted successfully`);
     const updateResult = await SectionClasse.updateMany(
       { niveau_classe: id },
       { $pull: { niveau_classe: id } }
     );
 
-    console.log("Update result:", updateResult);
     if (updateResult.nModified === 0) {
       console.warn(
         `No sections were updated to remove the deleted niveau classe ID ${id}`
@@ -91,28 +78,32 @@ const deleteNiveauClasse = async (id) => {
     throw error;
   }
 };
-// getSectionsByIdNiveau
 
-async function getSectionsByIdNiveau(niveauClasseId) {
+async function getSectionsByIdNiveau(niveauClasseId, useNew) {
   try {
-    return await niveauClasseDao.getSectionsByIdNiveau(niveauClasseId);
+    const db = await getDb(useNew);
+    return await niveauClasseDao.getSectionsByIdNiveau(niveauClasseId, db);
   } catch (error) {
     throw error;
   }
 }
 
-// getSectionsByIdNiveau
-
-async function getCyclesByIdNiveau(niveauClasseId) {
+async function getCyclesByIdNiveau(niveauClasseId, useNew) {
   try {
-    return await niveauClasseDao.getCyclesByIdNiveau(niveauClasseId);
+    const db = await getDb(useNew);
+    return await niveauClasseDao.getCyclesByIdNiveau(niveauClasseId, db);
   } catch (error) {
     throw error;
   }
 }
 
-const getNiveauByValue = async ({ name_niveau_ar, name_niveau_fr }) => {
-  return await niveauClasseDao.getNiveauByValue(name_niveau_ar, name_niveau_fr);
+const getNiveauByValue = async ({ name_niveau_ar, name_niveau_fr }, useNew) => {
+  const db = await getDb(useNew);
+  return await niveauClasseDao.getNiveauByValue(
+    name_niveau_ar,
+    name_niveau_fr,
+    db
+  );
 };
 
 module.exports = {

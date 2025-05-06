@@ -25,4 +25,5 @@ const courrierSortantSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("CourrierSortant", courrierSortantSchema);
+// module.exports = mongoose.model("CourrierSortant", courrierSortantSchema);
+module.exports = courrierSortantSchema;

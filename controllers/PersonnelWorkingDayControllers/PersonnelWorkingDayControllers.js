@@ -1,5 +1,9 @@
 const PersonnelWorkingDayServices = require("../../services/PersonnelWorkingDayServices/PersonnelWorkingDayServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addPersonnelWorkingDay = async (req, res) => {
   try {
     const {
@@ -14,16 +18,19 @@ const addPersonnelWorkingDay = async (req, res) => {
     } = req.body;
 
     const personnelWorkingDay =
-      await PersonnelWorkingDayServices.createPersonnelWorkingDay({
-        name,
-        day_start_time,
-        day_end_time,
-        daily_pause_start,
-        daily_pause_end,
-        period_start,
-        period_end,
-        part_time,
-      });
+      await PersonnelWorkingDayServices.createPersonnelWorkingDay(
+        {
+          name,
+          day_start_time,
+          day_end_time,
+          daily_pause_start,
+          daily_pause_end,
+          period_start,
+          period_end,
+          part_time,
+        },
+        useNewDb(req)
+      );
     res.json(personnelWorkingDay);
   } catch (error) {
     console.error(error);
@@ -56,7 +63,8 @@ const updatePersonnelWorkingDay = async (req, res) => {
           period_start,
           period_end,
           part_time,
-        }
+        },
+        useNewDb(req)
       );
 
     if (!updatePersonnelWorkingDay) {
@@ -72,7 +80,7 @@ const updatePersonnelWorkingDay = async (req, res) => {
 const getPersonnelWorkingDay = async (req, res) => {
   try {
     const personnelWorkingDay =
-      await PersonnelWorkingDayServices.getPersonnelWorkingDay();
+      await PersonnelWorkingDayServices.getPersonnelWorkingDay(useNewDb(req));
     res.json(personnelWorkingDay);
   } catch (error) {
     console.error(error);
@@ -86,7 +94,8 @@ const deletePersonnelWorkingDay = async (req, res) => {
 
     const deletedPersonnelWorkingDay =
       await PersonnelWorkingDayServices.deletePersonnelWorkingDay(
-        personnelWorkingDayId
+        personnelWorkingDayId,
+        useNewDb(req)
       );
 
     if (!deletedPersonnelWorkingDay) {

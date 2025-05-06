@@ -1,14 +1,19 @@
-const VirtualServiceService = require('../../services/VirtualServiceServices/VirtualServiceServices');
+const VirtualServiceService = require("../../services/VirtualServiceServices/VirtualServiceServices");
+
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
 
 const createVirtualService = async (req, res) => {
   try {
-    const {
-      title
-    } = req.body;
+    const { title } = req.body;
 
-    const VirtualService = await VirtualServiceService.createVirtualService({
-      title
-    });
+    const VirtualService = await VirtualServiceService.createVirtualService(
+      {
+        title,
+      },
+      useNewDb(req)
+    );
 
     res.status(201).json(VirtualService);
   } catch (error) {
@@ -19,7 +24,9 @@ const createVirtualService = async (req, res) => {
 
 const getAllVirtualServices = async (req, res) => {
   try {
-    const VirtualServices = await VirtualServiceService.getAllVirtualServices();
+    const VirtualServices = await VirtualServiceService.getAllVirtualServices(
+      useNewDb(req)
+    );
     res.status(200).json(VirtualServices);
   } catch (error) {
     console.error("Error fetching all VirtualServices:", error);
@@ -29,9 +36,12 @@ const getAllVirtualServices = async (req, res) => {
 
 const getVirtualServiceById = async (req, res) => {
   try {
-    const VirtualService = await VirtualServiceService.getVirtualServiceById(req.body._id);
+    const VirtualService = await VirtualServiceService.getVirtualServiceById(
+      req.body._id,
+      useNewDb(req)
+    );
     if (!VirtualService) {
-      return res.status(404).json({ message: 'VirtualService not found' });
+      return res.status(404).json({ message: "VirtualService not found" });
     }
     res.status(200).json(VirtualService);
   } catch (error) {
@@ -42,33 +52,39 @@ const getVirtualServiceById = async (req, res) => {
 
 const updateVirtualService = async (req, res) => {
   try {
-      const {
-          _id,
-          title
-      } = req.body;
+    const { _id, title } = req.body;
 
-      const updatedVirtualService = await VirtualServiceService.updateVirtualService(_id, {
-          title
-      });
+    const updatedVirtualService =
+      await VirtualServiceService.updateVirtualService(
+        _id,
+        {
+          title,
+        },
+        useNewDb(req)
+      );
 
-      if (!updatedVirtualService) {
-          return res.status(404).json({ message: 'VirtualService not found' });
-      }
+    if (!updatedVirtualService) {
+      return res.status(404).json({ message: "VirtualService not found" });
+    }
 
-      res.status(200).json(updatedVirtualService);
+    res.status(200).json(updatedVirtualService);
   } catch (error) {
-      console.error("Error updating VirtualService:", error);
-      res.status(500).json({ message: error.message });
+    console.error("Error updating VirtualService:", error);
+    res.status(500).json({ message: error.message });
   }
 };
 
 const deleteVirtualService = async (req, res) => {
   try {
-    const deletedVirtualService = await VirtualServiceService.deleteVirtualService(req.body._id);
+    const deletedVirtualService =
+      await VirtualServiceService.deleteVirtualService(
+        req.body._id,
+        useNewDb(req)
+      );
     if (!deletedVirtualService) {
-      return res.status(404).json({ message: 'VirtualService not found' });
+      return res.status(404).json({ message: "VirtualService not found" });
     }
-    res.status(200).json({ message: 'VirtualService deleted successfully' });
+    res.status(200).json({ message: "VirtualService deleted successfully" });
   } catch (error) {
     console.error("Error deleting VirtualService:", error);
     res.status(500).json({ message: error.message });
@@ -80,5 +96,5 @@ module.exports = {
   getAllVirtualServices,
   getVirtualServiceById,
   updateVirtualService,
-  deleteVirtualService
+  deleteVirtualService,
 };

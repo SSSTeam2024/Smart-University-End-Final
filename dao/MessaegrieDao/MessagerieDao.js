@@ -1,7 +1,14 @@
-const Message = require("../../model/MessagerieModel/MessagerieModel");
-const {getUserById}= require ("../../utils/getUser")
+const MessageSchema = require("../../model/MessagerieModel/MessagerieModel");
+const { getUserById } = require("../../utils/getUser");
 
-const createMessage = async (data) => {
+function getMessageModel(dbConnection) {
+  return (
+    dbConnection.models.Message || dbConnection.model("Message", MessageSchema)
+  );
+}
+
+const createMessage = async (data, dbName) => {
+  const Message = await getMessageModel(dbName);
   return await Message.create(data);
 };
 
@@ -12,8 +19,14 @@ const populateUserDetails = async (messages) => {
   return await Promise.all(
     messages.map(async (message) => {
       // Fetch sender details
-      const senderDetails = await getUserById(message.sender.userId, message.sender.userType);
-      const receiverDetails = await getUserById(message.receiver.userId, message.receiver.userType);
+      const senderDetails = await getUserById(
+        message.sender.userId,
+        message.sender.userType
+      );
+      const receiverDetails = await getUserById(
+        message.receiver.userId,
+        message.receiver.userType
+      );
 
       return {
         ...message.toObject(),
@@ -23,37 +36,41 @@ const populateUserDetails = async (messages) => {
     })
   );
 };
- 
-const getUserInbox = async (userId, userType) => {
+
+const getUserInbox = async (userId, userType, dbName) => {
+  const Message = await getMessageModel(dbName);
   const messages = await Message.find({
-     "receiver.userId": userId,
-      "receiver.userType": userType,
-      receiverStatus: { $ne: "archived" }, 
-      deletedBy: { $not: { $elemMatch: { userId, userType } } } // Exclude deleted messages
-     }).sort({ createdAt: -1 });
+    "receiver.userId": userId,
+    "receiver.userType": userType,
+    receiverStatus: { $ne: "archived" },
+    deletedBy: { $not: { $elemMatch: { userId, userType } } }, // Exclude deleted messages
+  }).sort({ createdAt: -1 });
   return populateUserDetails(messages);
 };
-const getUserArchivedInbox = async (userId, userType) => {
+const getUserArchivedInbox = async (userId, userType, dbName) => {
   // console.log("Fetching archived inbox for:", { userId, userType });
+  const Message = await getMessageModel(dbName);
   const messages = await Message.find({
-     "receiver.userId": userId,
-      "receiver.userType": userType,
-      receiverStatus: "archived",
-     }).sort({ createdAt: -1 });
-    //  console.log("Fetched Messages:", messages); 
+    "receiver.userId": userId,
+    "receiver.userType": userType,
+    receiverStatus: "archived",
+  }).sort({ createdAt: -1 });
+  //  console.log("Fetched Messages:", messages);
   return populateUserDetails(messages);
 };
 
-const getUserSentMessages = async (userId, userType) => {
+const getUserSentMessages = async (userId, userType, dbName) => {
+  const Message = await getMessageModel(dbName);
   const messages = await Message.find({
-     "sender.userId": userId, 
-     "sender.userType": userType,
-     senderStatus: { $ne: "archived" }, // Exclude archived messages for the sender
-     deletedBy: { $not: { $elemMatch: { userId, userType } } } 
-    }).sort({ createdAt: -1 });
+    "sender.userId": userId,
+    "sender.userType": userType,
+    senderStatus: { $ne: "archived" }, // Exclude archived messages for the sender
+    deletedBy: { $not: { $elemMatch: { userId, userType } } },
+  }).sort({ createdAt: -1 });
   return populateUserDetails(messages);
 };
-const getUserArchivedSentMessages = async (userId, userType) => {
+const getUserArchivedSentMessages = async (userId, userType, dbName) => {
+  const Message = await getMessageModel(dbName);
   const messages = await Message.find({
     "sender.userId": userId,
     "sender.userType": userType,
@@ -63,17 +80,29 @@ const getUserArchivedSentMessages = async (userId, userType) => {
   return populateUserDetails(messages);
 };
 
-const markAsRead = async (messageId) => {
-  return await Message.findByIdAndUpdate(messageId, { status: "read" }, { new: true });
+const markAsRead = async (messageId, dbName) => {
+  const Message = await getMessageModel(dbName);
+  return await Message.findByIdAndUpdate(
+    messageId,
+    { status: "read" },
+    { new: true }
+  );
 };
-const archiveMessage = async (messageId, userId, userType) => {
+const archiveMessage = async (messageId, userId, userType, dbName) => {
+  const Message = await getMessageModel(dbName);
   const message = await Message.findById(messageId);
   if (!message) throw new Error("Message not found");
 
-  if (message.sender.userId.toString() === userId && message.sender.userType === userType) {
+  if (
+    message.sender.userId.toString() === userId &&
+    message.sender.userType === userType
+  ) {
     // The user is the sender
     message.senderStatus = "archived";
-  } else if (message.receiver.userId.toString() === userId && message.receiver.userType === userType) {
+  } else if (
+    message.receiver.userId.toString() === userId &&
+    message.receiver.userType === userType
+  ) {
     // The user is the receiver
     message.receiverStatus = "archived";
   } else {
@@ -83,22 +112,26 @@ const archiveMessage = async (messageId, userId, userType) => {
   return await message.save();
 };
 
-const deleteMessage = async (messageId) => {
+const deleteMessage = async (messageId, dbName) => {
+  const Message = await getMessageModel(dbName);
   return await Message.findByIdAndDelete(messageId);
 };
 
-const getRepliesByMessageId = async (messageId) => {
+const getRepliesByMessageId = async (messageId, dbName) => {
   try {
+    const Message = await getMessageModel(dbName);
     return await Message.find({ parentMessageId: messageId }).sort("createdAt");
   } catch (error) {
     throw new Error("Erreur lors de la récupération des réponses.");
   }
 };
 
-const findMessageById = async (messageId) => {
+const findMessageById = async (messageId, dbName) => {
+  const Message = await getMessageModel(dbName);
   return await Message.findById(messageId);
 };
-const markMessageAsDeleted = async (messageId, userId, userType) => {
+const markMessageAsDeleted = async (messageId, userId, userType, dbName) => {
+  const Message = await getMessageModel(dbName);
   return await Message.findByIdAndUpdate(
     messageId,
     { $addToSet: { deletedBy: { userId, userType } } }, // Prevents duplicate entries
@@ -117,6 +150,5 @@ module.exports = {
   deleteMessage,
   getRepliesByMessageId,
   markMessageAsDeleted,
-  findMessageById
-  
+  findMessageById,
 };

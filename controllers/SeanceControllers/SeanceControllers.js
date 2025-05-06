@@ -1,5 +1,9 @@
 const seanceService = require("../../services/SeanceServices/SeanceServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const createSeance = async (req, res) => {
   try {
     const {
@@ -14,19 +18,22 @@ const createSeance = async (req, res) => {
       type_seance,
       emploiPeriodique_id,
     } = req.body;
-    
-    const seanceJson = await seanceService.createSeance({
-      jour,
-      matiere,
-      enseignant,
-      classe,
-      salle,
-      heure_fin,
-      heure_debut,
-      type_seance,
-      semestre,
-      emploiPeriodique_id,
-    });
+
+    const seanceJson = await seanceService.createSeance(
+      {
+        jour,
+        matiere,
+        enseignant,
+        classe,
+        salle,
+        heure_fin,
+        heure_debut,
+        type_seance,
+        semestre,
+        emploiPeriodique_id,
+      },
+      useNewDb(req)
+    );
     res.json(seanceJson);
   } catch (error) {
     console.error(error);
@@ -48,17 +55,21 @@ const updateSeanceById = async (req, res) => {
       type_seance,
     } = req.body;
 
-    const updatedSeance = await seanceService.updateSeance(seanceId, {
-      jour,
-      matiere,
-      enseignant,
-      classe,
-      salle,
-      heure_fin,
-      heure_debut,
-      semestre,
-      type_seance,
-    });
+    const updatedSeance = await seanceService.updateSeance(
+      seanceId,
+      {
+        jour,
+        matiere,
+        enseignant,
+        classe,
+        salle,
+        heure_fin,
+        heure_debut,
+        semestre,
+        type_seance,
+      },
+      useNewDb(req)
+    );
 
     if (!updatedSeance) {
       return res.status(404).send("Seance not found!");
@@ -74,7 +85,10 @@ const getSeanceById = async (req, res) => {
   try {
     const seanceId = req.params.id;
 
-    const getSeance = await seanceService.getSeanceById(seanceId);
+    const getSeance = await seanceService.getSeanceById(
+      seanceId,
+      useNewDb(req)
+    );
 
     if (!getSeance) {
       return res.status(404).send("Seance not found");
@@ -93,7 +107,8 @@ const getSeancesByIdTeacher = async (req, res) => {
     const seances = await seanceService.getSeancesByIdTeacher(
       teacher_id,
       jour,
-      emplois_periodiques_ids
+      emplois_periodiques_ids,
+      useNewDb(req)
     );
 
     if (!seances) {
@@ -112,7 +127,8 @@ const getPeriodicSessionsByTeacher = async (req, res) => {
 
     const seances = await seanceService.getPeriodicSessionsByTeacher(
       teacher_id,
-      emplois_periodiques_ids
+      emplois_periodiques_ids,
+      useNewDb(req)
     );
 
     if (!seances) {
@@ -128,9 +144,12 @@ const getPeriodicSessionsByTeacher = async (req, res) => {
 const getSessionsByRoomId = async (req, res) => {
   try {
     const roomId = req.params.id;
-   
-    const seances = await seanceService.getSessionsByRoomId(roomId);
-    
+
+    const seances = await seanceService.getSessionsByRoomId(
+      roomId,
+      useNewDb(req)
+    );
+
     if (!seances) {
       return res.status(404).send("Pas de séances");
     }
@@ -143,7 +162,7 @@ const getSessionsByRoomId = async (req, res) => {
 
 const getAllSeances = async (req, res) => {
   try {
-    const seances = await seanceService.getAllSeances();
+    const seances = await seanceService.getAllSeances(useNewDb(req));
     res.json(seances);
   } catch (error) {
     console.error(error);
@@ -158,7 +177,10 @@ const getAllSeancesByIdEmploi = async (req, res) => {
       const error = { message: "Invalid session id" };
       res.json(error);
     } else {
-      const seances = await seanceService.getAllSeancesByIdEmploi(idEmploi);
+      const seances = await seanceService.getAllSeancesByIdEmploi(
+        idEmploi,
+        useNewDb(req)
+      );
       res.json(seances);
     }
   } catch (error) {
@@ -171,7 +193,10 @@ const deleteSeanceById = async (req, res) => {
   try {
     const seance = req.body;
 
-    const deletedSeance = await seanceService.deleteSeance(seance);
+    const deletedSeance = await seanceService.deleteSeance(
+      seance,
+      useNewDb(req)
+    );
 
     if (!deletedSeance) {
       return res.status(404).send("Seance not found");
@@ -192,7 +217,8 @@ const fetchSeancesByIdTeacherAndSemestre = async (req, res) => {
 
     const seances = await seanceService.getSeancesByIdTeacherAndSemestre(
       enseignantId,
-      semestre
+      semestre,
+      useNewDb(req)
     );
     return res.status(200).json(seances);
   } catch (error) {

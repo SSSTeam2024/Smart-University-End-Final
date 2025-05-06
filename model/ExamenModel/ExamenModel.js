@@ -65,4 +65,4 @@ const examenSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Examen", examenSchema);
+module.exports = examenSchema;

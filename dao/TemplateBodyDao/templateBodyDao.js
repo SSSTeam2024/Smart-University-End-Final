@@ -1,25 +1,37 @@
-const TemplateBody = require("../../model/TemplateBodyModel/templateBodyModel")
+const templateBodySchema = require("../../model/TemplateBodyModel/templateBodyModel");
 
-const createTemplateBody = async (templateBody) => {
+function getTemplateBodyModel(dbConnection) {
+  return (
+    dbConnection.models.TemplateBody ||
+    dbConnection.model("TemplateBody", templateBodySchema)
+  );
+}
+
+const createTemplateBody = async (templateBody, dbName) => {
+  const TemplateBody = await getTemplateBodyModel(dbName);
   return await TemplateBody.create(templateBody);
 };
 
-const getTemplateBodys = async () => {
-  return await TemplateBody.find()
+const getTemplateBodys = async (dbName) => {
+  const TemplateBody = await getTemplateBodyModel(dbName);
+  return await TemplateBody.find();
 };
 
-const getTemplateBodyById = async (id) => {
+const getTemplateBodyById = async (id, dbName) => {
+  const TemplateBody = await getTemplateBodyModel(dbName);
   return await TemplateBody.findById(id);
 };
-const deleteTemplateBody = async (id) => {
-  return await TemplateBody.findByIdAndDelete(id)
+const deleteTemplateBody = async (id, dbName) => {
+  const TemplateBody = await getTemplateBodyModel(dbName);
+  return await TemplateBody.findByIdAndDelete(id);
 };
 
-const getTemplateBodyByContext = async (intended_for) => {
+const getTemplateBodyByContext = async (intended_for, dbName) => {
+  const TemplateBody = await getTemplateBodyModel(dbName);
   const query = {
-    intended_for: intended_for
+    intended_for: intended_for,
   };
-  return await TemplateBody.find(query)
+  return await TemplateBody.find(query);
 };
 
 module.exports = {
@@ -27,5 +39,5 @@ module.exports = {
   getTemplateBodys,
   getTemplateBodyById,
   deleteTemplateBody,
-  getTemplateBodyByContext
+  getTemplateBodyByContext,
 };

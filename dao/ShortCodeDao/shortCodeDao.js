@@ -1,15 +1,23 @@
-const ShortCode = require("../../model/ShortCodeModel/shortCodeModel")
+const shortCodeSchema = require("../../model/ShortCodeModel/shortCodeModel");
 
-const createShortCode = async (shortCodes) => {
+function getShortCodeModel(dbConnection) {
+  return (
+    dbConnection.models.ShortCode ||
+    dbConnection.model("ShortCode", shortCodeSchema)
+  );
+}
+
+const createShortCode = async (shortCodes, dbName) => {
+  const ShortCode = await getShortCodeModel(dbName);
   return await ShortCode.insertMany(shortCodes);
 };
 
-
-const getShortCodes = async () => {
-  return await ShortCode.find()
+const getShortCodes = async (dbName) => {
+  const ShortCode = await getShortCodeModel(dbName);
+  return await ShortCode.find();
 };
 
 module.exports = {
-    createShortCode,
-    getShortCodes
+  createShortCode,
+  getShortCodes,
 };

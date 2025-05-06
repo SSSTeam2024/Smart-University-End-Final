@@ -1,8 +1,12 @@
-const User = require('../../model/userModel/userModel');
+const userSchema = require("../../model/userModel/userModel");
 
+function getUserModel(dbConnection) {
+  return dbConnection.models.User || dbConnection.model("User", userSchema);
+}
 
-const createUser = async (userData) => {
+const createUser = async (userData, dbName) => {
   try {
+    const User = getUserModel(dbName);
     return await User.create(userData);
   } catch (error) {
     console.error("Error creating User:", error);
@@ -10,74 +14,99 @@ const createUser = async (userData) => {
   }
 };
 
-const findUserByLogin = async (login) => {
-    return await User.findOne({ login });
+const findUserByLogin = async (login, dbName) => {
+  const User = getUserModel(dbName);
+  return await User.findOne({ login });
 };
 
 // find User by token
-const findUserByToken = async (token) => {
-    let api_token = token;
-    // console.log("Token DAO", api_token)
-    return await User.findOne({ api_token }).populate("permissions").populate("personnelId").populate("enseignantId");
-  };
+const findUserByToken = async (token, dbName) => {
+  let api_token = token;
+  const User = getUserModel(dbName);
+  return await User.findOne({ api_token })
+    .populate("permissions")
+    .populate("personnelId")
+    .populate("enseignantId");
+};
 // get all Users
-const getAllUsers = async () => {
-    return await User.find({}).populate("enseignantId").populate("personnelId").populate("service").populate("permissions");
-  };
-  const updateJwtToken = async (id, token) => {
-    return await User.findByIdAndUpdate({ _id:id }, {
+const getAllUsers = async (dbName) => {
+  const User = getUserModel(dbName);
+  return await User.find({})
+    .populate("enseignantId")
+    .populate("personnelId")
+    .populate("service")
+    .populate("permissions");
+};
+const updateJwtToken = async (id, token, dbName) => {
+  const User = getUserModel(dbName);
+  return await User.findByIdAndUpdate(
+    { _id: id },
+    {
       $set: {
-        api_token: token
-      }
-    });
-  }
-
-const updateUser = async (id, updateData) => {
-    return await User.findByIdAndUpdate(id, updateData, { new: true });
+        api_token: token,
+      },
+    }
+  );
 };
 
-const deleteUser = async (id) => {
-    return await User.findByIdAndDelete(id);
+const updateUser = async (id, updateData, dbName) => {
+  const User = getUserModel(dbName);
+  return await User.findByIdAndUpdate(id, updateData, { new: true });
 };
 
-const getUserById = async (_id) => {
-  return await User.findById(_id).populate('permissions').populate("enseignantId").populate("personnelId").exec();
+const deleteUser = async (id, dbName) => {
+  const User = getUserModel(dbName);
+  return await User.findByIdAndDelete(id);
 };
 
-const getUserByEmail = async (email) => {
-    return await User.findOne({ email });
-}
-const updatePassword = async (id, password) => {
-    // console.log('Hashed pwd: '+password);
-    return await User.findByIdAndUpdate({ _id:id }, {
+const getUserById = async (_id, dbName) => {
+  const User = getUserModel(dbName);
+  return await User.findById(_id)
+    .populate("permissions")
+    .populate("enseignantId")
+    .populate("personnelId")
+    .exec();
+};
+
+const getUserByEmail = async (email, dbName) => {
+  const User = getUserModel(dbName);
+  return await User.findOne({ email });
+};
+const updatePassword = async (id, password, dbName) => {
+  const User = getUserModel(dbName);
+  return await User.findByIdAndUpdate(
+    { _id: id },
+    {
       $set: {
-        password: password
-      }
-    });
-  }
-  
-    // logout
-    const logout = async (id) => {
-        return await User.findByIdAndUpdate({ _id:id }, {
-          $set: {
-            api_token: ""
-          }
-        });
-      }
-  
+        password: password,
+      },
+    }
+  );
+};
 
+// logout
+const logout = async (id, dbName) => {
+  const User = getUserModel(dbName);
+  return await User.findByIdAndUpdate(
+    { _id: id },
+    {
+      $set: {
+        api_token: "",
+      },
+    }
+  );
+};
 
 module.exports = {
-    createUser,
-    findUserByToken,
-    getAllUsers,
-    updateUser,
-    deleteUser,
-    getUserById,
-    getUserByEmail,
-    findUserByLogin,
-    updatePassword,
-    updateJwtToken,
-    logout
-
+  createUser,
+  findUserByToken,
+  getAllUsers,
+  updateUser,
+  deleteUser,
+  getUserById,
+  getUserByEmail,
+  findUserByLogin,
+  updatePassword,
+  updateJwtToken,
+  logout,
 };

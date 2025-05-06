@@ -1,6 +1,10 @@
 const classeService = require("../../services/ClasseServices/ClasseServices");
 const classeDao = require("../../dao/ClasseDao/ClasseDao");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addClasse = async (req, res) => {
   try {
     const {
@@ -11,13 +15,16 @@ const addClasse = async (req, res) => {
       groupe_number,
     } = req.body;
 
-    const classeJson = await classeService.createClasse({
-      niveau_classe,
-      departement,
-      nom_classe_ar,
-      nom_classe_fr,
-      groupe_number,
-    });
+    const classeJson = await classeService.createClasse(
+      {
+        niveau_classe,
+        departement,
+        nom_classe_ar,
+        nom_classe_fr,
+        groupe_number,
+      },
+      useNewDb(req)
+    );
     res.json(classeJson);
   } catch (error) {
     console.error(error);
@@ -38,16 +45,20 @@ const updateClasseById = async (req, res) => {
       matieres,
     } = req.body;
 
-    const updatedClasse = await classeService.updateClasse(_id, {
-      niveau_classe,
-      departement,
-      nom_classe_ar,
-      nom_classe_fr,
-      groupe_number,
-      parcours,
-      semestres,
-      matieres,
-    });
+    const updatedClasse = await classeService.updateClasse(
+      _id,
+      {
+        niveau_classe,
+        departement,
+        nom_classe_ar,
+        nom_classe_fr,
+        groupe_number,
+        parcours,
+        semestres,
+        matieres,
+      },
+      useNewDb(req)
+    );
 
     if (!updatedClasse) {
       return res.status(404).send("Classe not found!");
@@ -63,7 +74,10 @@ const getClasseById = async (req, res) => {
   try {
     const classeId = req.params.id;
 
-    const getClasse = await classeService.getClasseById(classeId);
+    const getClasse = await classeService.getClasseById(
+      classeId,
+      useNewDb(req)
+    );
 
     if (!getClasse) {
       return res.status(404).send("Classe not found");
@@ -77,7 +91,7 @@ const getClasseById = async (req, res) => {
 
 const getAllClasses = async (req, res) => {
   try {
-    const classes = await classeService.getClasses();
+    const classes = await classeService.getClasses(useNewDb(req));
     res.json(classes);
   } catch (error) {
     console.error(error);
@@ -90,7 +104,10 @@ const deleteClasseById = async (req, res) => {
     const classeId = req.params.id;
     console.log(`Received request to delete classe with ID: ${classeId}`);
 
-    const deletedClasse = await classeService.deleteClasseById(classeId);
+    const deletedClasse = await classeService.deleteClasseById(
+      classeId,
+      useNewDb(req)
+    );
 
     if (!deletedClasse) {
       return res.status(404).send("Classe not found");
@@ -112,7 +129,8 @@ async function assignMatieresToClasseController(req, res, next) {
   try {
     const updatedClasse = await classeService.assignMatieresToClasse(
       classeId,
-      matiereIds
+      matiereIds,
+      useNewDb(req)
     );
     res.status(200).json(updatedClasse);
   } catch (error) {
@@ -126,7 +144,8 @@ const deleteAssignedMatiereFromClasse = async (req, res) => {
   try {
     const updatedClasse = await classeDao.deleteAssignedMatiereFromClasse(
       classeId,
-      matiereId
+      matiereId,
+      useNewDb(req)
     );
     res.json(updatedClasse);
   } catch (error) {
@@ -139,7 +158,10 @@ async function getAssignedMatieres(req, res) {
   const { classeId } = req.params;
 
   try {
-    const matieres = await classeService.getAssignedMatieres(classeId);
+    const matieres = await classeService.getAssignedMatieres(
+      classeId,
+      useNewDb(req)
+    );
     res.json(matieres);
   } catch (error) {
     console.error("Error fetching assigned matieres:", error);
@@ -152,7 +174,8 @@ const getAllClassesByTeacher = async (req, res) => {
     const { teacherId, semestre } = req.body;
     const classes = await classeService.getClassesByTeacherId(
       teacherId,
-      semestre
+      semestre,
+      useNewDb(req)
     );
     res.json(classes);
   } catch (error) {
@@ -171,10 +194,13 @@ const getClasseByValue = async (req, res) => {
         .json({ message: "nom_classe_ar and nom_classe_fr are required" });
     }
 
-    const classeValue = await classeService.getClasseByValue({
-      nom_classe_ar,
-      nom_classe_fr,
-    });
+    const classeValue = await classeService.getClasseByValue(
+      {
+        nom_classe_ar,
+        nom_classe_fr,
+      },
+      useNewDb(req)
+    );
 
     if (!classeValue) {
       return res.json(null);
@@ -220,7 +246,8 @@ const assignParcoursToClasse = async (req, res) => {
     const updatedClasse = await classeService.assignParcoursToClasse(
       classeId,
       parcoursId,
-      semestres // ✅ Pass semestres to service
+      semestres, // ✅ Pass semestres to service
+      useNewDb(req)
     );
 
     if (!updatedClasse) {

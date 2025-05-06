@@ -1,17 +1,16 @@
 const DemandeCongeDao = require("../../dao/CongeDao/DemandeCongeDao");
 const LeaveBalanceDao = require("../../dao/CongeDao/LeaveBalanceDao");
 const LeaveBalance = require("../../model/CongéModels/SoldeCongéModel");
+const { getDb } = require("../../config/dbSwitcher");
 
 const fs = require("fs").promises;
 const mongoose = require("mongoose");
 
 async function saveDocumentsToServer(documents) {
-  console.log("docs", documents);
   let counter = 0;
   for (const file of documents) {
     await saveFile(file.base64String, file.name, file.path);
     counter++;
-    console.log("File number " + counter + " saved");
   }
   if (counter == documents.length) return true;
 }
@@ -28,23 +27,25 @@ async function saveFile(base64String, fileName, file_path) {
     }
   });
 }
-const createDemandeConge = async (demandeCongeData, documents) => {
+const createDemandeConge = async (demandeCongeData, documents, useNew) => {
   try {
+    const db = await getDb(useNew);
     const saveResult = await saveDocumentsToServer(documents);
 
     if (!saveResult) {
       throw new Error("Not all files were saved successfully.");
     }
-    return await DemandeCongeDao.createDemandeConge(demandeCongeData);
+    return await DemandeCongeDao.createDemandeConge(demandeCongeData, db);
   } catch (error) {
     console.error("Error creating demande Conge:", error);
     throw error;
   }
 };
 
-const getAllDemandeConges = async () => {
+const getAllDemandeConges = async (useNew) => {
   try {
-    const demandes = await DemandeCongeDao.getAllDemandeConges();
+    const db = await getDb(useNew);
+    const demandes = await DemandeCongeDao.getAllDemandeConges(db);
 
     const demandesWithSubcategoryDetails = demandes.map((demande) => {
       const { subcategory, leaveType } = demande;
@@ -74,14 +75,16 @@ const getAllDemandeConges = async () => {
   }
 };
 
-const getDemandeCongeById = async (id) => {
-  return DemandeCongeDao.getDemandeCongeById(id);
+const getDemandeCongeById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return DemandeCongeDao.getDemandeCongeById(id, db);
 };
 
-const updateDemandeConge = async (id, updateData, documents) => {
+const updateDemandeConge = async (id, updateData, documents, useNew) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
+    const db = await getDb(useNew);
     if (documents && documents.length > 0) {
       const saveResult = await saveDocumentsToServer(documents);
       if (!saveResult) {
@@ -98,7 +101,11 @@ const updateDemandeConge = async (id, updateData, documents) => {
       )?.name;
     }
 
-    const demande = await DemandeCongeDao.updateDemandeConge(id, updateData);
+    const demande = await DemandeCongeDao.updateDemandeConge(
+      id,
+      updateData,
+      db
+    );
 
     if (!demande) {
       throw new Error("Demande Conge not found.");
@@ -112,7 +119,8 @@ const updateDemandeConge = async (id, updateData, documents) => {
       let leaveBalances = await LeaveBalanceDao.findLeaveBalances(
         personnelId,
         leaveType,
-        subcategory._id
+        subcategory._id,
+        db
       );
 
       //! If no leave balances exist for the current year, create one
@@ -133,7 +141,8 @@ const updateDemandeConge = async (id, updateData, documents) => {
 
         try {
           currentYearBalance = await LeaveBalanceDao.createLeaveBalance(
-            newLeaveBalance
+            newLeaveBalance,
+            db
           );
           leaveBalances.push(currentYearBalance);
         } catch (error) {
@@ -256,8 +265,9 @@ const updateDemandeConge = async (id, updateData, documents) => {
   }
 };
 
-const deleteDemandeConge = async (id) => {
-  return DemandeCongeDao.deleteDemandeConge(id);
+const deleteDemandeConge = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return DemandeCongeDao.deleteDemandeConge(id, db);
 };
 
 module.exports = {

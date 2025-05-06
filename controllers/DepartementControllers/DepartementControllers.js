@@ -1,6 +1,10 @@
 const departementService = require("../../services/DepartementServices/DepartementServices");
 const globalFunctions = require("../../utils/globalFunctions");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addDepartement = async (req, res) => {
   try {
     const {
@@ -11,7 +15,7 @@ const addDepartement = async (req, res) => {
       nom_chef_dep,
       SignatureFileBase64String,
       SignatureFileExtension,
-      sections
+      sections,
     } = req.body;
 
     const signaturePath = "files/departementFiles/";
@@ -36,9 +40,10 @@ const addDepartement = async (req, res) => {
         volume_horaire,
         nom_chef_dep,
         signature,
-        sections
+        sections,
       },
-      documents
+      documents,
+      useNewDb(req)
     );
     res.json(departement);
   } catch (error) {
@@ -49,28 +54,30 @@ const addDepartement = async (req, res) => {
 const updateDepartementById = async (req, res) => {
   try {
     const departementId = req.params.id;
-    const { name_fr,
+    const {
+      name_fr,
       name_ar,
       description,
       volume_horaire,
       nom_chef_dep,
       SignatureFileBase64String,
       sections,
-      SignatureFileExtension } = req.body;
-      
-      const signaturePath = "files/departementFiles/";
-      let signature = globalFunctions.generateUniqueFilename(
-        SignatureFileExtension,
-        "UpdatedSignature"
-      );
-      let documents = [
-        {
-          base64String: SignatureFileBase64String,
-          extension: SignatureFileExtension,
-          name: signature,
-          path: signaturePath,
-        },
-      ];
+      SignatureFileExtension,
+    } = req.body;
+
+    const signaturePath = "files/departementFiles/";
+    let signature = globalFunctions.generateUniqueFilename(
+      SignatureFileExtension,
+      "UpdatedSignature"
+    );
+    let documents = [
+      {
+        base64String: SignatureFileBase64String,
+        extension: SignatureFileExtension,
+        name: signature,
+        path: signaturePath,
+      },
+    ];
 
     const updatedDepartment = await departementService.updateDepartementDao(
       departementId,
@@ -81,8 +88,10 @@ const updateDepartementById = async (req, res) => {
         volume_horaire,
         nom_chef_dep,
         signature,
-        sections
-      },documents
+        sections,
+      },
+      documents,
+      useNewDb(req)
     );
 
     if (!updatedDepartment) {
@@ -100,7 +109,8 @@ const getDepartmentById = async (req, res) => {
     const departmentId = req.params.id;
 
     const getDepartement = await departementService.getDepartementDaoById(
-      departmentId
+      departmentId,
+      useNewDb(req)
     );
 
     if (!getDepartement) {
@@ -114,7 +124,9 @@ const getDepartmentById = async (req, res) => {
 };
 const getAllDeaprtements = async (req, res) => {
   try {
-    const departements = await departementService.getDepartementstDao();
+    const departements = await departementService.getDepartementstDao(
+      useNewDb(req)
+    );
     res.json(departements);
   } catch (error) {
     console.error(error);
@@ -125,16 +137,22 @@ const getAllDeaprtements = async (req, res) => {
 const deleteDepartementById = async (req, res) => {
   try {
     const departmentId = req.params.id;
-    console.log(`Received request to delete department with ID: ${departmentId}`);
+    console.log(
+      `Received request to delete department with ID: ${departmentId}`
+    );
 
     const deletedDepartement = await departementService.deleteDepartementDao(
-      departmentId
+      departmentId,
+      useNewDb(req)
     );
 
     if (!deletedDepartement) {
       return res.status(404).send("Departement not found");
     }
-    res.status(200).json({ message: "Department deleted successfully", data: deletedDepartement });
+    res.status(200).json({
+      message: "Department deleted successfully",
+      data: deletedDepartement,
+    });
   } catch (error) {
     console.error("Error in deleteDepartementById controller:", error);
     res.status(500).send(error.message);

@@ -10,4 +10,5 @@ const MentionClasseSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("MentionClasse", MentionClasseSchema);
+// module.exports = mongoose.model("MentionClasse", MentionClasseSchema);
+module.exports = MentionClasseSchema;

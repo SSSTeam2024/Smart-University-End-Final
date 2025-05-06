@@ -1,8 +1,10 @@
 const noteExamenDao = require("../../dao/NoteExamenDao/noteExamenDao");
+const { getDb } = require("../../config/dbSwitcher");
 
-const createNote = async (noteExamenData) => {
+const createNote = async (noteExamenData, useNew) => {
   try {
-    const Note = await noteExamenDao.createNote(noteExamenData);
+    const db = await getDb(useNew);
+    const Note = await noteExamenDao.createNote(noteExamenData, db);
 
     return Note;
   } catch (error) {
@@ -11,21 +13,30 @@ const createNote = async (noteExamenData) => {
   }
 };
 
-const updateNote = async (id, updateData) => {
-  return await noteExamenDao.updateNote(id, updateData);
+const updateNote = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return await noteExamenDao.updateNote(id, updateData, db);
 };
 
-const getNoteById = async (id) => {
-  return await noteExamenDao.getNoteById(id);
+const getNoteById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await noteExamenDao.getNoteById(id, db);
 };
 
-const getNotes = async () => {
-  const result = await noteExamenDao.getNotes();
+const getNotes = async (useNew) => {
+  const db = await getDb(useNew);
+  const result = await noteExamenDao.getNotes(db);
   return result;
 };
 
-const deleteNoteById = async (id) => {
-  return await noteExamenDao.deleteNote(id);
+const deleteNoteById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await noteExamenDao.deleteNote(id, db);
+};
+
+const deleteManyNotes = async (useNew, ids) => {
+  const db = await getDb(useNew);
+  return await noteExamenDao.deleteManyNotes(db, ids);
 };
 
 module.exports = {
@@ -34,4 +45,5 @@ module.exports = {
   getNoteById,
   updateNote,
   createNote,
+  deleteManyNotes,
 };

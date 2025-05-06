@@ -1,29 +1,51 @@
-const Reclamation = require('../../model/ReclamationEtudiantModel/ReclamationEtudiantModel');
+const ReclamationSchema = require("../../model/ReclamationEtudiantModel/ReclamationEtudiantModel");
 
+function getReclamationEtudiantModel(dbConnection) {
+  return (
+    dbConnection.models.Reclamation ||
+    dbConnection.model("Reclamation", ReclamationSchema)
+  );
+}
 
-const createReclamation = async (reclamationData) => {
+const createReclamation = async (reclamationData, dbName) => {
+  const Reclamation = await getReclamationEtudiantModel(dbName);
   const reclamation = new Reclamation(reclamationData);
   return reclamation.save();
 };
 
-const getAllReclamations = async () => {
-  return Reclamation.find().populate('studentId');
+const getAllReclamations = async (dbName) => {
+  const Reclamation = await getReclamationEtudiantModel(dbName);
+  return Reclamation.find().populate("studentId");
 };
 
-const getReclamationById = async (id) => {
-  return Reclamation.findById(id).populate('studentId');
+const getReclamationById = async (id, dbName) => {
+  const Reclamation = await getReclamationEtudiantModel(dbName);
+  return Reclamation.findById(id).populate("studentId");
 };
 
-const updateReclamation = async (id, updateData) => {
-  updateData.updatedAt = Date.now(); // Ensure updatedAt is updated
+const updateReclamation = async (id, updateData, dbName) => {
+  const Reclamation = await getReclamationEtudiantModel(dbName);
+  updateData.updatedAt = Date.now();
 
-  return Reclamation.findByIdAndUpdate(id, updateData, { new: true, runValidators: true })
-    .populate('studentId')
+  return Reclamation.findByIdAndUpdate(id, updateData, {
+    new: true,
+    runValidators: true,
+  })
+    .populate("studentId")
     .exec();
 };
 
-const deleteReclamation = async (id) => {
-  return Reclamation.findByIdAndDelete(id).populate('studentId');
+const deleteReclamation = async (id, dbName) => {
+  const Reclamation = await getReclamationEtudiantModel(dbName);
+  return Reclamation.findByIdAndDelete(id).populate("studentId");
+};
+
+const deleteManyReclamationsEtudiants = async (dbName, ids) => {
+  const reclamationEtudiantModel = await getReclamationEtudiantModel(dbName);
+  const query = {
+    _id: { $in: ids },
+  };
+  return await reclamationEtudiantModel.deleteMany(query);
 };
 
 module.exports = {
@@ -31,5 +53,6 @@ module.exports = {
   getAllReclamations,
   getReclamationById,
   updateReclamation,
-  deleteReclamation
+  deleteReclamation,
+  deleteManyReclamationsEtudiants,
 };

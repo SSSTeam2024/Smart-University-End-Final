@@ -1,5 +1,7 @@
-const avisEtudiantDao = require('../../dao/AvisEtudiantDao/AvisEtudiantDao');
+const avisEtudiantDao = require("../../dao/AvisEtudiantDao/AvisEtudiantDao");
 const fs = require("fs").promises;
+
+const { getDb } = require("../../config/dbSwitcher");
 
 async function saveMediaToServer(documents) {
   try {
@@ -28,34 +30,36 @@ async function saveFile(base64String, fileName, filePath) {
   }
 }
 
-const createAvisEtudiant = async (avisEtudiantData, documents) => {
+const createAvisEtudiant = async (avisEtudiantData, documents, useNew) => {
   try {
+    const db = await getDb(useNew);
     const saveResult = await saveMediaToServer(documents);
     if (!saveResult) {
       throw new Error("Not all files were saved successfully.");
     }
-    return await avisEtudiantDao.createAvisEtudiant(avisEtudiantData);
+    return await avisEtudiantDao.createAvisEtudiant(avisEtudiantData, db);
   } catch (error) {
     console.error("Error creating AvisEtudiant:", error);
     throw error;
   }
 };
 
-const getAllAvisEtudiants = async () => {
-  return avisEtudiantDao.getAllAvisEtudiants();
+const getAllAvisEtudiants = async (useNew) => {
+  const db = await getDb(useNew);
+  return await avisEtudiantDao.getAllAvisEtudiants(db);
 };
 
-const getAvisEtudiantById = async (id) => {
-  return avisEtudiantDao.getAvisEtudiantById(id);
+const getAvisEtudiantById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return avisEtudiantDao.getAvisEtudiantById(id, db);
 };
 
-
-const updateAvisEtudiant = async (id, updateData, documents) => {
+const updateAvisEtudiant = async (id, updateData, documents, useNew) => {
   try {
+    const db = await getDb(useNew);
     // Save the new media files to the server
- 
+
     if (documents.length > 0) {
-    
       const saveResult = await saveMediaToServer(documents);
       if (!saveResult) {
         throw new Error("Not all files were saved successfully.");
@@ -63,15 +67,21 @@ const updateAvisEtudiant = async (id, updateData, documents) => {
     }
 
     // Update the Actualite in the database with new data
-    return await avisEtudiantDao.updateAvisEtudiant(id, updateData);
+    return await avisEtudiantDao.updateAvisEtudiant(id, updateData, db);
   } catch (error) {
     console.error("Error updating Avis Etudiant :", error);
     throw error;
   }
 };
 
-const deleteAvisEtudiant = async (id) => {
-  return avisEtudiantDao.deleteAvisEtudiant(id);
+const deleteAvisEtudiant = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return avisEtudiantDao.deleteAvisEtudiant(id, db);
+};
+
+const deleteAvisEtudiants = async (dbName, ids) => {
+  const db = await getDb(dbName);
+  return await avisEtudiantDao.deleteAvisEtudiants(db, ids);
 };
 
 module.exports = {
@@ -79,5 +89,6 @@ module.exports = {
   getAllAvisEtudiants,
   getAvisEtudiantById,
   updateAvisEtudiant,
-  deleteAvisEtudiant
+  deleteAvisEtudiant,
+  deleteAvisEtudiants,
 };

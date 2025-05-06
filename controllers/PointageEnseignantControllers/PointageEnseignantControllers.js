@@ -1,15 +1,22 @@
 const PointageEnseignantServices = require("../../services/PointageEnseignantServices/PointageEnseignantServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addPointageEnseignant = async (req, res) => {
   try {
     const { id_enseignant, id_seance, date_pointage } = req.body;
 
     const pointage =
-      await PointageEnseignantServices.createNewPointageEnseignant({
-        id_enseignant,
-        id_seance,
-        date_pointage,
-      });
+      await PointageEnseignantServices.createNewPointageEnseignant(
+        {
+          id_enseignant,
+          id_seance,
+          date_pointage,
+        },
+        useNewDb(req)
+      );
     res.json(pointage);
   } catch (error) {
     console.error(error);
@@ -28,7 +35,8 @@ const updatePointageEnseignant = async (req, res) => {
           id_enseignant,
           id_seance,
           date_pointage,
-        }
+        },
+        useNewDb(req)
       );
 
     if (!updatedPointageEnseignant) {
@@ -47,7 +55,8 @@ const getPointageEnseignantById = async (req, res) => {
 
     const getPointageEnseignant =
       await PointageEnseignantServices.getPointageEnseignantById(
-        pointageEnseignantId
+        pointageEnseignantId,
+        useNewDb(req)
       );
 
     if (!getPointageEnseignant) {
@@ -62,7 +71,7 @@ const getPointageEnseignantById = async (req, res) => {
 const getAllPointageEnseignant = async (req, res) => {
   try {
     const pointageEnseignant =
-      await PointageEnseignantServices.getAllPointageEnseignant();
+      await PointageEnseignantServices.getAllPointageEnseignant(useNewDb(req));
     res.json(pointageEnseignant);
   } catch (error) {
     console.error(error);
@@ -76,7 +85,8 @@ const deleteCycleById = async (req, res) => {
 
     const deletePointageEnseignant =
       await PointageEnseignantServices.deletePointageEnseignant(
-        pointageEnseignantId
+        pointageEnseignantId,
+        useNewDb(req)
       );
 
     if (!deletePointageEnseignant) {
@@ -93,7 +103,10 @@ const getPointageByEnseignantId = async (req, res) => {
   try {
     const { id: enseignantId } = req.params;
     const pointages =
-      await PointageEnseignantServices.getPointageByEnseignantId(enseignantId);
+      await PointageEnseignantServices.getPointageByEnseignantId(
+        enseignantId,
+        useNewDb(req)
+      );
     res.json(pointages);
   } catch (error) {
     console.error(error);

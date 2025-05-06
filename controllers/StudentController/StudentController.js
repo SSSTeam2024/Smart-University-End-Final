@@ -8,6 +8,10 @@ const generateCode = require("../../utils/generateCode");
 const emailService = require("../../services/EmailServices/emailService");
 const emailStructure = require("../../utils/emailInscription");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addStudent = async (req, res) => {
   try {
     const {
@@ -95,7 +99,7 @@ const addStudent = async (req, res) => {
       mention_university_ar,
       mention_university_fr,
       session_university_fr,
-      session_university_ar
+      session_university_ar,
     } = req.body;
 
     const face1CINPath = "files/etudiantFiles/Face1CIN/";
@@ -271,9 +275,10 @@ const addStudent = async (req, res) => {
         mention_university_ar,
         mention_university_fr,
         session_university_fr,
-        session_university_ar
+        session_university_ar,
       },
-      documents
+      documents,
+      useNewDb(req)
     );
     // console.log(emails.length);
     // for (const email_to_sent of emails) {
@@ -308,18 +313,32 @@ const addStudent = async (req, res) => {
   }
 };
 
+// const getAllStudents = async (req, res) => {
+//   try {
+//     const etudiants = await studentService.getEtudiants();
+//     res.json(etudiants);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send(error.message);
+//   }
+// };
+
 const getAllStudents = async (req, res) => {
   try {
-    const etudiants = await studentService.getEtudiants();
+    const etudiants = await studentService.getEtudiants(useNewDb(req));
     res.json(etudiants);
   } catch (error) {
     console.error(error);
     res.status(500).send(error.message);
   }
 };
+
 const getStudentById = async (req, res) => {
   try {
-    const student = await studentService.getEtudiantById(req.body._id);
+    const student = await studentService.getEtudiantById(
+      req.body._id,
+      useNewDb(req)
+    );
     if (!student) {
       return res.status(404).json({ message: "student not found" });
     }
@@ -334,7 +353,10 @@ const deleteEtudiant = async (req, res) => {
   try {
     const etudiantId = req.body._id;
 
-    const deletedEtudiant = await studentService.deleteEtudiant(etudiantId);
+    const deletedEtudiant = await studentService.deleteEtudiant(
+      etudiantId,
+      useNewDb(req)
+    );
 
     if (!deletedEtudiant) {
       return res.status(404).send("Etudiant not found");
@@ -609,7 +631,8 @@ const updateStudent = async (req, res) => {
     // Update student in the database
     const updatedEtudiant = await studentService.updateEtudiant(
       id,
-      updateFields
+      updateFields,
+      useNewDb(req)
     );
 
     if (!updatedEtudiant) {
@@ -634,7 +657,8 @@ const getTypeInscriptionByIdStudent = async (req, res) => {
     }
 
     const typeInscription = await studentService.getTypeInscriptionByIdStudent(
-      studentId
+      studentId,
+      useNewDb(req)
     );
 
     if (!typeInscription) {
@@ -660,7 +684,8 @@ const updateGroupeClasse = async (req, res) => {
 
     const result = await studentService.updateGroupeClasse(
       studentIds,
-      groupeClasseId
+      groupeClasseId,
+      useNewDb(req)
     );
     res.json({ message: "groupe_classe updated successfully", result });
   } catch (error) {
@@ -673,7 +698,10 @@ const getEtudiantById = async (req, res) => {
   try {
     const etudiantId = req.params.id;
 
-    const getEtudiant = await studentService.getEtudiantById(etudiantId);
+    const getEtudiant = await studentService.getEtudiantById(
+      etudiantId,
+      useNewDb(req)
+    );
 
     if (!getEtudiant) {
       return res.status(404).send("Etudiant not found");
@@ -689,7 +717,10 @@ const getEtudiantsByIdClasse = async (req, res) => {
   try {
     const classeId = req.params.id;
 
-    const getEtudiants = await studentService.getEtudiantsByIdClasse(classeId);
+    const getEtudiants = await studentService.getEtudiantsByIdClasse(
+      classeId,
+      useNewDb(req)
+    );
 
     if (!getEtudiants) {
       return res.status(404).send("Aucun Etudiant pour ce groupe !!");
@@ -704,7 +735,10 @@ const getEtudiantsByIdClasse = async (req, res) => {
 const getEtudiantByCin = async (req, res) => {
   try {
     const cin_etudiant = req.params.id;
-    const etudiant = await studentService.getEtudiantByCin(cin_etudiant);
+    const etudiant = await studentService.getEtudiantByCin(
+      cin_etudiant,
+      useNewDb(req)
+    );
 
     if (!etudiant) {
       return res.status(404).send("Aucun Etudiant avec cette C.I.N");
@@ -721,7 +755,8 @@ const getEtudiantByCinAndCode = async (req, res) => {
     const { cin_etudiant, codesecret } = req.body;
     const etudiant = await studentService.getEtudiatByCinAndCode(
       cin_etudiant,
-      codesecret
+      codesecret,
+      useNewDb(req)
     );
 
     if (!etudiant) {
@@ -740,7 +775,10 @@ const getEtudiantByToken = async (req, res) => {
     if (!token) {
       return res.status(401).send("Token missing");
     }
-    const etudiant = await studentService.getEtudiantByToken(token);
+    const etudiant = await studentService.getEtudiantByToken(
+      token,
+      useNewDb(req)
+    );
     if (!etudiant) {
       return res.status(404).send("Etudiant not found");
     }
@@ -753,7 +791,7 @@ const getEtudiantByToken = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { cin, password } = req.body;
-    const etudiant = await studentService.login(cin, password);
+    const etudiant = await studentService.login(cin, password, useNewDb(req));
     res.json({ message: "Login successful", etudiant });
   } catch (error) {
     res.status(401).send(error.message);
@@ -792,7 +830,10 @@ const getNbrEtudiantsByClasses = async (req, res) => {
   try {
     const { classeIds } = req.body;
 
-    const nbrEtudiants = await studentService.getNbrEtudiantsByClasses(classeIds);
+    const nbrEtudiants = await studentService.getNbrEtudiantsByClasses(
+      classeIds,
+      useNewDb(req)
+    );
 
     console.log("Nombre Etudiants", nbrEtudiants);
 
@@ -809,7 +850,10 @@ const getNbrEtudiantsByClasses = async (req, res) => {
 const logoutEtudiant = async (req, res) => {
   try {
     const { studentId } = req.params;
-    const updatedStudent = await studentService.logoutEtudiant(studentId);
+    const updatedStudent = await studentService.logoutEtudiant(
+      studentId,
+      useNewDb(req)
+    );
 
     if (!updatedStudent) {
       return res.status(404).json({ error: "Student not found" });
@@ -821,7 +865,6 @@ const logoutEtudiant = async (req, res) => {
     res.status(500).json({ error: "Error logging out student" });
   }
 };
-
 
 module.exports = {
   addStudent,
@@ -838,5 +881,5 @@ module.exports = {
   getEtudiantByToken,
   login,
   getNbrEtudiantsByClasses,
-  logoutEtudiant
+  logoutEtudiant,
 };

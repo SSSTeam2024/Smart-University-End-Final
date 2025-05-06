@@ -1,10 +1,19 @@
-const teacherPeriodModel = require("../../model/TeacherPeriodModel/TeacherPeriodModel");
+const TeacherPeriodSchema = require("../../model/TeacherPeriodModel/TeacherPeriodModel");
 
-const createTeacherPeriod = async (params) => {
+function getTeacherPeriodModel(dbConnection) {
+  return (
+    dbConnection.models.TeacherPeriod ||
+    dbConnection.model("TeacherPeriod", TeacherPeriodSchema)
+  );
+}
+
+const createTeacherPeriod = async (params, dbName) => {
+  const teacherPeriodModel = await getTeacherPeriodModel(dbName);
   return await teacherPeriodModel.create(params);
 };
 
-const getTeacherPeriod = async (id, semestre) => {
+const getTeacherPeriod = async (id, semestre, dbName) => {
+  const teacherPeriodModel = await getTeacherPeriodModel(dbName);
   const query = {
     id_teacher: id,
     semestre: semestre,
@@ -15,10 +24,17 @@ const getTeacherPeriod = async (id, semestre) => {
     .populate("id_teacher");
 };
 
+const getAllTeacherPeriods = async (dbName) => {
+  const teacherPeriodModel = await getTeacherPeriodModel(dbName);
+  return await teacherPeriodModel.find();
+};
+
 const getTeacherPeriodByIdClassPeriod = async (
   emploiPeriodique_id,
-  id_teacher
+  id_teacher,
+  dbName
 ) => {
+  const teacherPeriodModel = await getTeacherPeriodModel(dbName);
   const query = {
     id_classe_period: emploiPeriodique_id,
     id_teacher: id_teacher,
@@ -29,7 +45,8 @@ const getTeacherPeriodByIdClassPeriod = async (
     .populate("id_teacher");
 };
 
-const updateTeacherPeriod = async (id, nbr_heure) => {
+const updateTeacherPeriod = async (id, nbr_heure, dbName) => {
+  const teacherPeriodModel = await getTeacherPeriodModel(dbName);
   return await teacherPeriodModel.findByIdAndUpdate(
     { _id: id },
     {
@@ -41,8 +58,13 @@ const updateTeacherPeriod = async (id, nbr_heure) => {
   );
 };
 
-const fetchPeriodsBySemesterAndTeacherId = async (semester, teacherId) => {
+const fetchPeriodsBySemesterAndTeacherId = async (
+  semester,
+  teacherId,
+  dbName
+) => {
   try {
+    const teacherPeriodModel = await getTeacherPeriodModel(dbName);
     return await teacherPeriodModel
       .find({
         semestre: semester,
@@ -55,10 +77,20 @@ const fetchPeriodsBySemesterAndTeacherId = async (semester, teacherId) => {
   }
 };
 
+const deleteManyPeriods = async (dbName, ids) => {
+  const teacherPeriodModel = await getTeacherPeriodModel(dbName);
+  const query = {
+    _id: { $in: ids },
+  };
+  return await teacherPeriodModel.deleteMany(query);
+};
+
 module.exports = {
   createTeacherPeriod,
   getTeacherPeriod,
   updateTeacherPeriod,
   getTeacherPeriodByIdClassPeriod,
   fetchPeriodsBySemesterAndTeacherId,
+  getAllTeacherPeriods,
+  deleteManyPeriods,
 };

@@ -1,25 +1,33 @@
-const absencePersonnelDao = require('../../dao/AbsencePersonnelDao/AbsencePersonnelDao');
+const absencePersonnelDao = require("../../dao/AbsencePersonnelDao/AbsencePersonnelDao");
 
+const { getDb } = require("../../config/dbSwitcher");
 
-const createAbsencePersonnel = async (absencePersonnelData) => {
-
-    return await absencePersonnelDao.createAbsencePersonnel(absencePersonnelData);
-};
-const getAllAbsencesPersonnels = async () => {
-  return absencePersonnelDao.getAllAbsencesPersonnels();
-};
-
-const getAbsencePersonnelById = async (id) => {
-  return absencePersonnelDao.getAbsencePersonnelById(id);
+const createAbsencePersonnel = async (absencePersonnelData, useNew) => {
+  const db = await getDb(useNew);
+  return await absencePersonnelDao.createAbsencePersonnel(
+    absencePersonnelData,
+    db
+  );
 };
 
-const updateAbsencePersonnel = async (id, updateData) => {
- 
-    return await absencePersonnelDao.updateAbsencePersonnel(id, updateData);
+const getAllAbsencesPersonnels = async (useNew) => {
+  const db = await getDb(useNew);
+  return absencePersonnelDao.getAllAbsencesPersonnels(db);
 };
 
-const deleteAbsencePersonnel = async (id) => {
-  return absencePersonnelDao.deleteAbsencePersonnel(id);
+const getAbsencePersonnelById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return absencePersonnelDao.getAbsencePersonnelById(id, db);
+};
+
+const updateAbsencePersonnel = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return await absencePersonnelDao.updateAbsencePersonnel(id, updateData, db);
+};
+
+const deleteAbsencePersonnel = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return absencePersonnelDao.deleteAbsencePersonnel(id, db);
 };
 
 module.exports = {
@@ -27,5 +35,5 @@ module.exports = {
   getAllAbsencesPersonnels,
   getAbsencePersonnelById,
   updateAbsencePersonnel,
-  deleteAbsencePersonnel
+  deleteAbsencePersonnel,
 };

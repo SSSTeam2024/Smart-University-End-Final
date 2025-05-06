@@ -1,7 +1,6 @@
 const Router = require("express");
 const router = new Router();
 
-const eventRoutes = require("./eventRoutes/eventRoutes");
 const userPermissionsRoutes = require("./userPermissionsRoutes/userPermissionsRoute");
 const userRoutes = require("./userRoutes/userRoute");
 const etatPersonnelRoutes = require("./etatPersonnelRoutes/etatPersonnelRoutes");
@@ -75,6 +74,9 @@ const cycleRoutes = require("./CycleRoutes/CycleRoutes");
 
 const generatedDocRoutes = require("./GeneratedDocRoutes/GeneratedDocRoutes");
 const demandeTirageRoutes = require("./DemandeTirageRoutes/DemandeTirageRoutes");
+
+const DatabaseNamesRoutes = require("./DatabaseNamesRoutes/DatabaseNamesRoutes");
+
 router.use("/demande-tirage", demandeTirageRoutes);
 
 router.use("/type-parcours", typeParcoursRoutes);
@@ -102,6 +104,7 @@ const CoursEnseignantRoutes = require("./CoursEnseignantRoutes/CoursEnseignantRo
 const IntervenantRoutes = require("./IntervenantRoutes/IntervenantRoutes");
 const PersonnelWorkingDayRoutes = require("./PersonnelWorkingDayRoutes/PersonnelWorkingDayRoutes");
 const PointageEnseignantRoutes = require("./PointageEnseignantRoutes/PointageEnseignantRoutes");
+const cloneRoutes = require("./CloneRoutes/CloneRoutes");
 
 // gestion des conges
 router.use("/examen", examenRoutes);
@@ -112,7 +115,6 @@ router.use("/LeaveBalance", leaveBalance);
 router.use("/LeaveType", leaveType);
 router.use("/demandeConge", demandeConge);
 
-router.use("/event", eventRoutes);
 router.use("/user-permissions", userPermissionsRoutes);
 router.use("/user", userRoutes);
 router.use("/enseignant", enseignantRoutes);
@@ -244,5 +246,14 @@ router.use("/courrier-sortant", CourrierSortantRoutes);
 
 //Pointage Enseignant
 router.use("/pointage-enseignant", PointageEnseignantRoutes);
+
+// Sauvegarde copy de la base des données
+router.use("/clone", cloneRoutes);
+
+// Create a new database when clone is complete
+router.use("/databases", DatabaseNamesRoutes);
+
+// it will already exists and we will use this to update the name in each time the migrate operations are done
+// router.use("/actuel-database", ActuelDatabaseRoutes);
 
 module.exports = router;

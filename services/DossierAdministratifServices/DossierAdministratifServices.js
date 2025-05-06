@@ -1,16 +1,20 @@
 const dossierAdministratifDao = require("../../dao/DossierAdministratifDao/DossierAdministratifDao");
 const fs = require("fs");
-const path = require('path');
+const path = require("path");
+const { getDb } = require("../../config/dbSwitcher");
 
-const addDossierAdministratif = async ( dossierData, documents) => {
+const addDossierAdministratif = async (dossierData, documents, useNew) => {
   try {
+    const db = await getDb(useNew);
     let saveResult = await saveDocumentToServer(documents);
-    console.log("Save result:", saveResult);
     if (saveResult) {
-      const newDossier = await dossierAdministratifDao.addDossierAdministratif(dossierData);
+      const newDossier = await dossierAdministratifDao.addDossierAdministratif(
+        dossierData,
+        db
+      );
       return newDossier;
     } else {
-      throw new Error('Failed to save documents.');
+      throw new Error("Failed to save documents.");
     }
   } catch (error) {
     console.error(error);
@@ -22,7 +26,6 @@ async function saveDocumentToServer(documents) {
   try {
     let counter = 0;
     for (const file of documents) {
-   
       await saveAdministrativeFile(file.base64String, file.name, file.path);
       counter++;
       console.log("File number " + counter + " saved");
@@ -51,35 +54,29 @@ async function saveAdministrativeFile(base64String, fileName, filePath) {
   });
 }
 
-
-
-// const updateDossierAdministratif = async (id,updateData, documents) => {
-//   try {
-//     let saveResult = await saveDocumentToServer(documents);
-    
-//     if (saveResult) {
-//       const updatedDossierAdministratif = await dossierAdministratifDao.updateDossiersAdministratif(id,updateData);
-//       return updatedDossierAdministratif;
-//     } else {
-//       throw new Error('Failed to save documents.');
-//     }
-//   } catch (error) {
-//     console.error("Error updating Dossier Administratif:", error);
-//     throw error;
-//   }
-// };
-
-const updateDossierAdministratif = async (id, updateData, documents) => {
+const updateDossierAdministratif = async (
+  id,
+  updateData,
+  documents,
+  useNew
+) => {
   try {
+    const db = await getDb(useNew);
     // Save only new documents that are provided
-    let saveResult = documents.length > 0 ? await saveDocumentToServer(documents) : true;
+    let saveResult =
+      documents.length > 0 ? await saveDocumentToServer(documents) : true;
 
     if (saveResult) {
       // Proceed with updating the Dossier if document save is successful or no documents were uploaded
-      const updatedDossierAdministratif = await dossierAdministratifDao.updateDossiersAdministratif(id, updateData);
+      const updatedDossierAdministratif =
+        await dossierAdministratifDao.updateDossiersAdministratif(
+          id,
+          updateData,
+          db
+        );
       return updatedDossierAdministratif;
     } else {
-      throw new Error('Failed to save documents.');
+      throw new Error("Failed to save documents.");
     }
   } catch (error) {
     console.error("Error updating Dossier Administratif:", error);
@@ -87,45 +84,63 @@ const updateDossierAdministratif = async (id, updateData, documents) => {
   }
 };
 
-
-const getDossierAdministratifsDao = async () => {
+const getDossierAdministratifsDao = async (useNew) => {
   try {
-    return await dossierAdministratifDao.getDossiersAdministratifs();
+    const db = await getDb(useNew);
+    return await dossierAdministratifDao.getDossiersAdministratifs(db);
   } catch (error) {
     console.error("Error fetching dossiers:", error);
     throw error;
   }
 };
-const removeSpecificPaperFromDossierService=async (dossierId, userId, userType, paperDetails) =>{
 
-  if (userType !== 'enseignant' && userType !== 'personnel') {
-      throw new Error('Invalid user type');
+const removeSpecificPaperFromDossierService = async (
+  dossierId,
+  userId,
+  userType,
+  paperDetails,
+  useNew
+) => {
+  const db = await getDb(useNew);
+  if (userType !== "enseignant" && userType !== "personnel") {
+    throw new Error("Invalid user type");
   }
-  const updatedDossier = await dossierAdministratifDao.removeSpecificPaperFromDossier(dossierId, userId, userType, paperDetails);
+  const updatedDossier =
+    await dossierAdministratifDao.removeSpecificPaperFromDossier(
+      dossierId,
+      userId,
+      userType,
+      paperDetails,
+      db
+    );
 
   if (!updatedDossier) {
-      throw new Error('Dossier not found or unable to remove the specified paper');
+    throw new Error(
+      "Dossier not found or unable to remove the specified paper"
+    );
   }
 
   return updatedDossier;
-}
+};
 
-const archiveDossierAdministratif = async (dossierId) => {
+const archiveDossierAdministratif = async (dossierId, useNew) => {
   try {
-    const dossier = await dossierAdministratifDao.getDossierById(dossierId);
+    const db = await getDb(useNew);
+    const dossier = await dossierAdministratifDao.getDossierById(dossierId, db);
 
     if (!dossier) {
       throw new Error("Dossier not found");
     }
     let type;
     if (dossier.enseignant) {
-      type = 'enseignant';
+      type = "enseignant";
     } else if (dossier.personnel) {
-      type = 'personnel';
+      type = "personnel";
     } else {
       throw new Error("Invalid dossier type");
     }
-    const archivedDossier = await dossierAdministratifDao.archiveDossierAdministratif(dossierId);
+    const archivedDossier =
+      await dossierAdministratifDao.archiveDossierAdministratif(dossierId, db);
 
     return {
       archivedDossier,
@@ -136,11 +151,14 @@ const archiveDossierAdministratif = async (dossierId) => {
     throw error;
   }
 };
-const restoreDossierAdministratifService = async (dossierId) => {
+
+const restoreDossierAdministratifService = async (dossierId, useNew) => {
   try {
-    const restoredDossier = await dossierAdministratifDao.restoreDossierAdministratif(dossierId);
+    const db = await getDb(useNew);
+    const restoredDossier =
+      await dossierAdministratifDao.restoreDossierAdministratif(dossierId, db);
     if (!restoredDossier) {
-      throw new Error('Dossier not found');
+      throw new Error("Dossier not found");
     }
     return restoredDossier;
   } catch (error) {
@@ -155,5 +173,5 @@ module.exports = {
   removeSpecificPaperFromDossierService,
   updateDossierAdministratif,
   restoreDossierAdministratifService,
-  archiveDossierAdministratif
+  archiveDossierAdministratif,
 };

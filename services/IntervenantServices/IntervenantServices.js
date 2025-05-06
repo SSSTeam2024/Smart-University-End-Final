@@ -1,20 +1,25 @@
 const IntervenantDao = require("../../dao/IntervenantDao/IntervenantDao");
+const { getDb } = require("../../config/dbSwitcher");
 
-const createIntervenant = async (intervenant) => {
-  return await IntervenantDao.createIntervenant(intervenant);
+const createIntervenant = async (intervenant, useNew) => {
+  const db = await getDb(useNew);
+  return await IntervenantDao.createIntervenant(intervenant, db);
 };
 
-const updateIntervenant = async (id, updateData) => {
-  return await IntervenantDao.updateIntervenant(id, updateData);
+const updateIntervenant = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return await IntervenantDao.updateIntervenant(id, updateData, db);
 };
 
-const getAllIntervenant = async () => {
-  const result = await IntervenantDao.getIntervenants();
+const getAllIntervenant = async (useNew) => {
+  const db = await getDb(useNew);
+  const result = await IntervenantDao.getIntervenants(db);
   return result;
 };
 
-const deleteIntervenant = async (id) => {
-  return await IntervenantDao.deleteIntervenant(id);
+const deleteIntervenant = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await IntervenantDao.deleteIntervenant(id, db);
 };
 
 module.exports = {

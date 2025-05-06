@@ -1,32 +1,39 @@
 const examenDao = require("../../dao/ExamenDao/ExamenDao");
+const { getDb } = require("../../config/dbSwitcher");
 
-const createExamen = async (examen) => {
-  console.log("examen", examen);
-  return await examenDao.createExamen(examen);
+const createExamen = async (examen, useNew) => {
+  const db = await getDb(useNew);
+  return await examenDao.createExamen(examen, db);
 };
 
-const updateExamen = async (id, updateData) => {
-  return await examenDao.updateExamen(id, updateData);
+const updateExamen = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return await examenDao.updateExamen(id, updateData, db);
 };
 
-const getExamenById = async (id) => {
-  return await examenDao.getExamenById(id);
+const getExamenById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await examenDao.getExamenById(id, db);
 };
 
-const getAllExamens = async () => {
-  const result = await examenDao.getExamens();
+const getAllExamens = async (useNew) => {
+  const db = await getDb(useNew);
+  const result = await examenDao.getExamens(db);
   return result;
 };
 
-const deleteExamen = async (id) => {
-  return await examenDao.deleteExamen(id);
+const deleteExamen = async (useNew, id) => {
+  const db = await getDb(useNew);
+  return await examenDao.deleteExamen(db, id);
 };
 
-const getExamensBySemesterAndRegime = async (semester, regime) => {
-  return await examenDao.getExamensBySemesterAndRegime(semester, regime);
+const getExamensBySemesterAndRegime = async (semester, regime, useNew) => {
+  const db = await getDb(useNew);
+  return await examenDao.getExamensBySemesterAndRegime(semester, regime, db);
 };
 
-const editCalendrierExamens = async (editData) => {
+const editCalendrierExamens = async (editData, useNew) => {
+  const db = await getDb(useNew);
   let id_Calendrier = editData.id_Calendrier;
   let epreuveId = editData.epreuveId;
   let epreuve_status = editData.epreuve_status;
@@ -41,7 +48,8 @@ const editCalendrierExamens = async (editData) => {
     nbre_present,
     nbre_absent,
     nbre_exclus,
-    notes
+    notes,
+    db
   );
   return "Success Edit Calendar!!";
 };

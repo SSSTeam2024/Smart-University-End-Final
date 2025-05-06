@@ -11,7 +11,16 @@ router.put(
   "/updateRattrapage/:id",
   rattarapageController.updateRattrapageEtatStatus
 );
-router.get("/get-rattrapage-by-id-class/:classId", rattarapageController.getRattrapagesByClassId);
+router.get(
+  "/get-rattrapage-by-id-class/:classId",
+  rattarapageController.getRattrapagesByClassId
+);
 
-router.get("/get-rattrapage-by-id-teacher/:teacherId", rattarapageController.getRattrapagesByTeacherId);
+router.get(
+  "/get-rattrapage-by-id-teacher/:teacherId",
+  rattarapageController.getRattrapagesByTeacherId
+);
+
+// Delete many Rattrapages
+router.delete("/delete-many", rattarapageController.deleteManyRattrapages);
 module.exports = router;

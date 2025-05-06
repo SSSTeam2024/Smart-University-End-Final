@@ -1,13 +1,20 @@
 const EtatPersonnelService = require("../../services/EtatPersonnelServices/EtatPersonnelServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addEtatPersonnel = async (req, res) => {
   try {
     const { etat_ar, etat_fr } = req.body;
 
-    const etatPersonnel = await EtatPersonnelService.registerEtatPersonnel({
-      etat_ar,
-      etat_fr,
-    });
+    const etatPersonnel = await EtatPersonnelService.registerEtatPersonnel(
+      {
+        etat_ar,
+        etat_fr,
+      },
+      useNewDb(req)
+    );
     res.json(etatPersonnel);
   } catch (error) {
     console.error(error);
@@ -20,10 +27,14 @@ const updateEtatPersonnelById = async (req, res) => {
     const { etat_ar, etat_fr } = req.body;
 
     const updatedEtatPersonnel =
-      await EtatPersonnelService.updateEtatPersonnelDao(etatPersonnelId, {
-        etat_ar,
-        etat_fr,
-      });
+      await EtatPersonnelService.updateEtatPersonnelDao(
+        etatPersonnelId,
+        {
+          etat_ar,
+          etat_fr,
+        },
+        useNewDb(req)
+      );
 
     if (!updatedEtatPersonnel) {
       return res.status(404).send("Etat Personnel not found!");
@@ -40,7 +51,8 @@ const getEtatPersonnelById = async (req, res) => {
     const etatPersonnelId = req.params.id;
 
     const getEtatPersonnel = await EtatPersonnelService.getEtatPersonnelDaoById(
-      etatPersonnelId
+      etatPersonnelId,
+      useNewDb(req)
     );
 
     if (!getEtatPersonnel) {
@@ -63,10 +75,13 @@ const getEtatByValue = async (req, res) => {
         .json({ message: "etat_fr and etat_ar are required" });
     }
 
-    const etatValue = await EtatPersonnelService.getEtatByValue({
-      etat_fr,
-      etat_ar,
-    });
+    const etatValue = await EtatPersonnelService.getEtatByValue(
+      {
+        etat_fr,
+        etat_ar,
+      },
+      useNewDb(req)
+    );
 
     if (!etatValue) {
       return res.json(null);
@@ -85,7 +100,9 @@ const getEtatByValue = async (req, res) => {
 
 const getAllEtatPersonnel = async (req, res) => {
   try {
-    const etatPersonnels = await EtatPersonnelService.getEtatsPersonnelDao();
+    const etatPersonnels = await EtatPersonnelService.getEtatsPersonnelDao(
+      useNewDb(req)
+    );
     res.json(etatPersonnels);
   } catch (error) {
     console.error(error);
@@ -98,7 +115,10 @@ const deleteEtatPersonnelById = async (req, res) => {
     const etatPersonnelId = req.params.id;
 
     const deletedEtatPersonnel =
-      await EtatPersonnelService.deleteEtatPersonnelDao(etatPersonnelId);
+      await EtatPersonnelService.deleteEtatPersonnelDao(
+        etatPersonnelId,
+        useNewDb(req)
+      );
 
     if (!deletedEtatPersonnel) {
       return res.status(404).send("Etat Personnel not found");

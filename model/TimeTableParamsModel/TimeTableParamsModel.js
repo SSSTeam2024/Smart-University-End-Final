@@ -1,4 +1,3 @@
-
 const mongoose = require("mongoose");
 
 const timeTableParamsSchema = new mongoose.Schema({
@@ -13,4 +12,5 @@ const timeTableParamsSchema = new mongoose.Schema({
   semestre2_end: String,
 });
 
-module.exports = mongoose.model("TimeTableParams", timeTableParamsSchema);
+// module.exports = mongoose.model("TimeTableParams", timeTableParamsSchema);
+module.exports = timeTableParamsSchema;

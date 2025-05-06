@@ -1,26 +1,34 @@
-const examenModel = require("../../model/ExamenModel/ExamenModel");
+const examenSchema = require("../../model/ExamenModel/ExamenModel");
 
-const createExamen = async (examen) => {
+function getExamenModel(dbConnection) {
+  return (
+    dbConnection.models.Examen || dbConnection.model("Examen", examenSchema)
+  );
+}
+
+const createExamen = async (examen, dbName) => {
   try {
+    const examenModel = await getExamenModel(dbName);
     return await examenModel.create(examen);
   } catch (error) {
     console.error("Error creating Examen:", error);
     throw error;
   }
 };
-const getExamens = async () => {
+const getExamens = async (dbName) => {
   try {
+    const examenModel = await getExamenModel(dbName);
     return await examenModel
       .find()
-      .populate("group_enseignant.enseignant") // Populate group_enseignant
-      .populate("epreuve.salle") // Populate salle
-      .populate("epreuve.matiere") // Populate matiere
-      .populate("epreuve.classe") // Populate classe
+      .populate("group_enseignant.enseignant")
+      .populate("epreuve.salle")
+      .populate("epreuve.matiere")
+      .populate("epreuve.classe")
       .populate({
-        path: "epreuve.group_surveillants", // Correctly populate group_surveillants
+        path: "epreuve.group_surveillants",
       })
       .populate({
-        path: "epreuve.group_responsables", // Correctly populate group_responsables
+        path: "epreuve.group_responsables",
       });
   } catch (error) {
     console.error("Error fetching Examens:", error);
@@ -28,8 +36,9 @@ const getExamens = async () => {
   }
 };
 
-const updateExamen = async (id, updateData) => {
+const updateExamen = async (id, updateData, dbName) => {
   try {
+    const examenModel = await getExamenModel(dbName);
     return await examenModel
       .findByIdAndUpdate(id, updateData, { new: true })
       .populate("group_enseignant.enseignant")
@@ -48,8 +57,9 @@ const updateExamen = async (id, updateData) => {
   }
 };
 
-const deleteExamen = async (id) => {
+const deleteExamen = async (dbName, id) => {
   try {
+    const examenModel = await getExamenModel(dbName);
     return await examenModel.findByIdAndDelete(id);
   } catch (error) {
     console.error("Error deleting Examen:", error);
@@ -57,8 +67,9 @@ const deleteExamen = async (id) => {
   }
 };
 
-const getExamenById = async (id) => {
+const getExamenById = async (id, dbName) => {
   try {
+    const examenModel = await getExamenModel(dbName);
     return await examenModel
       .findById(id)
       .populate("group_enseignant.enseignant")
@@ -77,8 +88,9 @@ const getExamenById = async (id) => {
   }
 };
 
-const getExamensBySemesterAndRegime = async (semester, regime) => {
+const getExamensBySemesterAndRegime = async (semester, regime, dbName) => {
   try {
+    const examenModel = await getExamenModel(dbName);
     const examens = await examenModel
       .find({ semestre: semester })
       .populate({
@@ -97,8 +109,6 @@ const getExamensBySemesterAndRegime = async (semester, regime) => {
       )
     );
 
-    console.log("Filtered Examens:", filteredExamens);
-
     return filteredExamens;
   } catch (error) {
     throw new Error(`Failed to fetch examens: ${error.message}`);
@@ -112,9 +122,11 @@ const editCalendrierExamens = async (
   nbre_present,
   nbre_absent,
   nbre_exclus,
-  notes
+  notes,
+  dbName
 ) => {
   try {
+    const examenModel = await getExamenModel(dbName);
     const document = await examenModel.findOne({
       _id: id_Calendrier,
       "epreuve._id": epreuveId,

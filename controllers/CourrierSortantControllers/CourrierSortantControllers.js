@@ -1,6 +1,10 @@
 const CourrierSortantServices = require("../../services/CourrierSortantServices/CourrierSortantServices");
 const globalFunctions = require("../../utils/globalFunctions");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addCourrierSortant = async (req, res) => {
   try {
     const {
@@ -40,7 +44,8 @@ const addCourrierSortant = async (req, res) => {
         observations,
         file,
       },
-      documents
+      documents,
+      useNewDb(req)
     );
     res.json(CourrierSortant);
   } catch (error) {
@@ -94,7 +99,8 @@ const updateCourrierSortantById = async (req, res) => {
       await CourrierSortantServices.updateCourrierSortant(
         CourrierSortantId,
         courrierSortantBody,
-        documents
+        documents,
+        useNewDb(req)
       );
 
     if (!updatedCourrierSortant) {
@@ -109,8 +115,9 @@ const updateCourrierSortantById = async (req, res) => {
 
 const getAllCourrierSortant = async (req, res) => {
   try {
-    const CourrierSortant =
-      await CourrierSortantServices.getAllCourrierSortant();
+    const CourrierSortant = await CourrierSortantServices.getAllCourrierSortant(
+      useNewDb(req)
+    );
     res.json(CourrierSortant);
   } catch (error) {
     console.error(error);
@@ -123,7 +130,10 @@ const deleteCourrierSortantById = async (req, res) => {
     const CourrierSortantId = req.params.id;
 
     const deletedCourrierSortant =
-      await CourrierSortantServices.deleteCourrierSortant(CourrierSortantId);
+      await CourrierSortantServices.deleteCourrierSortant(
+        CourrierSortantId,
+        useNewDb(req)
+      );
 
     if (!deletedCourrierSortant) {
       return res.status(404).send("Courrier Sortant not found");

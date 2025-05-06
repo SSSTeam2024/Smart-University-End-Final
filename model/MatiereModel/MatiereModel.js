@@ -23,4 +23,4 @@ const matiereSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Matiere", matiereSchema);
+module.exports = matiereSchema;

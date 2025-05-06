@@ -6,61 +6,12 @@ const emailService = require("../EmailServices/emailService");
 const emailStructure = require("../../utils/emailInscription");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { getDb } = require("../../config/dbSwitcher");
 
-// const registerEtudiant = async (userData, documents) => {
-//   try {
-//     console.log(documents);
-//     const saveResult = await saveDocumentToServer(documents);
-//     if (saveResult) {
-//       const hashedPassword = await bcrypt.hash(userData.password, 10);
-//       const newEtudiant = await etudiantDao.createEudiant({
-//         ...userData,
-//         password: hashedPassword,
-//       });
-
-//       const email = prepareEmailInscription(
-//         userData.email,
-//         userData.prenom_fr,
-//         userData.nom_fr,
-//         userData.code_acces,
-//         userData.num_CIN,
-//         newEtudiant.createdAt
-//       );
-//       await emailService.sendEmail(email);
-//       return newEtudiant;
-//     } else {
-//       throw new Error("Failed to save documents.");
-//     }
-//   } catch (error) {
-//     console.error("Error registering etudiant:", error);
-//     throw error;
-//   }
-// };
-
-// async function saveDocumentToServer(documents) {
-//   let counter = 0;
-//   for (const file of documents) {
-//     await saveFile(file.base64String, file.name, file.path);
-//     counter++;
-//   }
-//   if (counter == documents.length) return true;
-// }
-
-// async function saveFile(base64String, fileName, file_path) {
-//   const binaryData = Buffer.from(base64String, "base64");
-//   const filePath = file_path + fileName;
-//   await globalFunctions.ensureDirectoryExistence(file_path);
-//   fs.writeFile(filePath, binaryData, "binary", (err) => {
-//     if (err) {
-//       console.error("Error saving the file:", err);
-//     } else {
-//       console.log("File saved successfully!");
-//     }
-//   });
-// }
-const registerEtudiant = async (userData, documents = []) => {
+const registerEtudiant = async (userData, documents = [], useNew) => {
   try {
-    let saveResult = true; // Default to true in case no documents are provided
+    const db = await getDb(useNew);
+    let saveResult = true;
 
     if (documents.length > 0) {
       saveResult = await saveDocumentToServer(documents);
@@ -71,6 +22,7 @@ const registerEtudiant = async (userData, documents = []) => {
       const newEtudiant = await etudiantDao.createEudiant({
         ...userData,
         password: hashedPassword,
+        db,
       });
 
       // const email = prepareEmailInscription(
@@ -82,6 +34,7 @@ const registerEtudiant = async (userData, documents = []) => {
       //   newEtudiant.createdAt
       // );
       // await emailService.sendEmail(email);
+
       return newEtudiant;
     } else {
       throw new Error("Failed to save documents.");
@@ -94,16 +47,13 @@ const registerEtudiant = async (userData, documents = []) => {
 
 async function saveDocumentToServer(documents) {
   if (!documents || documents.length === 0) {
-    console.log("No documents to save.");
-    return true; // Return true since no files need saving
+    return true;
   }
-
   let counter = 0;
   for (const file of documents) {
     await saveFile(file.base64String, file.name, file.path);
     counter++;
   }
-
   return counter === documents.length;
 }
 
@@ -133,7 +83,6 @@ async function saveFile(base64String, fileName, file_path) {
 function prepareEmailInscription(email, prenom, nom, code, cin, date) {
   let recipient = email;
   let pwd = String(cin).split("").reverse().join("");
-  console.log("date", date);
   let formattedDate = new Date(date)
     .toLocaleString("en-US", {
       month: "long",
@@ -158,26 +107,33 @@ function prepareEmailInscription(email, prenom, nom, code, cin, date) {
   return fullEmailObject;
 }
 
-const getEtudiants = async () => {
-  const result = await etudiantDao.getEtudiants();
+const getEtudiants = async (useNew) => {
+  const db = await getDb(useNew);
+  const result = await etudiantDao.getEtudiants(db);
   return result;
 };
-const getEtudiantById = async (id) => {
-  return etudiantDao.getEtudiantById(id);
+
+const getEtudiantById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return etudiantDao.getEtudiantById(id, db);
 };
 
-const deleteEtudiant = async (id) => {
-  return await etudiantDao.deleteEtudiant(id);
+const deleteEtudiant = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await etudiantDao.deleteEtudiant(id, db);
 };
 
-const updateEtudiant = async (id, updateData) => {
-  return await etudiantDao.updateEtudiant(id, updateData);
+const updateEtudiant = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return await etudiantDao.updateEtudiant(id, updateData, db);
 };
 
-const getTypeInscriptionByIdStudent = async (studentId) => {
+const getTypeInscriptionByIdStudent = async (studentId, useNew) => {
   try {
+    const db = await getDb(useNew);
     const typeInscription = await etudiantDao.getTypeInscriptionByIdStudent(
-      studentId
+      studentId,
+      db
     );
     return typeInscription;
   } catch (error) {
@@ -189,28 +145,34 @@ const getTypeInscriptionByIdStudent = async (studentId) => {
   }
 };
 
-const updateGroupeClasse = async (studentIds, groupeClasseId) => {
+const updateGroupeClasse = async (studentIds, groupeClasseId, useNew) => {
+  const db = await getDb(useNew);
   const result = await etudiantDao.updateGroupeClasse(
     studentIds,
-    groupeClasseId
+    groupeClasseId,
+    db
   );
   return result;
 };
 
-const getEtudiantsByIdClasse = async (classeId) => {
-  return etudiantDao.getEtudiantsByIdClasse(classeId);
+const getEtudiantsByIdClasse = async (classeId, useNew) => {
+  const db = await getDb(useNew);
+  return etudiantDao.getEtudiantsByIdClasse(classeId, db);
 };
 
-const getEtudiantByCin = async (cin_etudiant) => {
-  return etudiantDao.getEtudiantByCIN(cin_etudiant);
+const getEtudiantByCin = async (cin_etudiant, useNew) => {
+  const db = await getDb(useNew);
+  return etudiantDao.getEtudiantByCIN(cin_etudiant, db);
 };
 
-const getEtudiatByCinAndCode = async (cin_etudiant, codesecret) => {
-  return etudiantDao.getEtudiantByCinAndCode(cin_etudiant, codesecret);
+const getEtudiatByCinAndCode = async (cin_etudiant, codesecret, useNew) => {
+  const db = await getDb(useNew);
+  return etudiantDao.getEtudiantByCinAndCode(cin_etudiant, codesecret, db);
 };
 
-const login = async (cin, password) => {
-  const etudiant = await etudiantDao.getEtudiantByCIN(cin);
+const login = async (cin, password, useNew) => {
+  const db = await getDb(useNew);
+  const etudiant = await etudiantDao.getEtudiantByCIN(cin, db);
 
   if (!etudiant) {
     throw new Error("Etudiant not found");
@@ -221,7 +183,7 @@ const login = async (cin, password) => {
 
     await etudiantDao.updateJwtToken(etudiant._id, String(accessToken));
 
-    let updatedEtudiant = await etudiantDao.getEtudiantById(etudiant._id);
+    let updatedEtudiant = await etudiantDao.getEtudiantById(etudiant._id, db);
 
     return updatedEtudiant;
   } else {
@@ -229,23 +191,25 @@ const login = async (cin, password) => {
   }
 };
 
-const getEtudiantByToken = async (token) => {
-  return await etudiantDao.findEtudiantByToken(token);
+const getEtudiantByToken = async (token, useNew) => {
+  const db = await getDb(useNew);
+  return await etudiantDao.findEtudiantByToken(token, db);
 };
 
-const getNbrEtudiantsByClasses = async (classeIds) => {
+const getNbrEtudiantsByClasses = async (classeIds, useNew) => {
+  const db = await getDb(useNew);
   let nbr = 0;
   for (const classId of classeIds) {
-    const students = await etudiantDao.getEtudiantsByIdClasse(classId);
+    const students = await etudiantDao.getEtudiantsByIdClasse(classId, db);
     nbr += students.length;
   }
   return nbr;
 };
 
-const logoutEtudiant = async (studentId) => {
-  return await etudiantDao.logoutEtudiant(studentId);
+const logoutEtudiant = async (studentId, useNew) => {
+  const db = await getDb(useNew);
+  return await etudiantDao.logoutEtudiant(studentId, db);
 };
-
 
 module.exports = {
   getEtudiants,
@@ -261,5 +225,5 @@ module.exports = {
   login,
   getEtudiantByToken,
   getNbrEtudiantsByClasses,
-  logoutEtudiant
+  logoutEtudiant,
 };

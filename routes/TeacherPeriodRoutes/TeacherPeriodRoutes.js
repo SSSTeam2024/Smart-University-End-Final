@@ -21,4 +21,11 @@ router.post(
   "/periods",
   teacherPeriodController.fetchPeriodsBySemesterAndTeacherId
 );
+
+// Get all teachers periods
+router.get("/get-all-periods", teacherPeriodController.getAllTeacherPeriod);
+
+// Delete many Avis Enseignant
+router.delete("/delete-many", teacherPeriodController.deleteManyPeriods);
+
 module.exports = router;

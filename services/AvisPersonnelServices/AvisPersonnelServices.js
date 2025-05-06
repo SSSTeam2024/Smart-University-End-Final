@@ -1,5 +1,7 @@
-const avisPersonnelDao = require('../../dao/AvisPersonnelDao/AvisPersonnelDao');
+const avisPersonnelDao = require("../../dao/AvisPersonnelDao/AvisPersonnelDao");
 const fs = require("fs").promises;
+
+const { getDb } = require("../../config/dbSwitcher");
 
 async function saveMediaToServer(documents) {
   try {
@@ -28,29 +30,33 @@ async function saveFile(base64String, fileName, filePath) {
   }
 }
 
-const createAvisPersonnel = async (avisPersonnelData, documents) => {
+const createAvisPersonnel = async (avisPersonnelData, documents, useNew) => {
   try {
+    const db = await getDb(useNew);
     const saveResult = await saveMediaToServer(documents);
     if (!saveResult) {
       throw new Error("Not all files were saved successfully.");
     }
-    return await avisPersonnelDao.createAvisPersonnel(avisPersonnelData);
+    return await avisPersonnelDao.createAvisPersonnel(avisPersonnelData, db);
   } catch (error) {
     console.error("Error creating AvisPersonnel:", error);
     throw error;
   }
 };
 
-const getAllAvisPersonnels = async () => {
-  return avisPersonnelDao.getAllAvisPersonnels();
+const getAllAvisPersonnels = async (dbName) => {
+  const db = await getDb(dbName);
+  return avisPersonnelDao.getAllAvisPersonnels(db);
 };
 
-const getAvisPersonnelById = async (id) => {
-  return avisPersonnelDao.getAvisPersonnelById(id);
+const getAvisPersonnelById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return avisPersonnelDao.getAvisPersonnelById(id, db);
 };
 
-const updateAvisPersonnel = async (id, updateData, documents) => {
+const updateAvisPersonnel = async (id, updateData, documents, useNew) => {
   try {
+    const db = await getDb(useNew);
     // Save the new media files to the server
     if (documents && documents.length > 0) {
       const saveResult = await saveMediaToServer(documents);
@@ -60,15 +66,21 @@ const updateAvisPersonnel = async (id, updateData, documents) => {
     }
 
     // Update the Actualite in the database with new data
-    return await avisPersonnelDao.updateAvisPersonnel(id, updateData);
+    return await avisPersonnelDao.updateAvisPersonnel(id, updateData, db);
   } catch (error) {
     console.error("Error updating Avis Personnel :", error);
     throw error;
   }
 };
 
-const deleteAvisPersonnel = async (id) => {
-  return avisPersonnelDao.deleteAvisPersonnel(id);
+const deleteAvisPersonnel = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return avisPersonnelDao.deleteAvisPersonnel(id, db);
+};
+
+const deleteManyAvisPersonnel = async (dbName, id) => {
+  const db = await getDb(dbName);
+  return avisPersonnelDao.deleteManyAvisPersonnels(db, id);
 };
 
 module.exports = {
@@ -76,5 +88,6 @@ module.exports = {
   getAllAvisPersonnels,
   getAvisPersonnelById,
   updateAvisPersonnel,
-  deleteAvisPersonnel
+  deleteAvisPersonnel,
+  deleteManyAvisPersonnel,
 };

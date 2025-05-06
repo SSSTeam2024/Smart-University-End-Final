@@ -1,14 +1,21 @@
 const categoriePersonnelService = require("../../services/CategoriePersonnelServices/CategoriePersonnelServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addCategoriePersonnel = async (req, res) => {
   try {
     const { categorie_ar, categorie_fr } = req.body;
 
     const categoriePersonnel =
-      await categoriePersonnelService.registerCategoriePersonnel({
-        categorie_ar,
-        categorie_fr,
-      });
+      await categoriePersonnelService.registerCategoriePersonnel(
+        {
+          categorie_ar,
+          categorie_fr,
+        },
+        useNewDb(req)
+      );
     res.json(categoriePersonnel);
   } catch (error) {
     console.error(error);
@@ -31,7 +38,8 @@ const updateCategoriePersonnelById = async (req, res) => {
         {
           categorie_ar,
           categorie_fr,
-        }
+        },
+        useNewDb(req)
       );
 
     if (!updatedCategoriePersonnel) {
@@ -50,7 +58,8 @@ const getCategoriePersonnelById = async (req, res) => {
 
     const getCategoriePersonnel =
       await categoriePersonnelService.getCategoriePersonnelDaoById(
-        categoriePersonnelId
+        categoriePersonnelId,
+        useNewDb(req)
       );
 
     if (!getCategoriePersonnel) {
@@ -66,7 +75,7 @@ const getCategoriePersonnelById = async (req, res) => {
 const getAllCategoriePersonnel = async (req, res) => {
   try {
     const categoriePersonnels =
-      await categoriePersonnelService.getCategoriesPersonnelDao();
+      await categoriePersonnelService.getCategoriesPersonnelDao(useNewDb(req));
     res.json(categoriePersonnels);
   } catch (error) {
     console.error(error);
@@ -80,7 +89,8 @@ const deleteCategoriePersonnelById = async (req, res) => {
 
     const deletedEtatPersonnel =
       await categoriePersonnelService.deleteCategoriePersonnelDao(
-        categoriePersonnelId
+        categoriePersonnelId,
+        useNewDb(req)
       );
 
     if (!deletedEtatPersonnel) {
@@ -102,10 +112,13 @@ const getCategoryByValue = async (req, res) => {
         .json({ message: "categorie_ar and categorie_fr are required" });
     }
 
-    const categoryValue = await categoriePersonnelService.getCategoryByValue({
-      categorie_fr,
-      categorie_ar,
-    });
+    const categoryValue = await categoriePersonnelService.getCategoryByValue(
+      {
+        categorie_fr,
+        categorie_ar,
+      },
+      useNewDb(req)
+    );
 
     if (!categoryValue) {
       return res.json(null);

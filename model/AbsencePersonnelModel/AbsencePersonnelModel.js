@@ -29,4 +29,5 @@ const AbsencePersonnelSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("AbsencePersonnel", AbsencePersonnelSchema);
+// module.exports = mongoose.model("AbsencePersonnel", AbsencePersonnelSchema);
+module.exports = AbsencePersonnelSchema;

@@ -1,24 +1,25 @@
 const templateBodyService = require("../../services/TemplateBodyServices/templateBodyServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addTemplateBody = async (req, res) => {
   try {
-    const {
-      title,
-      body,
-      langue,
-      intended_for,
-      has_code,
-      has_number
-    } = req.body;
+    const { title, body, langue, intended_for, has_code, has_number } =
+      req.body;
 
-    const templateBody = await templateBodyService.createTemplateBody({
-      title,
-      body,
-      langue,
-      intended_for,
-      has_code,
-      has_number
-    });
+    const templateBody = await templateBodyService.createTemplateBody(
+      {
+        title,
+        body,
+        langue,
+        intended_for,
+        has_code,
+        has_number,
+      },
+      useNewDb(req)
+    );
 
     res.json(templateBody);
   } catch (error) {
@@ -29,7 +30,9 @@ const addTemplateBody = async (req, res) => {
 
 const getAllTemplateBodys = async (req, res) => {
   try {
-    const templateBodys = await templateBodyService.getTemplateBodys();
+    const templateBodys = await templateBodyService.getTemplateBodys(
+      useNewDb(req)
+    );
     res.json(templateBodys);
   } catch (error) {
     console.error(error);
@@ -39,9 +42,12 @@ const getAllTemplateBodys = async (req, res) => {
 
 const getAllTemplateBodyById = async (req, res) => {
   try {
-    const templateBody = await templateBodyService.getTemplateBodyById(req.body._id);
+    const templateBody = await templateBodyService.getTemplateBodyById(
+      req.body._id,
+      useNewDb(req)
+    );
     if (!templateBody) {
-      return res.status(404).json({ message: 'templateBody not found' });
+      return res.status(404).json({ message: "templateBody not found" });
     }
     res.status(200).json(templateBody);
   } catch (error) {
@@ -51,20 +57,26 @@ const getAllTemplateBodyById = async (req, res) => {
 };
 const deleteTemplateBody = async (req, res) => {
   try {
-    const deleteTemplateBody = await templateBodyService.deleteTemplateBody(req.params.id);
+    const deleteTemplateBody = await templateBodyService.deleteTemplateBody(
+      req.params.id,
+      useNewDb(req)
+    );
     if (!deleteTemplateBody) {
-      return res.status(404).json({ message: 'template not found' });
+      return res.status(404).json({ message: "template not found" });
     }
-    res.status(200).json({ message: 'template deleted' });
+    res.status(200).json({ message: "template deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 const getTemplateBodyByContext = async (req, res) => {
   try {
-    const templateBodies = await templateBodyService.getTemplateBodyByContext(req.body.intended_for);
+    const templateBodies = await templateBodyService.getTemplateBodyByContext(
+      req.body.intended_for,
+      useNewDb(req)
+    );
     if (!templateBodies) {
-      return res.status(404).json({ message: 'template bodies not found' });
+      return res.status(404).json({ message: "template bodies not found" });
     }
     res.status(200).json(templateBodies);
   } catch (error) {
@@ -76,5 +88,5 @@ module.exports = {
   getAllTemplateBodys,
   getAllTemplateBodyById,
   deleteTemplateBody,
-  getTemplateBodyByContext
+  getTemplateBodyByContext,
 };

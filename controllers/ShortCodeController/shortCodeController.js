@@ -1,5 +1,9 @@
 const shortCodeServices = require("../../services/ShortCodeServices/shortCodeServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 // const addShortCode = async (req, res) => {
 //   try {
 //     const {
@@ -31,7 +35,10 @@ const addShortCode = async (req, res) => {
       return res.status(400).send("Request body must be an array of objects.");
     }
 
-    const shortCodes = await shortCodeServices.createShortCode(shortCodeDataArray);
+    const shortCodes = await shortCodeServices.createShortCode(
+      shortCodeDataArray,
+      useNewDb(req)
+    );
 
     res.json(shortCodes);
   } catch (error) {
@@ -42,7 +49,7 @@ const addShortCode = async (req, res) => {
 
 const getAllShortCodes = async (req, res) => {
   try {
-    const shortCodes = await shortCodeServices.getShortCodes();
+    const shortCodes = await shortCodeServices.getShortCodes(useNewDb(req));
     res.json(shortCodes);
   } catch (error) {
     console.error(error);
@@ -51,6 +58,6 @@ const getAllShortCodes = async (req, res) => {
 };
 
 module.exports = {
-    addShortCode,
-    getAllShortCodes,
+  addShortCode,
+  getAllShortCodes,
 };

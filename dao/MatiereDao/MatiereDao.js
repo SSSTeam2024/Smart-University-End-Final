@@ -1,7 +1,14 @@
-const matiereModel = require("../../model/MatiereModel/MatiereModel");
+const matiereSchema = require("../../model/MatiereModel/MatiereModel");
 
-const createMatiere = async (matiere) => {
+function getMatiereModel(dbConnection) {
+  return (
+    dbConnection.models.Matiere || dbConnection.model("Matiere", matiereSchema)
+  );
+}
+
+const createMatiere = async (matiere, dbName) => {
   try {
+    const matiereModel = await getMatiereModel(dbName);
     return await matiereModel.create(matiere);
   } catch (error) {
     console.error("Error creating matiere:", error);
@@ -9,8 +16,9 @@ const createMatiere = async (matiere) => {
   }
 };
 
-const getMatieres = async () => {
+const getMatieres = async (dbName) => {
   try {
+    const matiereModel = await getMatiereModel(dbName);
     return await matiereModel.find().populate("classes");
   } catch (error) {
     console.error("Error fetching matieres:", error);
@@ -18,8 +26,9 @@ const getMatieres = async () => {
   }
 };
 
-const updateMatiere = async (id, updateData) => {
+const updateMatiere = async (id, updateData, dbName) => {
   try {
+    const matiereModel = await getMatiereModel(dbName);
     return await matiereModel
       .findByIdAndUpdate(id, updateData, { new: true })
       .populate("classes");
@@ -29,8 +38,9 @@ const updateMatiere = async (id, updateData) => {
   }
 };
 
-const deleteMatiere = async (id) => {
+const deleteMatiere = async (id, dbName) => {
   try {
+    const matiereModel = await getMatiereModel(dbName);
     return await matiereModel.findByIdAndDelete(id);
   } catch (error) {
     console.error("Error deleting matiere:", error);
@@ -38,8 +48,9 @@ const deleteMatiere = async (id) => {
   }
 };
 
-const getMatiereById = async (id) => {
+const getMatiereById = async (id, dbName) => {
   try {
+    const matiereModel = await getMatiereModel(dbName);
     return await matiereModel.findById(id).populate("classes");
   } catch (error) {
     console.error("Error fetching matiere by ID:", error);
@@ -47,7 +58,8 @@ const getMatiereById = async (id) => {
   }
 };
 
-const getMatiereByCodeMatiere = async (code_matiere) => {
+const getMatiereByCodeMatiere = async (code_matiere, dbName) => {
+  const matiereModel = await getMatiereModel(dbName);
   return await matiereModel.findOne({ code_matiere });
 };
 

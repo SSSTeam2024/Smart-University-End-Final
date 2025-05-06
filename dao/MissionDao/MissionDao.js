@@ -1,24 +1,43 @@
-const Mission = require('../../model/MissionModel/Mission');
+const MissionSchema = require("../../model/MissionModel/Mission");
 
-const createMission = async (missionData) => {
+function getMissionModel(dbConnection) {
+  return (
+    dbConnection.models.Mission || dbConnection.model("Mission", MissionSchema)
+  );
+}
+
+const createMission = async (missionData, dbName) => {
+  const Mission = await getMissionModel(dbName);
   const mission = new Mission(missionData);
   return mission.save();
 };
 
-const getAllMissions = async () => {
-  return Mission.find().populate('personnel').populate('enseignant');
+const getAllMissions = async (dbName) => {
+  const Mission = await getMissionModel(dbName);
+  return Mission.find().populate("personnel").populate("enseignant");
 };
 
-const getMissionById = async (id) => {
+const getMissionById = async (id, dbName) => {
+  const Mission = await getMissionModel(dbName);
   return Mission.findById(id);
 };
 
-const updateMission = async (id, updateData) => {
+const updateMission = async (id, updateData, dbName) => {
+  const Mission = await getMissionModel(dbName);
   return Mission.findByIdAndUpdate(id, updateData, { new: true });
 };
 
-const deleteMission = async (id) => {
+const deleteMission = async (id, dbName) => {
+  const Mission = await getMissionModel(dbName);
   return Mission.findByIdAndDelete(id);
+};
+
+const deleteManyMissions = async (dbName, ids) => {
+  const missionModel = await getMissionModel(dbName);
+  const query = {
+    _id: { $in: ids },
+  };
+  return await missionModel.deleteMany(query);
 };
 
 module.exports = {
@@ -26,5 +45,6 @@ module.exports = {
   getAllMissions,
   getMissionById,
   updateMission,
-  deleteMission
+  deleteMission,
+  deleteManyMissions,
 };

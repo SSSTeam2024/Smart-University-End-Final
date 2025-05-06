@@ -1,18 +1,24 @@
 const typeSeanceDao = require("../../dao/TypeSeance/TypeSeance");
-const createTypeSeance = async (data) => {
-  let typeSeance = await typeSeanceDao.createTypeSeance(data);
+const { getDb } = require("../../config/dbSwitcher");
+
+const createTypeSeance = async (data, useNew) => {
+  const db = await getDb(useNew);
+  let typeSeance = await typeSeanceDao.createTypeSeance(data, db);
   return typeSeance;
 };
 
-const updateTypeSeance = async (id, updateData) => {
-  return await typeSeanceDao.updateTypeSeance(id, updateData);
+const updateTypeSeance = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return await typeSeanceDao.updateTypeSeance(id, updateData, db);
 };
-const getTypeSeances = async () => {
-  return await typeSeanceDao.getTypeSeances();
+const getTypeSeances = async (useNew) => {
+  const db = await getDb(useNew);
+  return await typeSeanceDao.getTypeSeances(db);
 };
 
-const deleteTypeSeance = async (id) => {
-  return await typeSeanceDao.deleteTypeSeance(id);
+const deleteTypeSeance = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await typeSeanceDao.deleteTypeSeance(id, db);
 };
 
 module.exports = {

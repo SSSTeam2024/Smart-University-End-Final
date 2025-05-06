@@ -1,13 +1,20 @@
 const postePersonnelService = require("../../services/PostePersonnelServices/PostePersonnelServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const createPostePersonnel = async (req, res) => {
   try {
     const { poste_ar, poste_fr } = req.body;
 
-    const postetPersonnel = await postePersonnelService.createPostePersonnel({
-      poste_ar,
-      poste_fr,
-    });
+    const postetPersonnel = await postePersonnelService.createPostePersonnel(
+      {
+        poste_ar,
+        poste_fr,
+      },
+      useNewDb(req)
+    );
     res.json(postetPersonnel);
   } catch (error) {
     console.error(error);
@@ -20,10 +27,14 @@ const updatePostePersonnelById = async (req, res) => {
     const { poste_ar, poste_fr } = req.body;
 
     const updatedPostePersonnel =
-      await postePersonnelService.updatePostePersonnelDao(postePersonnelId, {
-        poste_ar,
-        poste_fr,
-      });
+      await postePersonnelService.updatePostePersonnelDao(
+        postePersonnelId,
+        {
+          poste_ar,
+          poste_fr,
+        },
+        useNewDb(req)
+      );
 
     if (!updatedPostePersonnel) {
       return res.status(404).send("Poste Personnel not found!");
@@ -40,7 +51,10 @@ const getPostePersonnelById = async (req, res) => {
     const postePersonnelId = req.params.id;
 
     const getPostePersonnel =
-      await postePersonnelService.getPostePersonnelDaoById(postePersonnelId);
+      await postePersonnelService.getPostePersonnelDaoById(
+        postePersonnelId,
+        useNewDb(req)
+      );
 
     if (!getPostePersonnel) {
       return res.status(404).send("Poste Personnel not found");
@@ -54,7 +68,9 @@ const getPostePersonnelById = async (req, res) => {
 
 const getAllPostesPersonnel = async (req, res) => {
   try {
-    const postePersonnels = await postePersonnelService.getPostesPersonnelDao();
+    const postePersonnels = await postePersonnelService.getPostesPersonnelDao(
+      useNewDb(req)
+    );
     res.json(postePersonnels);
   } catch (error) {
     console.error(error);
@@ -67,7 +83,10 @@ const deletePostePersonnelById = async (req, res) => {
     const postePersonnelId = req.params.id;
 
     const deletedPostePersonnel =
-      await postePersonnelService.deletePostePersonnelDao(postePersonnelId);
+      await postePersonnelService.deletePostePersonnelDao(
+        postePersonnelId,
+        useNewDb(req)
+      );
 
     if (!deletedPostePersonnel) {
       return res.status(404).send("Poste Personnel not found");
@@ -89,10 +108,13 @@ const getPosteByValue = async (req, res) => {
         .json({ message: "poste_ar and poste_fr are required" });
     }
 
-    const posteValue = await postePersonnelService.getPosteByValue({
-      poste_fr,
-      poste_ar,
-    });
+    const posteValue = await postePersonnelService.getPosteByValue(
+      {
+        poste_fr,
+        poste_ar,
+      },
+      useNewDb(req)
+    );
 
     if (!posteValue) {
       return res.json(null);

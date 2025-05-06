@@ -17,4 +17,5 @@ const pointageEnseignantSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("PointageEnseignant", pointageEnseignantSchema);
+// module.exports = mongoose.model("PointageEnseignant", pointageEnseignantSchema);
+module.exports = pointageEnseignantSchema;

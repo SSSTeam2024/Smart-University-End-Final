@@ -105,4 +105,4 @@ const etudiantSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Etudiant", etudiantSchema);
+module.exports = etudiantSchema;

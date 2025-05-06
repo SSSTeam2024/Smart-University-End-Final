@@ -1,16 +1,32 @@
-const NiveauClasseModel = require("../../model/NiveauClasseModel/NiveauClasseModel");
-const sectionClasse = require("../../model/SectionClasseModel/SectionClasseModel");
-const DepartementClasse = require("../../model/departementModel/DepartementModel");
-const createSectionClasse = async (section) => {
+const sectionClasseSchema = require("../../model/SectionClasseModel/SectionClasseModel");
+const departementSchema = require("../../model/departementModel/DepartementModel");
+
+function getSectionClasseModel(dbConnection) {
+  return (
+    dbConnection.models.SectionClasse ||
+    dbConnection.model("SectionClasse", sectionClasseSchema)
+  );
+}
+
+function getDepartementModel(dbConnection) {
+  return (
+    dbConnection.models.Departement ||
+    dbConnection.model("Departement", departementSchema)
+  );
+}
+
+const createSectionClasse = async (section, dbName) => {
   try {
+    const sectionClasse = await getSectionClasseModel(dbName);
     return await sectionClasse.create(section);
   } catch (error) {
     throw error;
   }
 };
 
-const getSectionsClasse = async () => {
+const getSectionsClasse = async (dbName) => {
   try {
+    const sectionClasse = await getSectionClasseModel(dbName);
     return await sectionClasse
       .find()
       .populate("niveau_classe")
@@ -21,8 +37,10 @@ const getSectionsClasse = async () => {
     throw error;
   }
 };
-const updateSectionClasse = async (id, updateData) => {
+
+const updateSectionClasse = async (id, updateData, dbName) => {
   try {
+    const sectionClasse = await getSectionClasseModel(dbName);
     return await sectionClasse
       .findByIdAndUpdate(id, updateData, { new: true })
       .populate("niveau_classe")
@@ -34,8 +52,13 @@ const updateSectionClasse = async (id, updateData) => {
   }
 };
 
-const updateDepartmentsWithSection = async (sectionId, departmentIds) => {
+const updateDepartmentsWithSection = async (
+  sectionId,
+  departmentIds,
+  dbName
+) => {
   try {
+    const DepartementClasse = await getDepartementModel(dbName);
     await Promise.all(
       departmentIds.map(async (departmentId) => {
         await DepartementClasse.findByIdAndUpdate(departmentId, {
@@ -47,12 +70,15 @@ const updateDepartmentsWithSection = async (sectionId, departmentIds) => {
     throw error;
   }
 };
-const deleteSectionClasse = async (id) => {
+
+const deleteSectionClasse = async (id, dbName) => {
+  const sectionClasse = await getSectionClasseModel(dbName);
   return await sectionClasse.findByIdAndDelete(id);
 };
 
-const getSectionClasseById = async (id) => {
+const getSectionClasseById = async (id, dbName) => {
   try {
+    const sectionClasse = await getSectionClasseModel(dbName);
     return await sectionClasse
       .findById(id)
       .populate("niveau_classe")

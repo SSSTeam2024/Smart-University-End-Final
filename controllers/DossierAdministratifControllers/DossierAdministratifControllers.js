@@ -5,6 +5,10 @@ const PapierAdministratifModel = require("../../model/PapierAdministratif/Papier
 const DossierAdministratifModel = require("../../model/DossierAdministratifModel/DossierAdministratifModel");
 const personnelDao = require("../../dao/PersonnelDao/PersonnelDao");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addDossierAdministratif = async (req, res) => {
   try {
     const { enseignant, personnel, papers } = req.body;
@@ -101,7 +105,9 @@ const addDossierAdministratif = async (req, res) => {
 const getAllDossierAdmnistratifs = async (req, res) => {
   try {
     const dossierAdministratif =
-      await dossierAdministratifService.getDossierAdministratifsDao();
+      await dossierAdministratifService.getDossierAdministratifsDao(
+        useNewDb(req)
+      );
     res.json(dossierAdministratif);
   } catch (error) {
     console.error(error);
@@ -121,7 +127,10 @@ const updateDossierAdministratif = async (req, res) => {
 
       if (FileBase64String && FileExtension) {
         // New file provided, update and save
-        let newFile = globalFunctions.generateUniqueFilename(FileExtension, "Dossier");
+        let newFile = globalFunctions.generateUniqueFilename(
+          FileExtension,
+          "Dossier"
+        );
         documents.push({
           base64String: FileBase64String,
           extension: FileExtension,
@@ -142,11 +151,12 @@ const updateDossierAdministratif = async (req, res) => {
       papers: updatedPapers,
     };
 
-    const dossier = await dossierAdministratifService.updateDossierAdministratif(
-      DossierAdministratifId,
-      dossierBody,
-      documents
-    );
+    const dossier =
+      await dossierAdministratifService.updateDossierAdministratif(
+        DossierAdministratifId,
+        dossierBody,
+        documents
+      );
 
     res.status(200).json(dossier);
   } catch (error) {
@@ -155,32 +165,44 @@ const updateDossierAdministratif = async (req, res) => {
   }
 };
 
-const removeSpecificPaperFromDossier= async(req, res)=> {
-  const { dossierId, userId, userType, paperId, annee, remarques, file } = req.body;
-  console.log("Request Body:", req.body); 
+const removeSpecificPaperFromDossier = async (req, res) => {
+  const { dossierId, userId, userType, paperId, annee, remarques, file } =
+    req.body;
+  console.log("Request Body:", req.body);
   console.log("Dossier ID:", dossierId);
 
   try {
-      const paperDetails = {
-          papier_administratif: paperId,
-          annee,
-          remarques,
-          file
-      };
+    const paperDetails = {
+      papier_administratif: paperId,
+      annee,
+      remarques,
+      file,
+    };
 
-      const updatedDossier = await dossierAdministratifService.removeSpecificPaperFromDossierService(dossierId, userId, userType, paperDetails);
+    const updatedDossier =
+      await dossierAdministratifService.removeSpecificPaperFromDossierService(
+        dossierId,
+        userId,
+        userType,
+        paperDetails
+      );
 
-      res.status(200).json({ success: true, message: 'Paper removed successfully', updatedDossier });
+    res.status(200).json({
+      success: true,
+      message: "Paper removed successfully",
+      updatedDossier,
+    });
   } catch (error) {
-      res.status(400).json({ success: false, message: error.message });
+    res.status(400).json({ success: false, message: error.message });
   }
-}
+};
 
 const archiveDossierAdministratif = async (req, res) => {
   try {
     const { dossierId } = req.body;
 
-    const { archivedDossier, type } = await dossierAdministratifService.archiveDossierAdministratif(dossierId);
+    const { archivedDossier, type } =
+      await dossierAdministratifService.archiveDossierAdministratif(dossierId);
 
     if (archivedDossier) {
       return res.status(200).json({
@@ -190,11 +212,13 @@ const archiveDossierAdministratif = async (req, res) => {
         type, // Return the type of dossier archived (enseignant or personnel)
       });
     } else {
-      return res.status(404).json({ success: false, message: 'Dossier not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Dossier not found" });
     }
   } catch (error) {
     console.error("Error archiving dossier:", error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -202,24 +226,26 @@ const restoreDossierAdministratifController = async (req, res) => {
   const { dossierId } = req.body;
 
   if (!dossierId) {
-    return res.status(400).json({ message: 'Dossier ID is required' });
+    return res.status(400).json({ message: "Dossier ID is required" });
   }
 
   try {
-    const restoredDossier = await dossierAdministratifService.restoreDossierAdministratifService(dossierId);
+    const restoredDossier =
+      await dossierAdministratifService.restoreDossierAdministratifService(
+        dossierId
+      );
     if (!restoredDossier) {
-      return res.status(404).json({ message: 'Dossier not found' });
+      return res.status(404).json({ message: "Dossier not found" });
     }
     return res.status(200).json({
-      message: 'Dossier restored successfully',
+      message: "Dossier restored successfully",
       dossier: restoredDossier,
     });
   } catch (error) {
     console.error("Error in controller restoring dossier:", error);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 module.exports = {
   addDossierAdministratif,
@@ -227,6 +253,5 @@ module.exports = {
   removeSpecificPaperFromDossier,
   updateDossierAdministratif,
   archiveDossierAdministratif,
-  restoreDossierAdministratifController
-
+  restoreDossierAdministratifController,
 };

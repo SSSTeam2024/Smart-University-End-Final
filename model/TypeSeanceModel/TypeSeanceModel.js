@@ -10,4 +10,5 @@ const typeSeanceSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("TypeSeance", typeSeanceSchema);
+// module.exports = mongoose.model("TypeSeance", typeSeanceSchema);
+module.exports = typeSeanceSchema;

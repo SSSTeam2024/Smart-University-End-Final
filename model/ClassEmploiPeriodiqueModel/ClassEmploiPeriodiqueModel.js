@@ -8,7 +8,8 @@ const classEmploiPeriodiqueSchema = new mongoose.Schema({
   etat: String,
 });
 
-module.exports = mongoose.model(
-  "ClassEmploiPeriodique",
-  classEmploiPeriodiqueSchema
-);
+// module.exports = mongoose.model(
+//   "ClassEmploiPeriodique",
+//   classEmploiPeriodiqueSchema
+// );
+module.exports = classEmploiPeriodiqueSchema;

@@ -1,6 +1,15 @@
-const DossierAdministratif = require("../../model/DossierAdministratifModel/DossierAdministratifModel");
-const addDossierAdministratif = async (dossierData) => {
+const DossierAdministratifSchema = require("../../model/DossierAdministratifModel/DossierAdministratifModel");
+
+function getDossierAdministratifModel(dbConnection) {
+  return (
+    dbConnection.models.DossierAdministratif ||
+    dbConnection.model("DossierAdministratif", DossierAdministratifSchema)
+  );
+}
+
+const addDossierAdministratif = async (dossierData, dbName) => {
   try {
+    const DossierAdministratif = await getDossierAdministratifModel(dbName);
     return await DossierAdministratif.create(dossierData);
   } catch (error) {
     console.error("Error creating dossier:", error);
@@ -8,8 +17,9 @@ const addDossierAdministratif = async (dossierData) => {
   }
 };
 
-const getDossiersAdministratifs = async () => {
+const getDossiersAdministratifs = async (dbName) => {
   try {
+    const DossierAdministratif = await getDossierAdministratifModel(dbName);
     return await DossierAdministratif.find()
       .populate("enseignant")
       .populate("personnel")
@@ -24,11 +34,9 @@ const getDossiersAdministratifs = async () => {
   }
 };
 
-
-
-
-const updateDossiersAdministratif = async (id, updateData) => {
+const updateDossiersAdministratif = async (id, updateData, dbName) => {
   try {
+    const DossierAdministratif = await getDossierAdministratifModel(dbName);
     return await DossierAdministratif.findByIdAndUpdate(id, updateData, {
       new: true,
     })
@@ -44,38 +52,48 @@ const updateDossiersAdministratif = async (id, updateData) => {
   }
 };
 
-
-const removeSpecificPaperFromDossier= async (dossierId, userId, userType, paperDetails) =>{
+const removeSpecificPaperFromDossier = async (
+  dossierId,
+  userId,
+  userType,
+  paperDetails,
+  dbName
+) => {
   const query = {
-      _id: dossierId,
-      [userType]: userId,
+    _id: dossierId,
+    [userType]: userId,
   };
+  const DossierAdministratif = await getDossierAdministratifModel(dbName);
   const update = {
-      $pull: {
-          papers: {
-           'papier_administratif': paperDetails.papier_administratif,
-              annee: paperDetails.annee,  
-              remarques: paperDetails.remarques,
-              file: paperDetails.file
-          }
-      }
+    $pull: {
+      papers: {
+        papier_administratif: paperDetails.papier_administratif,
+        annee: paperDetails.annee,
+        remarques: paperDetails.remarques,
+        file: paperDetails.file,
+      },
+    },
   };
-  return await DossierAdministratif.findOneAndUpdate(query, update, { new: true });
-}
+  return await DossierAdministratif.findOneAndUpdate(query, update, {
+    new: true,
+  });
+};
 
-const getDossierById = async (dossierId) => {
+const getDossierById = async (dossierId, dbName) => {
   try {
+    const DossierAdministratif = await getDossierAdministratifModel(dbName);
     return await DossierAdministratif.findById(dossierId)
-      .populate('enseignant')
-      .populate('personnel');
+      .populate("enseignant")
+      .populate("personnel");
   } catch (error) {
     console.error("Error fetching dossier by ID:", error);
     throw error;
   }
 };
 
-const archiveDossierAdministratif = async (dossierId) => {
+const archiveDossierAdministratif = async (dossierId, dbName) => {
   try {
+    const DossierAdministratif = await getDossierAdministratifModel(dbName);
     const archivedDossier = await DossierAdministratif.findByIdAndUpdate(
       dossierId,
       { isArchived: true },
@@ -88,9 +106,9 @@ const archiveDossierAdministratif = async (dossierId) => {
   }
 };
 
-
-const restoreDossierAdministratif = async (dossierId) => {
+const restoreDossierAdministratif = async (dossierId, dbName) => {
   try {
+    const DossierAdministratif = await getDossierAdministratifModel(dbName);
     const restoredDossier = await DossierAdministratif.findByIdAndUpdate(
       dossierId,
       { isArchived: false },
@@ -103,7 +121,6 @@ const restoreDossierAdministratif = async (dossierId) => {
   }
 };
 
-
 module.exports = {
   addDossierAdministratif,
   getDossiersAdministratifs,
@@ -111,5 +128,5 @@ module.exports = {
   updateDossiersAdministratif,
   archiveDossierAdministratif,
   getDossierById,
-  restoreDossierAdministratif
+  restoreDossierAdministratif,
 };

@@ -1,5 +1,6 @@
 const coursEnseignantDao = require("../../dao/CoursEnseignantDao/CoursEnseignantDao");
 const fs = require("fs").promises;
+const { getDb } = require("../../config/dbSwitcher");
 
 async function saveMediaToServer(documents) {
   try {
@@ -28,33 +29,38 @@ async function saveFile(base64String, fileName, filePath) {
   }
 }
 
-const addCoursEnseignant = async (coursEnseignantData, documents) => {
+const addCoursEnseignant = async (coursEnseignantData, documents, useNew) => {
   try {
+    const db = await getDb(useNew);
     const saveResult = await saveMediaToServer(documents);
     if (!saveResult) {
       throw new Error("Not all files were saved successfully.");
     }
-    return await coursEnseignantDao.addCoursEnseignant(coursEnseignantData);
+    return await coursEnseignantDao.addCoursEnseignant(coursEnseignantData, db);
   } catch (error) {
     console.error("Error creating Actualite:", error);
     throw error;
   }
 };
 
-const getCoursEnseignants = async () => {
-  return coursEnseignantDao.getCoursEnseignants();
+const getCoursEnseignants = async (useNew) => {
+  const db = await getDb(useNew);
+  return coursEnseignantDao.getCoursEnseignants(db);
 };
 
-const getCoursEnseignantById = async (id) => {
-  return coursEnseignantDao.getCoursEnseignantById(id);
+const getCoursEnseignantById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return coursEnseignantDao.getCoursEnseignantById(id, db);
 };
 
-const getCoursEnseignantByIdClasse = async (id) => {
-  return coursEnseignantDao.getCoursEnseignantByIdClasse(id);
+const getCoursEnseignantByIdClasse = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return coursEnseignantDao.getCoursEnseignantByIdClasse(id, db);
 };
 
-const updateCoursEnseignant = async (id, updateData, documents) => {
+const updateCoursEnseignant = async (id, updateData, documents, useNew) => {
   try {
+    const db = await getDb(useNew);
     if (documents && documents.length > 0) {
       const saveResult = await saveMediaToServer(documents);
       if (!saveResult) {
@@ -62,22 +68,25 @@ const updateCoursEnseignant = async (id, updateData, documents) => {
       }
     }
 
-    return await coursEnseignantDao.updateCoursEnseignant(id, updateData);
+    return await coursEnseignantDao.updateCoursEnseignant(id, updateData, db);
   } catch (error) {
     console.error("Error updating Actualite:", error);
     throw error;
   }
 };
 
-const deleteCoursEnseignant = async (id) => {
-  return coursEnseignantDao.deleteCoursEnseignant(id);
+const deleteCoursEnseignant = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return coursEnseignantDao.deleteCoursEnseignant(id, db);
 };
 
-const getSupportCoursByTeacherId = async (enseignantId) => {
-  return await coursEnseignantDao.getSupportCoursByTeacherId(enseignantId);
+const getSupportCoursByTeacherId = async (enseignantId, useNew) => {
+  const db = await getDb(useNew);
+  return await coursEnseignantDao.getSupportCoursByTeacherId(enseignantId, db);
 };
-const deleteSupportCoursEnseignant = async (id) => {
-  return await coursEnseignantDao.deleteSupportCoursEnseignant(id);
+const deleteSupportCoursEnseignant = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await coursEnseignantDao.deleteSupportCoursEnseignant(id, db);
 };
 
 module.exports = {
@@ -88,5 +97,5 @@ module.exports = {
   deleteCoursEnseignant,
   getCoursEnseignantByIdClasse,
   getSupportCoursByTeacherId,
-  deleteSupportCoursEnseignant
+  deleteSupportCoursEnseignant,
 };

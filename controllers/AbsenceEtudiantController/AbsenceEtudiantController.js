@@ -1,5 +1,9 @@
 const absenceEtudiantServices = require("../../services/AbsenceEtudiantServices/AbsenceEtudiantServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addAbsenceEtudiant = async (req, res) => {
   try {
     const {
@@ -13,16 +17,19 @@ const addAbsenceEtudiant = async (req, res) => {
       added_by,
     } = req.body;
     const newAbsenceEtudiant =
-      await absenceEtudiantServices.createAbsenceEtudiant({
-        classe,
-        enseignant,
-        etudiants,
-        seance,
-        departement,
-        date,
-        trimestre,
-        added_by,
-      });
+      await absenceEtudiantServices.createAbsenceEtudiant(
+        {
+          classe,
+          enseignant,
+          etudiants,
+          seance,
+          departement,
+          date,
+          trimestre,
+          added_by,
+        },
+        useNewDb(req)
+      );
     res.json(newAbsenceEtudiant);
   } catch (error) {
     console.error(error);
@@ -44,16 +51,20 @@ const updateAbsenceEtudiantById = async (req, res) => {
     } = req.body;
 
     const updatedAbsenceEtudiant =
-      await absenceEtudiantServices.updateAbsenceEtudiant(absenceEtudiantId, {
-        classe,
-        enseignant,
-        etudiants,
-        seance,
-        departement,
-        date,
-        trimestre,
-        added_by,
-      });
+      await absenceEtudiantServices.updateAbsenceEtudiant(
+        absenceEtudiantId,
+        {
+          classe,
+          enseignant,
+          etudiants,
+          seance,
+          departement,
+          date,
+          trimestre,
+          added_by,
+        },
+        useNewDb(req)
+      );
 
     if (!updatedAbsenceEtudiant) {
       return res.status(404).send("Absence Etudiant not found!");
@@ -70,7 +81,10 @@ const getAbsenceEtudiantById = async (req, res) => {
     const absenceEtudiantId = req.params.id;
 
     const getAbsenceEtudiant =
-      await absenceEtudiantServices.getAbsenceEtudiantById(absenceEtudiantId);
+      await absenceEtudiantServices.getAbsenceEtudiantById(
+        absenceEtudiantId,
+        useNewDb(req)
+      );
 
     if (!getAbsenceEtudiant) {
       return res.status(404).send("Absence Etudiant not found");
@@ -84,8 +98,9 @@ const getAbsenceEtudiantById = async (req, res) => {
 
 const getAllAbsenceEtudiant = async (req, res) => {
   try {
-    const absenceEtudiants =
-      await absenceEtudiantServices.getAbsenceEtudiants();
+    const absenceEtudiants = await absenceEtudiantServices.getAbsenceEtudiants(
+      useNewDb(req)
+    );
     res.json(absenceEtudiants);
   } catch (error) {
     console.error(error);
@@ -98,7 +113,10 @@ const deleteAbsenceEtudiantById = async (req, res) => {
     const absenceEtudiantId = req.params.id;
 
     const deletedAbsenceEtudiant =
-      await absenceEtudiantServices.deleteAbsenceEtudiant(absenceEtudiantId);
+      await absenceEtudiantServices.deleteAbsenceEtudiant(
+        absenceEtudiantId,
+        useNewDb(req)
+      );
 
     if (!deletedAbsenceEtudiant) {
       return res.status(404).send("Absence Etudiant not found");
@@ -114,7 +132,8 @@ const getAllAbsenceClasse = async (req, res) => {
   try {
     const classId = req.params.id;
     let classAbsences = await absenceEtudiantServices.getAllAbsenceClasse(
-      classId
+      classId,
+      useNewDb(req)
     );
     res.json(classAbsences);
   } catch (error) {
@@ -131,7 +150,11 @@ const getHistoriqueAbsence = async (req, res) => {
       return res.status(400).json({ message: "Teacher ID is required" });
     }
 
-    const absences = await absenceEtudiantServices.getHistoriqueAbsenceByTeacherId(teacherId);
+    const absences =
+      await absenceEtudiantServices.getHistoriqueAbsenceByTeacherId(
+        teacherId,
+        useNewDb(req)
+      );
 
     console.log("Returning absences:", absences);
 
@@ -149,5 +172,5 @@ module.exports = {
   updateAbsenceEtudiantById,
   addAbsenceEtudiant,
   getAllAbsenceClasse,
-  getHistoriqueAbsence
+  getHistoriqueAbsence,
 };

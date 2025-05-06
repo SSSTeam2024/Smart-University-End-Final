@@ -4,12 +4,14 @@ const Schema = mongoose.Schema;
 const DemandeTirageSchema = new Schema(
   {
     semestre: String,
-    classes: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Classe",
-      required: false,
-      default: null,
-    }],
+    classes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Classe",
+        required: false,
+        default: null,
+      },
+    ],
     enseignant: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Enseignant",
@@ -45,4 +47,4 @@ const DemandeTirageSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("DemandeTirage", DemandeTirageSchema);
+module.exports = DemandeTirageSchema;

@@ -1,28 +1,41 @@
-const servicePersonnel = require("../../model/ServicePersonnelModel/ServicePersonnelModel");
+const servicePersonnelSchema = require("../../model/ServicePersonnelModel/ServicePersonnelModel");
 
-const createServicePersonnel = async (service_personnel) => {
+function getServicePersonnelModel(dbConnection) {
+  return (
+    dbConnection.models.ServicePersonnel ||
+    dbConnection.model("ServicePersonnel", servicePersonnelSchema)
+  );
+}
+
+const createServicePersonnel = async (service_personnel, dbName) => {
+  const servicePersonnel = await getServicePersonnelModel(dbName);
   return await servicePersonnel.create(service_personnel);
 };
 
-const getServicesPersonnel = async () => {
+const getServicesPersonnel = async (dbName) => {
+  const servicePersonnel = await getServicePersonnelModel(dbName);
   return await servicePersonnel.find();
 };
 
-const updateServicePersonnel = async (id, updateData) => {
+const updateServicePersonnel = async (id, updateData, dbName) => {
+  const servicePersonnel = await getServicePersonnelModel(dbName);
   return await servicePersonnel.findByIdAndUpdate(id, updateData, {
     new: true,
   });
 };
 
-const deleteServicePersonnel = async (id) => {
+const deleteServicePersonnel = async (id, dbName) => {
+  const servicePersonnel = await getServicePersonnelModel(dbName);
   return await servicePersonnel.findByIdAndDelete(id);
 };
 
-const getServicePersonnelById = async (id) => {
+const getServicePersonnelById = async (id, dbName) => {
+  const servicePersonnel = await getServicePersonnelModel(dbName);
   return await servicePersonnel.findById(id);
 };
 
-const getServiceByValue = async (service_ar, service_fr) => {
+const getServiceByValue = async (service_ar, service_fr, dbName) => {
+  const servicePersonnel = await getServicePersonnelModel(dbName);
   return await servicePersonnel.findOne({ service_ar, service_fr });
 };
 

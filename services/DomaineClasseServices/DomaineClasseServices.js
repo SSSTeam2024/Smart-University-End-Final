@@ -1,8 +1,13 @@
 const domaineClasseDao = require("../../dao/DomaineClasseDao/DomaineClasseDao");
+const { getDb } = require("../../config/dbSwitcher");
 
-const createDomaineClasse = async (userData) => {
+const createDomaineClasse = async (userData, useNew) => {
   try {
-    const domaineClasse = await domaineClasseDao.createDomaineClasse(userData);
+    const db = await getDb(useNew);
+    const domaineClasse = await domaineClasseDao.createDomaineClasse(
+      userData,
+      db
+    );
 
     return domaineClasse;
   } catch (error) {
@@ -11,22 +16,30 @@ const createDomaineClasse = async (userData) => {
   }
 };
 
-const updateDomaineClasse = async (id, updateData) => {
-  return await domaineClasseDao.updateDomaineClasse(id, updateData);
+const updateDomaineClasse = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return await domaineClasseDao.updateDomaineClasse(id, updateData, db);
 };
 
-const getDomainesClasse = async () => {
-  return await domaineClasseDao.getDomainesClasse();
+const getDomainesClasse = async (useNew) => {
+  const db = await getDb(useNew);
+  return await domaineClasseDao.getDomainesClasse(db);
 };
 
-const deleteDomaineClasse = async (id) => {
-  return await domaineClasseDao.deleteDomaineClasse(id);
+const deleteDomaineClasse = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await domaineClasseDao.deleteDomaineClasse(id, db);
 };
 
-const getDomaineByValue = async ({ name_domaine_ar, name_domaine_fr }) => {
+const getDomaineByValue = async (
+  { name_domaine_ar, name_domaine_fr },
+  useNew
+) => {
+  const db = await getDb(useNew);
   return await domaineClasseDao.getDomaineByValue(
     name_domaine_ar,
-    name_domaine_fr
+    name_domaine_fr,
+    db
   );
 };
 

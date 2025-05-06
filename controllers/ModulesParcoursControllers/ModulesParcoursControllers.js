@@ -1,5 +1,9 @@
 const moduleParcoursService = require("../../services/ModulesParcoursServices/ModulesParcoursServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const createModuleParcours = async (req, res) => {
   try {
     const {
@@ -14,17 +18,20 @@ const createModuleParcours = async (req, res) => {
       matiere,
     } = req.body;
 
-    const moduleParcours = await moduleParcoursService.createModulesParcours({
-      code_Ue,
-      libelle,
-      credit,
-      coef,
-      nature,
-      regime,
-      parcours,
-      semestre_module,
-      matiere,
-    });
+    const moduleParcours = await moduleParcoursService.createModulesParcours(
+      {
+        code_Ue,
+        libelle,
+        credit,
+        coef,
+        nature,
+        regime,
+        parcours,
+        semestre_module,
+        matiere,
+      },
+      useNewDb(req)
+    );
     console.log("create moduleParcours ctrl", moduleParcours);
     res.json(moduleParcours);
   } catch (error) {
@@ -52,17 +59,21 @@ const updateModuleParcours = async (req, res) => {
     }
 
     const updatedModuleParcours =
-      await moduleParcoursService.updateModuleParcours(moduleParcoursId, {
-        code_Ue,
-        libelle,
-        credit,
-        coef,
-        nature,
-        regime,
-        parcours,
-        matiere,
-        semestre_module,
-      });
+      await moduleParcoursService.updateModuleParcours(
+        moduleParcoursId,
+        {
+          code_Ue,
+          libelle,
+          credit,
+          coef,
+          nature,
+          regime,
+          parcours,
+          matiere,
+          semestre_module,
+        },
+        useNewDb(req)
+      );
 
     if (!updatedModuleParcours) {
       return res.status(404).send("Module Parcours not found!");
@@ -76,7 +87,9 @@ const updateModuleParcours = async (req, res) => {
 
 const getAllModulesParcours = async (req, res) => {
   try {
-    const moduleParcours = await moduleParcoursService.getAllModulesParcours();
+    const moduleParcours = await moduleParcoursService.getAllModulesParcours(
+      useNewDb(req)
+    );
     res.json(moduleParcours);
   } catch (error) {
     console.error(error);
@@ -89,7 +102,10 @@ const deleteModuleParcours = async (req, res) => {
     const moduleParcoursId = req.params.id;
 
     const deletedModuleParcoursId =
-      await moduleParcoursService.deleteModulesParcours(moduleParcoursId);
+      await moduleParcoursService.deleteModulesParcours(
+        moduleParcoursId,
+        useNewDb(req)
+      );
 
     if (!deletedModuleParcoursId) {
       return res.status(404).send("Module Parcours not found");
@@ -108,9 +124,12 @@ const getModuleByCode = async (req, res) => {
       return res.status(400).json({ message: "code_Ue is required" });
     }
 
-    const moduleByCode = await moduleParcoursService.getModuleByCode({
-      code_Ue,
-    });
+    const moduleByCode = await moduleParcoursService.getModuleByCode(
+      {
+        code_Ue,
+      },
+      useNewDb(req)
+    );
 
     if (!moduleByCode) {
       return res.json(null);

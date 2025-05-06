@@ -1,17 +1,43 @@
 const sectionClasseDao = require("../../dao/SectionClasseDao/SectionClasseDao");
-const niveauClasse = require ("../../model/NiveauClasseModel/NiveauClasseModel");
-const DepartementClasse = require ("../../model/departementModel/DepartementModel")
-const SectionClasse =require ("../../model/SectionClasseModel/SectionClasseModel")
-// const registerSectionClasse = async (userData) => {
- 
-//   return await sectionClasseDao.createSectionClasse(userData);
-// };
+const niveauClasseSchema = require("../../model/NiveauClasseModel/NiveauClasseModel");
+const departementSchema = require("../../model/departementModel/DepartementModel");
+const sectionClasseSchema = require("../../model/SectionClasseModel/SectionClasseModel");
+const { getDb } = require("../../config/dbSwitcher");
 
-const registerSectionClasse = async (userData) => {
+function getDepartementModel(dbConnection) {
+  return (
+    dbConnection.models.Departement ||
+    dbConnection.model("Departement", departementSchema)
+  );
+}
+
+function getNiveauClasseModel(dbConnection) {
+  return (
+    dbConnection.models.NiveauClasse ||
+    dbConnection.model("NiveauClasse", niveauClasseSchema)
+  );
+}
+
+function getSectionClasseModel(dbConnection) {
+  return (
+    dbConnection.models.SectionClasse ||
+    dbConnection.model("SectionClasse", sectionClasseSchema)
+  );
+}
+
+const registerSectionClasse = async (userData, useNew) => {
   try {
-    const sectionClasse = await sectionClasseDao.createSectionClasse(userData);
-    await sectionClasseDao.updateDepartmentsWithSection(sectionClasse._id, userData.departements);
-    await sectionClasse.populate('departements');
+    const db = await getDb(useNew);
+    const sectionClasse = await sectionClasseDao.createSectionClasse(
+      userData,
+      db
+    );
+    await sectionClasseDao.updateDepartmentsWithSection(
+      sectionClasse._id,
+      userData.departements,
+      db
+    );
+    await sectionClasse.populate("departements");
     return sectionClasse;
   } catch (error) {
     console.error("Error in registering section classe:", error);
@@ -19,20 +45,35 @@ const registerSectionClasse = async (userData) => {
   }
 };
 
-const updateSetionClasseDao = async (sectionClasseId, updateData) => {
+const updateSetionClasseDao = async (sectionClasseId, updateData, useNew) => {
   try {
-    const updatedSectionClasse = await SectionClasse.findByIdAndUpdate(sectionClasseId, updateData, { new: true });
-    
+    const db = await getDb(useNew);
+    const SectionClasse = await getSectionClasseModel(dbName, db);
+    const updatedSectionClasse = await SectionClasse.findByIdAndUpdate(
+      sectionClasseId,
+      updateData,
+      { new: true }
+    );
+
     // Clear old section references from departments
     const oldSection = await SectionClasse.findById(sectionClasseId);
+    const DepartementClasse = await getDepartementModel(dbName, db);
     if (oldSection) {
-      await Promise.all(oldSection.departements.map(async (departmentId) => {
-        await DepartementClasse.findByIdAndUpdate(departmentId, { $pull: { sections: sectionClasseId } });
-      }));
+      await Promise.all(
+        oldSection.departements.map(async (departmentId) => {
+          await DepartementClasse.findByIdAndUpdate(departmentId, {
+            $pull: { sections: sectionClasseId },
+          });
+        })
+      );
     }
-    
+
     // Add new section references to departments
-    await sectionClasseDao.updateDepartmentsWithSection(sectionClasseId, updateData.departements);
+    await sectionClasseDao.updateDepartmentsWithSection(
+      sectionClasseId,
+      updateData.departements,
+      db
+    );
 
     return updatedSectionClasse;
   } catch (error) {
@@ -40,20 +81,23 @@ const updateSetionClasseDao = async (sectionClasseId, updateData) => {
     throw error;
   }
 };
-const getSectionClasseDaoById = async (id) => {
-  return await sectionClasseDao.getSectionClasseById(id)
+
+const getSectionClasseDaoById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await sectionClasseDao.getSectionClasseById(id, db);
 };
 
-const getSectionsClasseDao = async () => {
-  const result = await sectionClasseDao.getSectionsClasse();
+const getSectionsClasseDao = async (useNew) => {
+  const db = await getDb(useNew);
+  const result = await sectionClasseDao.getSectionsClasse(db);
   return result;
 };
 
-const deleteSectionClassetDao = async (id) => {
+const deleteSectionClassetDao = async (id, useNew) => {
   try {
-    console.log(`Attempting to delete section with ID: ${id}`);
-    const deletedSection = await sectionClasseDao.deleteSectionClasse(id);
-
+    const db = await getDb(useNew);
+    const deletedSection = await sectionClasseDao.deleteSectionClasse(id, db);
+    const niveauClasse = await getNiveauClasseModel(dbName, db);
     if (!deletedSection) {
       console.log(`Section with ID ${id} not found`);
       throw new Error("Section not found");
@@ -67,7 +111,9 @@ const deleteSectionClassetDao = async (id) => {
 
     console.log("Update result:", updateResult);
     if (updateResult.nModified === 0) {
-      console.warn(`No niveau classes were updated to remove the deleted section ID ${id}`);
+      console.warn(
+        `No niveau classes were updated to remove the deleted section ID ${id}`
+      );
     }
 
     return deletedSection;
@@ -77,16 +123,10 @@ const deleteSectionClassetDao = async (id) => {
   }
 };
 
-
-
-
-
 module.exports = {
-    deleteSectionClassetDao,
-    getSectionsClasseDao,
-    getSectionClasseDaoById,
-    updateSetionClasseDao,
-    registerSectionClasse,
-
-
+  deleteSectionClassetDao,
+  getSectionsClasseDao,
+  getSectionClasseDaoById,
+  updateSetionClasseDao,
+  registerSectionClasse,
 };

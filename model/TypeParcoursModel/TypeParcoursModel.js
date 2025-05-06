@@ -9,4 +9,5 @@ const typeParcoursSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("TypeParcours", typeParcoursSchema);
+// module.exports = mongoose.model("TypeParcours", typeParcoursSchema);
+module.exports = typeParcoursSchema;

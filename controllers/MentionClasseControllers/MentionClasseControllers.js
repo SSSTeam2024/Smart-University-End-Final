@@ -1,15 +1,22 @@
 const MentionService = require("../../services/MentionClasseServices/MentionClasseServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const createMentionClasse = async (req, res) => {
   try {
     const { name_mention_ar, name_mention_fr, abreviation, domaine } = req.body;
 
-    const MentionClasse = await MentionService.createMentionClasse({
-      name_mention_ar,
-      name_mention_fr,
-      abreviation,
-      domaine,
-    });
+    const MentionClasse = await MentionService.createMentionClasse(
+      {
+        name_mention_ar,
+        name_mention_fr,
+        abreviation,
+        domaine,
+      },
+      useNewDb(req)
+    );
     res.json(MentionClasse);
   } catch (error) {
     console.error(error);
@@ -28,7 +35,8 @@ const updateMentionClasseById = async (req, res) => {
         name_mention_fr,
         abreviation,
         domaine,
-      }
+      },
+      useNewDb(req)
     );
 
     if (!updatedMentionClasse) {
@@ -43,7 +51,9 @@ const updateMentionClasseById = async (req, res) => {
 
 const getAllMentionClasse = async (req, res) => {
   try {
-    const MentionClasses = await MentionService.getMentionsClasse();
+    const MentionClasses = await MentionService.getMentionsClasse(
+      useNewDb(req)
+    );
     res.json(MentionClasses);
   } catch (error) {
     console.error(error);
@@ -56,7 +66,8 @@ const deleteMentionClasseById = async (req, res) => {
     const doamineClasseId = req.params.id;
 
     const deletedDoamineClasseId = await MentionService.deleteMentionClasse(
-      doamineClasseId
+      doamineClasseId,
+      useNewDb(req)
     );
 
     if (!deletedDoamineClasseId) {
@@ -79,10 +90,13 @@ const getMentionByValue = async (req, res) => {
         .json({ message: "name_mention_fr and name_mention_ar are required" });
     }
 
-    const mentionValue = await MentionService.getMentionByValue({
-      name_mention_fr,
-      name_mention_ar,
-    });
+    const mentionValue = await MentionService.getMentionByValue(
+      {
+        name_mention_fr,
+        name_mention_ar,
+      },
+      useNewDb(req)
+    );
 
     if (!mentionValue) {
       return res.json(null);

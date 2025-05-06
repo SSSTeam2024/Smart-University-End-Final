@@ -1,11 +1,20 @@
-const AbsencePersonnel = require("../../model/AbsencePersonnelModel/AbsencePersonnelModel");
+const AbsencePersonnelSchema = require("../../model/AbsencePersonnelModel/AbsencePersonnelModel");
 
-const createAbsencePersonnel = async (absencePersonnelData) => {
+function getAbsencePersonnelModel(dbConnection) {
+  return (
+    dbConnection.models.AbsencePersonnel ||
+    dbConnection.model("AbsencePersonnel", AbsencePersonnelSchema)
+  );
+}
+
+const createAbsencePersonnel = async (absencePersonnelData, dbName) => {
+  const AbsencePersonnel = getAbsencePersonnelModel(dbName);
   const absencePersonnel = new AbsencePersonnel(absencePersonnelData);
   return absencePersonnel.save();
 };
 
-const getAllAbsencesPersonnels = async () => {
+const getAllAbsencesPersonnels = async (dbName) => {
+  const AbsencePersonnel = getAbsencePersonnelModel(dbName);
   return AbsencePersonnel.find()
     .populate({
       path: "personnels",
@@ -14,7 +23,8 @@ const getAllAbsencesPersonnels = async () => {
     .populate("added_by");
 };
 
-const getAbsencePersonnelById = async (id) => {
+const getAbsencePersonnelById = async (id, dbName) => {
+  const AbsencePersonnel = getAbsencePersonnelModel(dbName);
   return AbsencePersonnel.findById(id)
     .populate({
       path: "personnels",
@@ -23,11 +33,13 @@ const getAbsencePersonnelById = async (id) => {
     .populate("added_by");
 };
 
-const updateAbsencePersonnel = async (id, updateData) => {
+const updateAbsencePersonnel = async (id, updateData, dbName) => {
+  const AbsencePersonnel = getAbsencePersonnelModel(dbName);
   return AbsencePersonnel.findByIdAndUpdate(id, updateData, { new: true });
 };
 
-const deleteAbsencePersonnel = async (id) => {
+const deleteAbsencePersonnel = async (id, dbName) => {
+  const AbsencePersonnel = getAbsencePersonnelModel(dbName);
   return AbsencePersonnel.findByIdAndDelete(id);
 };
 

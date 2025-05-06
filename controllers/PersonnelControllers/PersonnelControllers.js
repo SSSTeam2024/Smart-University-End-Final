@@ -1,127 +1,11 @@
 const personnelService = require("../../services/PersonnelServices/PersonnelServices");
 const Personnel = require("../../model/PersonnelModel/PersonnelModel");
 const globalFunctions = require("../../utils/globalFunctions");
-const path = require("path");
 const fs = require("fs");
-// const addPersonnel = async (req, res) => {
-//   try {
-//     const {
-//       nom_fr,
-//       category,
-//       files_papier_administratif,
-//       nom_ar,
-//       prenom_fr,
-//       mat_cnrps,
-//       matricule,
-//       prenom_ar,
-//       lieu_naissance_fr,
-//       lieu_naissance_ar,
-//       date_naissance,
-//       nationalite,
-//       etat_civil,
-//       sexe,
-//       etat_compte,
-//       poste,
-//       grade,
-//       departements,
-//       specilaite,
-//       date_affectation,
-//       compte_courant,
-//       identifinat_unique,
-//       num_cin,
-//       date_delivrance,
-//       categorie,
-//       service,
-//       date_designation,
-//       state,
-//       dependence,
-//       code_postale,
-//       adress_ar,
-//       adress_fr,
-//       num_phone1,
-//       num_phone2,
-//       email,
-//       nom_conjoint,
-//       job_conjoint,
-//       nombre_fils,
-//       PhotoProfilFileExtension,
-//       PhotoProfilFileBase64String,
-//     } = req.body;
-//     const PhotoProfilPath = "files/personnelFiles/PhotoProfil/";
-//     const PhotoProfilFilePath = path.join(
-//       PhotoProfilPath,
-//       globalFunctions.generateUniqueFilename(
-//         PhotoProfilFileExtension,
-//         "photo_profil"
-//       )
-//     );
 
-//     let documents = [
-//       {
-//         base64String: PhotoProfilFileBase64String,
-//         extension: PhotoProfilFileExtension,
-//         name: path.basename(PhotoProfilFilePath),
-//         path: PhotoProfilPath,
-//       },
-//     ];
-//     const personnel = await personnelService.registerPersonnelDao(
-//       {
-//         nom_fr,
-//         nom_ar,
-//         category,
-//         prenom_fr,
-//         files_papier_administratif,
-//         prenom_ar,
-//         lieu_naissance_fr,
-//         lieu_naissance_ar,
-//         date_naissance,
-//         mat_cnrps,
-//         matricule,
-//         nationalite,
-//         etat_civil,
-//         sexe,
-//         etat_compte,
-//         poste,
-//         grade,
-//         specilaite,
-//         date_designation,
-//         date_affectation,
-//         compte_courant,
-//         identifinat_unique,
-//         num_cin,
-//         date_delivrance,
-//         categorie,
-//         service,
-//         state,
-//         dependence,
-//         code_postale,
-//         departements,
-//         adress_ar,
-//         adress_fr,
-//         num_phone1,
-//         num_phone2,
-//         email,
-//         nom_conjoint,
-//         job_conjoint,
-//         nombre_fils,
-//         photo_profil: path.basename(PhotoProfilFilePath),
-//       },
-//       documents
-//     );
-
-//     const populatedPersonnel = await Personnel.findById(personnel._id)
-//       .populate("etat_compte")
-//       .populate("categorie")
-//       .populate("grade")
-//       .populate("poste")
-//       .populate("service");
-
-//     res.json(populatedPersonnel);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// };
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
 
 const addPersonnel = async (req, res) => {
   try {
@@ -234,7 +118,8 @@ const addPersonnel = async (req, res) => {
     // Call the service to register the personnel
     const personnel = await personnelService.registerPersonnelDao(
       personnelData,
-      documents
+      documents,
+      useNewDb(req)
     );
 
     // Populate related data before sending the response
@@ -254,7 +139,7 @@ const addPersonnel = async (req, res) => {
 
 const getPersonnels = async (req, res) => {
   try {
-    const personnels = await personnelService.getPersonnelsDao();
+    const personnels = await personnelService.getPersonnelsDao(useNewDb(req));
     res.json(personnels);
   } catch (error) {
     console.error(error);
@@ -411,7 +296,8 @@ const updatePersonnelById = async (req, res) => {
     // Call the service to update personnel
     const updatedPersonnel = await personnelService.updatePersonnelDao(
       personnelId,
-      updateFields
+      updateFields,
+      useNewDb(req)
     );
 
     if (!updatedPersonnel) {
@@ -430,7 +316,8 @@ const getPersonnelById = async (req, res) => {
     const personnelId = req.body.personnelId; // Corrected to match your request body
 
     const getPersonnel = await personnelService.getPersonnelDaoById(
-      personnelId
+      personnelId,
+      useNewDb(req)
     );
 
     if (!getPersonnel) {
@@ -448,7 +335,8 @@ const deletePersonnelById = async (req, res) => {
     const personnelId = req.params.id;
 
     const deletedPersonnel = await personnelService.deletePersonnelDao(
-      personnelId
+      personnelId,
+      useNewDb(req)
     );
 
     if (!deletedPersonnel) {

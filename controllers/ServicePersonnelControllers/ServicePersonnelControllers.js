@@ -1,14 +1,21 @@
 const servicePersonnelService = require("../../services/ServicePersonnelServices/ServicePersonnelServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addServicePersonnel = async (req, res) => {
   try {
     const { service_fr, service_ar } = req.body;
 
     const servicePersonnel =
-      await servicePersonnelService.registerServicePersonnel({
-        service_fr,
-        service_ar,
-      });
+      await servicePersonnelService.registerServicePersonnel(
+        {
+          service_fr,
+          service_ar,
+        },
+        useNewDb(req)
+      );
     res.json(servicePersonnel);
   } catch (error) {
     console.error(error);
@@ -26,7 +33,8 @@ const updateServicePersonnelById = async (req, res) => {
         {
           service_fr,
           service_ar,
-        }
+        },
+        useNewDb(req)
       );
 
     if (!updatedServicePersonnel) {
@@ -45,7 +53,8 @@ const getServicePersonnelById = async (req, res) => {
 
     const getEtatPersonnel =
       await servicePersonnelService.getServicePersonnelDaoById(
-        servicePersonnelId
+        servicePersonnelId,
+        useNewDb(req)
       );
 
     if (!getEtatPersonnel) {
@@ -61,7 +70,7 @@ const getServicePersonnelById = async (req, res) => {
 const getAllServicePersonnel = async (req, res) => {
   try {
     const servicePersonnels =
-      await servicePersonnelService.getServicesPersonnelDao();
+      await servicePersonnelService.getServicesPersonnelDao(useNewDb(req));
     res.json(servicePersonnels);
   } catch (error) {
     console.error(error);
@@ -75,7 +84,8 @@ const deleteServicePersonnelById = async (req, res) => {
 
     const deletedServicePersonnel =
       await servicePersonnelService.deleteServicePersonnelDao(
-        servicePersonnelId
+        servicePersonnelId,
+        useNewDb(req)
       );
 
     if (!deletedServicePersonnel) {
@@ -97,10 +107,13 @@ const getServiceByValue = async (req, res) => {
         .json({ message: "service_ar and service_fr are required" });
     }
 
-    const serviceValue = await servicePersonnelService.getServiceByValue({
-      service_fr,
-      service_ar,
-    });
+    const serviceValue = await servicePersonnelService.getServiceByValue(
+      {
+        service_fr,
+        service_ar,
+      },
+      useNewDb(req)
+    );
 
     if (!serviceValue) {
       return res.json(null);

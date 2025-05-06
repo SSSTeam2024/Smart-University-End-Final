@@ -1,6 +1,10 @@
 const demandeTirageServices = require("../../services/DemandeTirageServices/DemandeTirageServices");
 const globalFunctions = require("../../utils/globalFunctions");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addDemandeTirage = async (req, res) => {
   try {
     const {
@@ -28,7 +32,7 @@ const addDemandeTirage = async (req, res) => {
       etat,
       added_by,
       note,
-      couleur
+      couleur,
     } = req.body;
 
     const docPath = "files/demandeTirageFiles/";
@@ -70,9 +74,10 @@ const addDemandeTirage = async (req, res) => {
         etat,
         added_by,
         note,
-        couleur
+        couleur,
       },
-      documents
+      documents,
+      useNewDb(req)
     );
     res.json(demandeTirage);
   } catch (error) {
@@ -80,10 +85,22 @@ const addDemandeTirage = async (req, res) => {
   }
 };
 
+// const getAllDemandeTirage = async (req, res) => {
+//   try {
+//     const demandesTirage =
+//       await demandeTirageServices.getAllDemandesTirage();
+//     res.json(demandesTirage);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send(error.message);
+//   }
+// };
+
 const getAllDemandeTirage = async (req, res) => {
   try {
-    const demandesTirage =
-      await demandeTirageServices.getAllDemandesTirage();
+    const demandesTirage = await demandeTirageServices.getAllDemandesTirage(
+      useNewDb(req)
+    );
     res.json(demandesTirage);
   } catch (error) {
     console.error(error);
@@ -149,7 +166,10 @@ const deleteDemandeTirage = async (req, res) => {
     const demandeTirageId = req.params.id;
 
     const deletedDemandeTirage =
-      await demandeTirageServices.deleteDemandeTirage(demandeTirageId);
+      await demandeTirageServices.deleteDemandeTirage(
+        demandeTirageId,
+        useNewDb(req)
+      );
 
     if (!deletedDemandeTirage) {
       return res.status(404).send("Demande Tirage not found");
@@ -166,14 +186,18 @@ const updateEtatDemandeTirage = async (req, res) => {
     const { etat, date, heure } = req.body;
 
     if (!id) {
-      return res.status(400).json({ message: "Demande Tirage ID is required." });
+      return res
+        .status(400)
+        .json({ message: "Demande Tirage ID is required." });
     }
 
     const updatedEtat =
       await demandeTirageServices.updateEtatDemandeTirageService(
         id,
         etat,
-        date, heure
+        date,
+        heure,
+        useNewDb(req)
       );
 
     if (!updatedEtat) {
@@ -204,17 +228,50 @@ const updateEtatDemandeTirage = async (req, res) => {
 const getDemandesTirageByTeacherId = async (req, res) => {
   try {
     const { enseignantId } = req.params;
-    const demandesTirage = await demandeTirageServices.getDemandesTirageByTeacherId(enseignantId);
+    const demandesTirage =
+      await demandeTirageServices.getDemandesTirageByTeacherId(
+        enseignantId,
+        useNewDb(req)
+      );
     res.json(demandesTirage);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Error fetching demandes tirage by teacher ID" });
+    res
+      .status(500)
+      .json({ error: "Error fetching demandes tirage by teacher ID" });
   }
 };
+
+const deleteManyDemandesTirages = async (req, res) => {
+  try {
+    const demandeIds = req.body.ids;
+
+    if (!demandeIds || demandeIds.length === 0) {
+      return res.status(400).send("No IDs provided");
+    }
+
+    const deleteDemandeTirageResult =
+      await demandeTirageServices.deleteManyDemandesTirages(
+        useNewDb(req),
+        demandeIds
+      );
+
+    if (deleteDemandeTirageResult.deletedCount === 0) {
+      return res.status(404).send("No Demande Tirage found with provided IDs");
+    }
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   addDemandeTirage,
   getAllDemandeTirage,
   deleteDemandeTirage,
   updateEtatDemandeTirage,
-  getDemandesTirageByTeacherId
+  getDemandesTirageByTeacherId,
+  deleteManyDemandesTirages,
 };

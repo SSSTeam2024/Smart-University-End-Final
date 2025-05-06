@@ -1,5 +1,9 @@
 const rattrapageService = require("../../services/RattrapageServices/RattrapageServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const createRattrapage = async (req, res) => {
   try {
     const {
@@ -16,19 +20,22 @@ const createRattrapage = async (req, res) => {
       status,
     } = req.body;
 
-    const rattrapageJson = await rattrapageService.createRattrapage({
-      matiere,
-      enseignant,
-      classe,
-      salle,
-      jour,
-      date,
-      heure_debut,
-      heure_fin,
-      semestre,
-      etat,
-      status,
-    });
+    const rattrapageJson = await rattrapageService.createRattrapage(
+      {
+        matiere,
+        enseignant,
+        classe,
+        salle,
+        jour,
+        date,
+        heure_debut,
+        heure_fin,
+        semestre,
+        etat,
+        status,
+      },
+      useNewDb(req)
+    );
     res.json(rattrapageJson);
   } catch (error) {
     console.error(error);
@@ -37,7 +44,7 @@ const createRattrapage = async (req, res) => {
 
 const getRattrapages = async (req, res) => {
   try {
-    const rattrapages = await rattrapageService.getRattrapages();
+    const rattrapages = await rattrapageService.getRattrapages(useNewDb(req));
     res.json(rattrapages);
   } catch (error) {
     console.error(error);
@@ -58,7 +65,8 @@ const updateRattrapageEtatStatus = async (req, res) => {
       await rattrapageService.updateRattrapageEtatStatusService(
         id,
         etat,
-        status
+        status,
+        useNewDb(req)
       );
 
     if (!updatedRattrapage) {
@@ -116,7 +124,10 @@ const updateRattrapageEtatStatus = async (req, res) => {
 const getRattrapagesByClassId = async (req, res) => {
   try {
     const { classId } = req.params;
-    const rattrapages = await rattrapageService.getRattrapagesByClassId(classId);
+    const rattrapages = await rattrapageService.getRattrapagesByClassId(
+      classId,
+      useNewDb(req)
+    );
     res.json(rattrapages);
   } catch (error) {
     console.error(error);
@@ -126,11 +137,39 @@ const getRattrapagesByClassId = async (req, res) => {
 const getRattrapagesByTeacherId = async (req, res) => {
   try {
     const { teacherId } = req.params;
-    const rattrapages = await rattrapageService.getRattrapagesByTeacherId(teacherId);
+    const rattrapages = await rattrapageService.getRattrapagesByTeacherId(
+      teacherId,
+      useNewDb(req)
+    );
     res.json(rattrapages);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error fetching rattrapages by teacher ID" });
+  }
+};
+
+const deleteManyRattrapages = async (req, res) => {
+  try {
+    const rattrapageIds = req.body.ids;
+
+    if (!rattrapageIds || rattrapageIds.length === 0) {
+      return res.status(400).send("No IDs provided");
+    }
+
+    const deleteRattrapageResult =
+      await rattrapageService.deleteManyRattrapages(
+        useNewDb(req),
+        rattrapageIds
+      );
+
+    if (deleteRattrapageResult.deletedCount === 0) {
+      return res.status(404).send("No Rattrapages found with provided IDs");
+    }
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
   }
 };
 
@@ -139,5 +178,6 @@ module.exports = {
   createRattrapage,
   updateRattrapageEtatStatus,
   getRattrapagesByClassId,
-  getRattrapagesByTeacherId
+  getRattrapagesByTeacherId,
+  deleteManyRattrapages,
 };

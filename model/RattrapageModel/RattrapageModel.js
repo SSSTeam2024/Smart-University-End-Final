@@ -33,4 +33,4 @@ const rattrapageSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Rattrapage", rattrapageSchema);
+module.exports = rattrapageSchema;

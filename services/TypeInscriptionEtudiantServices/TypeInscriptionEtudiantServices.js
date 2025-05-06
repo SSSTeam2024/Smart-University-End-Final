@@ -1,35 +1,50 @@
 const typeInscriptionEtudiantDao = require("../../dao/TypeInscriptionEtudiantDao/TypeInscriptionEtudiantDao");
+const { getDb } = require("../../config/dbSwitcher");
 
-const registerTypeInscriptionEtudiantt = async (userData) => {
+const registerTypeInscriptionEtudiantt = async (userData, useNew) => {
+  const db = await getDb(useNew);
   return await typeInscriptionEtudiantDao.createTypeInscriptionEtudiant(
-    userData
+    userData,
+    db
   );
 };
 
-const updateTypeInscriptionEtudiantDao = async (id, updateData) => {
+const updateTypeInscriptionEtudiantDao = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
   return await typeInscriptionEtudiantDao.updateTypeInscriptionEtudiant(
     id,
-    updateData
+    updateData,
+    db
   );
 };
 
-const getTypeInscriptionEtudianttDaoById = async (id) => {
-  return await typeInscriptionEtudiantDao.getTypeInscriptionEtudiantById(id);
+const getTypeInscriptionEtudianttDaoById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await typeInscriptionEtudiantDao.getTypeInscriptionEtudiantById(
+    id,
+    db
+  );
 };
 
-const getTypeInscriptionsEtudianttDao = async () => {
-  const result = await typeInscriptionEtudiantDao.getTypeInscriptionsEtudiant();
+const getTypeInscriptionsEtudianttDao = async (useNew) => {
+  const db = await getDb(useNew);
+  const result = await typeInscriptionEtudiantDao.getTypeInscriptionsEtudiant(
+    db
+  );
   return result;
 };
 
-const deleteTypeInscriptionEtudianttDao = async (id) => {
-  return await typeInscriptionEtudiantDao.deleteTypeInscriptionEtudiant(id);
+const deleteTypeInscriptionEtudianttDao = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await typeInscriptionEtudiantDao.deleteTypeInscriptionEtudiant(id, db);
 };
 
-const getTypeInscriptionByValue = async ({ type_ar, type_fr }) => {
+const getTypeInscriptionByValue = async ({ type_ar, type_fr }, useNew) => {
+  const db = await getDb(useNew);
   return await typeInscriptionEtudiantDao.getTypeInscriptionByValue(
     type_ar,
-    type_fr
+    type_fr,
+    db
   );
 };
 

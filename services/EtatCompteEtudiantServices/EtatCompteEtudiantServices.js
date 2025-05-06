@@ -1,28 +1,36 @@
 const etatEtudiantDao = require("../../dao/EtatCompteEtudiantDao/EtatCompteEtudiantDao");
 
-const registerEtatEtudiantt = async (userData) => {
-  return await etatEtudiantDao.createEtatEtudiant(userData);
+const { getDb } = require("../../config/dbSwitcher");
+
+const registerEtatEtudiantt = async (userData, useNew) => {
+  const db = await getDb(useNew);
+  return await etatEtudiantDao.createEtatEtudiant(userData, db);
 };
 
-const updateEtatEtudiantDao = async (id, updateData) => {
-  return await etatEtudiantDao.updateEtatEtudiant(id, updateData);
+const updateEtatEtudiantDao = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return await etatEtudiantDao.updateEtatEtudiant(id, updateData, db);
 };
 
-const getEtatEtudianttDaoById = async (id) => {
-  return await etatEtudiantDao.getEtatEtudiantById(id);
+const getEtatEtudianttDaoById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await etatEtudiantDao.getEtatEtudiantById(id, db);
 };
 
-const getEtatsEtudianttDao = async () => {
-  const result = await etatEtudiantDao.getEtatsEtudiant();
+const getEtatsEtudianttDao = async (useNew) => {
+  const db = await getDb(useNew);
+  const result = await etatEtudiantDao.getEtatsEtudiant(db);
   return result;
 };
 
-const deleteEtatEtudianttDao = async (id) => {
-  return await etatEtudiantDao.deleteEtatEtudiant(id);
+const deleteEtatEtudianttDao = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await etatEtudiantDao.deleteEtatEtudiant(id, db);
 };
 
-const getEtatCompteByValue = async ({ etat_ar, etat_fr }) => {
-  return await etatEtudiantDao.getEtatByValue(etat_ar, etat_fr);
+const getEtatCompteByValue = async ({ etat_ar, etat_fr }, useNew) => {
+  const db = await getDb(useNew);
+  return await etatEtudiantDao.getEtatByValue(etat_ar, etat_fr, db);
 };
 module.exports = {
   deleteEtatEtudianttDao,

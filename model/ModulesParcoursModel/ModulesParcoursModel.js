@@ -17,4 +17,5 @@ const moduleParcoursSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("ModuleParcours", moduleParcoursSchema);
+// module.exports = mongoose.model("ModuleParcours", moduleParcoursSchema);
+module.exports = moduleParcoursSchema;

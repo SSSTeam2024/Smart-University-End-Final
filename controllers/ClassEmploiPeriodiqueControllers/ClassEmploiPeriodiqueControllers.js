@@ -1,17 +1,24 @@
 const classEmploiPeriodiqueService = require("../../services/ClassEmploiPeriodiqueServices/ClassEmploiPeriodiqueServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const createClassEmploiPeriodique = async (req, res) => {
   try {
     const { date_debut, date_fin, semestre, id_classe, etat } = req.body;
 
     const classEmploiPeriodique =
-      await classEmploiPeriodiqueService.createClassEmploiPeriodique({
-        date_debut,
-        date_fin,
-        semestre,
-        id_classe,
-        etat,
-      });
+      await classEmploiPeriodiqueService.createClassEmploiPeriodique(
+        {
+          date_debut,
+          date_fin,
+          semestre,
+          id_classe,
+          etat,
+        },
+        useNewDb(req)
+      );
     res.json(classEmploiPeriodique);
   } catch (error) {
     console.error(error);
@@ -23,13 +30,17 @@ const updateClassEmploiPeriodique = async (req, res) => {
     const { _id, date_debut, date_fin, semestre, id_classe, etat } = req.body;
 
     const updatedClassEmploiPeriodique =
-      await classEmploiPeriodiqueService.updateClassEmploiPeriodique(_id, {
-        date_debut,
-        date_fin,
-        semestre,
-        id_classe,
-        etat,
-      });
+      await classEmploiPeriodiqueService.updateClassEmploiPeriodique(
+        _id,
+        {
+          date_debut,
+          date_fin,
+          semestre,
+          id_classe,
+          etat,
+        },
+        useNewDb(req)
+      );
 
     if (!updatedClassEmploiPeriodique) {
       return res.status(404).send("Class Emploi Periodique not found!");
@@ -45,7 +56,8 @@ const getClassEmploiPeriodique = async (req, res) => {
   try {
     const id = req.params.id;
     const params = await classEmploiPeriodiqueService.getClassEmploiPeriodique(
-      id
+      id,
+      useNewDb(req)
     );
     res.json(params);
   } catch (error) {
@@ -60,7 +72,8 @@ const getEmploiPeriodiqueByClass = async (req, res) => {
     const emploi_periodique =
       await classEmploiPeriodiqueService.getEmploiPeriodiqueByClasse(
         class_id,
-        semestre
+        semestre,
+        useNewDb(req)
       );
     res.json(emploi_periodique);
   } catch (error) {

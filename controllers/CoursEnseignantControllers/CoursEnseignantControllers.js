@@ -1,6 +1,10 @@
 const coursEnseignantServices = require("../../services/CoursEnseignantServices/CoursEnseignantServices");
 const globalFunctions = require("../../utils/globalFunctions");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addCoursEnseignant = async (req, res) => {
   try {
     const { classe, enseignant, nom_cours, trimestre, filesData } = req.body;
@@ -35,7 +39,8 @@ const addCoursEnseignant = async (req, res) => {
         file_cours,
         trimestre,
       },
-      documents
+      documents,
+      useNewDb(req)
     );
 
     res.status(201).json(newCoursEnseignant);
@@ -47,8 +52,9 @@ const addCoursEnseignant = async (req, res) => {
 
 const getCoursEnseignants = async (req, res) => {
   try {
-    const coursEnseignants =
-      await coursEnseignantServices.getCoursEnseignants();
+    const coursEnseignants = await coursEnseignantServices.getCoursEnseignants(
+      useNewDb(req)
+    );
     res.status(200).json(coursEnseignants);
   } catch (error) {
     console.error("Error fetching all Cours Enseignants:", error);
@@ -59,7 +65,10 @@ const getCoursEnseignants = async (req, res) => {
 const getCoursEnseignantById = async (req, res) => {
   try {
     const coursEnseignantById =
-      await coursEnseignantServices.getCoursEnseignantById(req.body._id);
+      await coursEnseignantServices.getCoursEnseignantById(
+        req.body._id,
+        useNewDb(req)
+      );
     if (!coursEnseignantById) {
       return res.status(404).json({ message: "Cours Enseignants not found" });
     }
@@ -73,7 +82,10 @@ const getCoursEnseignantById = async (req, res) => {
 const getCoursEnseignantByIdClasse = async (req, res) => {
   try {
     const coursEnseignantByIdClasse =
-      await coursEnseignantServices.getCoursEnseignantByIdClasse(req.body._id);
+      await coursEnseignantServices.getCoursEnseignantByIdClasse(
+        req.body._id,
+        useNewDb(req)
+      );
     if (!coursEnseignantByIdClasse) {
       return res.status(404).json({ message: "Cours Enseignants not found" });
     }
@@ -87,7 +99,10 @@ const getCoursEnseignantByIdClasse = async (req, res) => {
 const deleteCoursEnseignant = async (req, res) => {
   try {
     const deleteCoursEnseignant =
-      await coursEnseignantServices.deleteCoursEnseignant(req.body._id);
+      await coursEnseignantServices.deleteCoursEnseignant(
+        req.body._id,
+        useNewDb(req)
+      );
     if (!deleteCoursEnseignant) {
       return res.status(404).json({ message: "Cours Enseignants not found" });
     }
@@ -165,7 +180,8 @@ const updateCoursEnseignant = async (req, res) => {
         file_cours,
         trimestre,
       },
-      documents
+      documents,
+      useNewDb(req)
     );
 
     if (!updatedCours) {
@@ -180,11 +196,17 @@ const updateCoursEnseignant = async (req, res) => {
 const getSupportCoursByTeacherId = async (req, res) => {
   try {
     const { enseignantId } = req.params;
-    const demandesTirage = await coursEnseignantServices.getSupportCoursByTeacherId(enseignantId);
+    const demandesTirage =
+      await coursEnseignantServices.getSupportCoursByTeacherId(
+        enseignantId,
+        useNewDb(req)
+      );
     res.json(demandesTirage);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Error fetching demandes tirage by teacher ID" });
+    res
+      .status(500)
+      .json({ error: "Error fetching demandes tirage by teacher ID" });
   }
 };
 
@@ -192,9 +214,11 @@ const deleteSupportCoursEnseignant = async (req, res) => {
   try {
     const supportCoursId = req.params.id;
 
-    const deletedSupportCours = await coursEnseignantServices.deleteSupportCoursEnseignant(
-      supportCoursId
-    );
+    const deletedSupportCours =
+      await coursEnseignantServices.deleteSupportCoursEnseignant(
+        supportCoursId,
+        useNewDb(req)
+      );
 
     if (!deletedSupportCours) {
       return res.status(404).send("Support Cours not found");
@@ -213,5 +237,5 @@ module.exports = {
   deleteCoursEnseignant,
   getCoursEnseignantByIdClasse,
   getSupportCoursByTeacherId,
-  deleteSupportCoursEnseignant
+  deleteSupportCoursEnseignant,
 };

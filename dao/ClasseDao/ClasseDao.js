@@ -1,65 +1,31 @@
-const classeModel = require("../../model/ClasseModels/ClasseModels");
-const MatiereModel = require("../../model/MatiereModel/MatiereModel");
-const Classe = require("../../model/ClasseModels/ClasseModels");
+const matiereSchema = require("../../model/MatiereModel/MatiereModel");
+const classeSchema = require("../../model/ClasseModels/ClasseModels");
 
-const createClasse = async (classe) => {
+function getMatiereModel(dbConnection) {
+  return (
+    dbConnection.models.Matiere || dbConnection.model("Matiere", matiereSchema)
+  );
+}
+
+function getClasseModel(dbConnection) {
+  return (
+    dbConnection.models.Classe || dbConnection.model("Classe", classeSchema)
+  );
+}
+
+const createClasse = async (classe, dbName) => {
   try {
-    return await classeModel.create(classe);
+    const Classe = await getClasseModel(dbName);
+    return await Classe.create(classe);
   } catch (error) {
     console.error("Error creating classe:", error);
     throw error;
   }
 };
-// const getClasses = async () => {
-//   try {
-//     const classes = await Classe.find()
-//       .populate({
-//         path: "niveau_classe",
-//         populate: {
-//           path: "sections",
-//           model: "SectionClasse",
-//         },
-//       })
-//       .populate("departement")
-//       .populate("matieres");
 
-//     return classes;
-//   } catch (error) {
-//     console.error("Error fetching classes:", error);
-//     throw error;
-//   }
-// };
-
-// const getClasses = async () => {
-//   try {
-//     const classes = await Classe.find()
-//       .populate({
-//         path: "niveau_classe",
-//         populate: {
-//           path: "sections",
-//           model: "SectionClasse",
-//           populate: {
-//             path: "departements",
-//             model: "Departement",
-//             populate: {
-//               path: "sections",
-//               model: "SectionClasse",
-//             },
-//           },
-//         },
-//       })
-//       .populate("departement")
-//       .populate("matieres");
-
-//     return classes;
-//   } catch (error) {
-//     console.error("Error fetching classes:", error);
-//     throw error;
-//   }
-// };
-
-const getClasses = async () => {
+const getClasses = async (dbName) => {
   try {
+    const Classe = await getClasseModel(dbName);
     const classes = await Classe.find()
       .populate({
         path: "niveau_classe",
@@ -102,10 +68,10 @@ const getClasses = async () => {
   }
 };
 
-const updateClasse = async (id, updateData) => {
+const updateClasse = async (id, updateData, dbName) => {
   try {
-    return await classeModel
-      .findByIdAndUpdate(id, updateData, { new: true })
+    const Classe = await getClasseModel(dbName);
+    return await Classe.findByIdAndUpdate(id, updateData, { new: true })
       .populate("departement")
       .populate("niveau_classe")
       .populate("parcours");
@@ -115,8 +81,9 @@ const updateClasse = async (id, updateData) => {
   }
 };
 
-const deleteClasse = async (id) => {
+const deleteClasse = async (id, dbName) => {
   try {
+    const Classe = await getClasseModel(dbName);
     return await Classe.findByIdAndDelete(id);
   } catch (error) {
     console.error("Error deleting classe:", error);
@@ -124,10 +91,10 @@ const deleteClasse = async (id) => {
   }
 };
 
-const getClasseById = async (id) => {
+const getClasseById = async (id, dbName) => {
   try {
-    return await classeModel
-      .findById(id)
+    const Classe = await getClasseModel(dbName);
+    return await Classe.findById(id)
       // .populate("departement")
       // .populate("niveau_classe")
       // .populate("matieres");
@@ -170,8 +137,9 @@ const getClasseById = async (id) => {
   }
 };
 
-async function assignMatieresToClasse(classeId, matiereIds) {
+async function assignMatieresToClasse(classeId, matiereIds, dbName) {
   try {
+    const Classe = await getClasseModel(dbName);
     const classe = await Classe.findById(classeId);
 
     if (!classe) {
@@ -208,8 +176,10 @@ async function assignMatieresToClasse(classeId, matiereIds) {
   }
 }
 
-const deleteAssignedMatiereFromClasse = async (classeId, matiereId) => {
+const deleteAssignedMatiereFromClasse = async (classeId, matiereId, dbName) => {
   try {
+    const Classe = await getClasseModel(dbName);
+    const Matiere = await getMatiereModel(dbName);
     const classe = await Classe.findById(classeId);
     if (!classe) {
       throw new Error("Classe not found");
@@ -223,7 +193,7 @@ const deleteAssignedMatiereFromClasse = async (classeId, matiereId) => {
     await classe.save();
 
     // Update corresponding matiere document
-    const matiere = await MatiereModel.findById(matiereId);
+    const matiere = await Matiere.findById(matiereId);
     if (matiere) {
       matiere.classes = matiere.classes.filter(
         (c) => c.toString() !== classeId
@@ -239,8 +209,9 @@ const deleteAssignedMatiereFromClasse = async (classeId, matiereId) => {
   }
 };
 
-async function getAssignedMatieres(classeId) {
+async function getAssignedMatieres(classeId, dbName) {
   try {
+    const Classe = await getClasseModel(dbName);
     const classe = await Classe.findById(classeId).populate("matieres");
     if (!classe) {
       throw new Error("Classe not found");
@@ -251,16 +222,23 @@ async function getAssignedMatieres(classeId) {
   }
 }
 
-const getClasseByValue = async (nom_classe_ar, nom_classe_fr) => {
+const getClasseByValue = async (nom_classe_ar, nom_classe_fr, dbName) => {
+  const Classe = await getClasseModel(dbName);
   return await Classe.findOne({ nom_classe_ar, nom_classe_fr });
 };
 
-const assignParcoursToClasse = async (classeId, parcoursId, semestres) => {
+const assignParcoursToClasse = async (
+  classeId,
+  parcoursId,
+  semestres,
+  dbName
+) => {
   if (!classeId || !parcoursId || !semestres) {
     throw new Error("Classe ID, Parcours ID, and Semestres are required");
   }
 
   try {
+    const Classe = await getClasseModel(dbName);
     const updatedClasse = await Classe.findByIdAndUpdate(
       classeId,
       { parcours: parcoursId, semestres: semestres },

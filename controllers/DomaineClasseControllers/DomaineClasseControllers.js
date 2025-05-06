@@ -1,14 +1,21 @@
 const domaineService = require("../../services/DomaineClasseServices/DomaineClasseServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const createDomaineClasse = async (req, res) => {
   try {
     const { abreviation, name_domaine_fr, name_domaine_ar } = req.body;
 
-    const domaineClasse = await domaineService.createDomaineClasse({
-      abreviation,
-      name_domaine_fr,
-      name_domaine_ar,
-    });
+    const domaineClasse = await domaineService.createDomaineClasse(
+      {
+        abreviation,
+        name_domaine_fr,
+        name_domaine_ar,
+      },
+      useNewDb(req)
+    );
     res.json(domaineClasse);
   } catch (error) {
     console.error(error);
@@ -26,7 +33,8 @@ const updateDoamineClasseById = async (req, res) => {
         abreviation,
         name_domaine_fr,
         name_domaine_ar,
-      }
+      },
+      useNewDb(req)
     );
 
     if (!updatedDomaineClasse) {
@@ -41,7 +49,9 @@ const updateDoamineClasseById = async (req, res) => {
 
 const getAllDomaineClasse = async (req, res) => {
   try {
-    const domaineClasses = await domaineService.getDomainesClasse();
+    const domaineClasses = await domaineService.getDomainesClasse(
+      useNewDb(req)
+    );
     res.json(domaineClasses);
   } catch (error) {
     console.error(error);
@@ -54,7 +64,8 @@ const deleteDomaineClasseById = async (req, res) => {
     const doamineClasseId = req.params.id;
 
     const deletedDoamineClasseId = await domaineService.deleteDomaineClasse(
-      doamineClasseId
+      doamineClasseId,
+      useNewDb(req)
     );
 
     if (!deletedDoamineClasseId) {
@@ -77,10 +88,13 @@ const getDomaineByValue = async (req, res) => {
         .json({ message: "name_domaine_fr and name_domaine_ar are required" });
     }
 
-    const domaineValue = await domaineService.getDomaineByValue({
-      name_domaine_fr,
-      name_domaine_ar,
-    });
+    const domaineValue = await domaineService.getDomaineByValue(
+      {
+        name_domaine_fr,
+        name_domaine_ar,
+      },
+      useNewDb(req)
+    );
 
     if (!domaineValue) {
       return res.json(null);

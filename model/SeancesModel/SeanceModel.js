@@ -36,4 +36,5 @@ const seanceSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Seance", seanceSchema);
+// module.exports = mongoose.model("Seance", seanceSchema);
+module.exports = seanceSchema;

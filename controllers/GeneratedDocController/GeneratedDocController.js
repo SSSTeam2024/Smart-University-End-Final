@@ -1,5 +1,9 @@
 const generatedDocService = require("../../services/GeneratedDocServices/GeneratedDocServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const saveGeneratedDoc = async (req, res) => {
   try {
     const {
@@ -13,16 +17,19 @@ const saveGeneratedDoc = async (req, res) => {
       num_qr_code,
     } = req.body;
 
-    const generatedDoc = await generatedDocService.saveGeneratedDoc({
-      personnel,
-      etudiant,
-      enseignant,
-      model,
-      body,
-      date_generation,
-      num_ordre,
-      num_qr_code,
-    });
+    const generatedDoc = await generatedDocService.saveGeneratedDoc(
+      {
+        personnel,
+        etudiant,
+        enseignant,
+        model,
+        body,
+        date_generation,
+        num_ordre,
+        num_qr_code,
+      },
+      useNewDb(req)
+    );
     res.json(generatedDoc);
   } catch (error) {
     console.error(error);
@@ -36,14 +43,13 @@ const getGeneratedDocsByModelId = async (req, res) => {
     };
 
     const generatedDocs = await generatedDocService.getGeneratedDocsByModelId(
-      req.params.id
+      req.params.id,
+      useNewDb(req)
     );
     if (!generatedDocs) {
-      return res
-        .status(404)
-        .json({
-          message: "No generated docs according to the provided model!",
-        });
+      return res.status(404).json({
+        message: "No generated docs according to the provided model!",
+      });
     }
 
     if (generatedDocs.length === 0) {
@@ -64,7 +70,10 @@ const getGeneratedDocsByModelId = async (req, res) => {
 
 const getGeneratedDocsByQrCode = async (req, res) => {
   try {
-    const generatedDoc = await generatedDocService.getGenerartedDocsByQrCode(req.params.num_qr_code);
+    const generatedDoc = await generatedDocService.getGenerartedDocsByQrCode(
+      req.params.num_qr_code,
+      useNewDb(req)
+    );
     res.status(200).json(generatedDoc);
   } catch (error) {
     console.error("Error fetching Generated docs by QR Code:", error);
@@ -120,7 +129,7 @@ const getGeneratedDocsByQrCode = async (req, res) => {
 module.exports = {
   saveGeneratedDoc,
   getGeneratedDocsByModelId,
-  getGeneratedDocsByQrCode
+  getGeneratedDocsByQrCode,
   // getAllAbsencesPersonnels,
   // updateAbsencePersonnelById,
   // deleteAbsencePersonnel

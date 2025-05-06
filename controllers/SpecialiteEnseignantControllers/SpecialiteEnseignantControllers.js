@@ -1,14 +1,21 @@
 const specialiteEnseignantService = require("../../services/SpecialiteEnseignantServices/SpecialiteEnseignantServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const addSpecialiteEnseignant = async (req, res) => {
   try {
     const { specialite_ar, specialite_fr } = req.body;
 
     const specialiteEnseignant =
-      await specialiteEnseignantService.registerSpecialiteEnseignant({
-        specialite_ar,
-        specialite_fr,
-      });
+      await specialiteEnseignantService.registerSpecialiteEnseignant(
+        {
+          specialite_ar,
+          specialite_fr,
+        },
+        useNewDb(req)
+      );
     res.json(specialiteEnseignant);
   } catch (error) {
     console.error(error);
@@ -26,7 +33,8 @@ const updateSpecialiteEnseignantById = async (req, res) => {
         {
           specialite_ar,
           specialite_fr,
-        }
+        },
+        useNewDb(req)
       );
 
     if (!updatedSpecialiteEnseignant) {
@@ -45,7 +53,8 @@ const getSpecialiteEnseignantById = async (req, res) => {
 
     const getSpecialiteEnseignant =
       await specialiteEnseignantService.getSpecialiteEnseignantDaoById(
-        specialiteEnseignantId
+        specialiteEnseignantId,
+        useNewDb(req)
       );
 
     if (!getSpecialiteEnseignant) {
@@ -60,7 +69,9 @@ const getSpecialiteEnseignantById = async (req, res) => {
 const getAllSpecialiteEnseignant = async (req, res) => {
   try {
     const specialiteEnseignants =
-      await specialiteEnseignantService.getSpecialitesEnseignantDao();
+      await specialiteEnseignantService.getSpecialitesEnseignantDao(
+        useNewDb(req)
+      );
     res.json(specialiteEnseignants);
   } catch (error) {
     console.error(error);
@@ -74,7 +85,8 @@ const deleteSpecialiteEnseignantById = async (req, res) => {
 
     const deletedSpecialiteEnseignant =
       await specialiteEnseignantService.deleteSpecialiteEnseignantDao(
-        specialiteEnseignantId
+        specialiteEnseignantId,
+        useNewDb(req)
       );
 
     if (!deletedSpecialiteEnseignant) {
@@ -97,10 +109,13 @@ const getSpecialiteByValue = async (req, res) => {
     }
 
     const specialiteValue =
-      await specialiteEnseignantService.getSpecialiteByValue({
-        specialite_fr,
-        specialite_ar,
-      });
+      await specialiteEnseignantService.getSpecialiteByValue(
+        {
+          specialite_fr,
+          specialite_ar,
+        },
+        useNewDb(req)
+      );
 
     if (!specialiteValue) {
       return res.json(null);

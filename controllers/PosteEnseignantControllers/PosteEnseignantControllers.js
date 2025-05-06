@@ -1,5 +1,9 @@
 const posteEnseignantService = require("../../services/PosteEnseignantServices/PosteEnseignantServices");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
+
 const createPosteEnseignant = async (req, res) => {
   try {
     const { poste_ar, poste_fr } = req.body;
@@ -8,7 +12,8 @@ const createPosteEnseignant = async (req, res) => {
       {
         poste_ar,
         poste_fr,
-      }
+      },
+      useNewDb(req)
     );
     res.json(postetEnseignant);
   } catch (error) {
@@ -27,10 +32,14 @@ const updatePosteEnseignantById = async (req, res) => {
     const { poste_ar, poste_fr } = req.body;
 
     const updatedPosteEnseignant =
-      await posteEnseignantService.updatePosteEnseignantDao(posteEnseignantId, {
-        poste_ar,
-        poste_fr,
-      });
+      await posteEnseignantService.updatePosteEnseignantDao(
+        posteEnseignantId,
+        {
+          poste_ar,
+          poste_fr,
+        },
+        useNewDb(req)
+      );
 
     if (!updatedPosteEnseignant) {
       return res.status(404).send("Poste Enseignant not found!");
@@ -47,7 +56,10 @@ const getPosteEnseignantById = async (req, res) => {
     const posteEnseignantId = req.params.id;
 
     const getPosteEnseignant =
-      await posteEnseignantService.getPosteEnseignantDaoById(posteEnseignantId);
+      await posteEnseignantService.getPosteEnseignantDaoById(
+        posteEnseignantId,
+        useNewDb(req)
+      );
 
     if (!getPosteEnseignant) {
       return res.status(404).send("Poste Enseignant not found");
@@ -62,7 +74,7 @@ const getPosteEnseignantById = async (req, res) => {
 const getAllPostesEnseignant = async (req, res) => {
   try {
     const posteEnseignants =
-      await posteEnseignantService.getPostesEnseignantDao();
+      await posteEnseignantService.getPostesEnseignantDao(useNewDb(req));
     res.json(posteEnseignants);
   } catch (error) {
     console.error(error);
@@ -75,7 +87,10 @@ const deletePosteEnseignantById = async (req, res) => {
     const posteEnseignantId = req.params.id;
 
     const deletedPosteEnseignant =
-      await posteEnseignantService.deletePosteEnseignantDao(posteEnseignantId);
+      await posteEnseignantService.deletePosteEnseignantDao(
+        posteEnseignantId,
+        useNewDb(req)
+      );
 
     if (!deletedPosteEnseignant) {
       return res.status(404).send("Poste Enseignant not found");
@@ -96,10 +111,13 @@ const getPosteByValue = async (req, res) => {
         .json({ message: "poste_fr and poste_ar are required" });
     }
 
-    const posteValue = await posteEnseignantService.getPosteByValue({
-      poste_fr,
-      poste_ar,
-    });
+    const posteValue = await posteEnseignantService.getPosteByValue(
+      {
+        poste_fr,
+        poste_ar,
+      },
+      useNewDb(req)
+    );
 
     if (!posteValue) {
       return res.json(null);

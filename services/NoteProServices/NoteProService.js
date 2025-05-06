@@ -1,12 +1,13 @@
 const noteProDao = require("../../dao/NoteProDao/NoteProDao");
+const { getDb } = require("../../config/dbSwitcher");
 
-const createNotePro = async (noteProData) => {
+const createNotePro = async (noteProData, useNew) => {
   try {
-    console.log(noteProData);
+    const db = await getDb(useNew);
     let results = [];
     for (const notes of noteProData.notes) {
-     let result = await noteProDao.createNotePro(notes);
-     results.push(result);
+      let result = await noteProDao.createNotePro(notes, db);
+      results.push(result);
     }
     return results;
   } catch (error) {
@@ -15,29 +16,34 @@ const createNotePro = async (noteProData) => {
   }
 };
 
-const getAllNotesPro = async () => {
-  return noteProDao.getAllNotesPro();
+const getAllNotesPro = async (dbName) => {
+  const db = await getDb(dbName);
+  return noteProDao.getAllNotesPro(db);
 };
 
-const getNoteProById = async (id) => {
-  return noteProDao.getNoteProById(id);
+const getNoteProById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return noteProDao.getNoteProById(id, db);
 };
 
-const getNoteProByYear = async (annee) => {
-  return noteProDao.getNoteProByYear(annee);
+const getNoteProByYear = async (annee, useNew) => {
+  const db = await getDb(useNew);
+  return noteProDao.getNoteProByYear(annee, db);
 };
 
-const updateNotePro = async (id, updateData, documents) => {
+const updateNotePro = async (id, updateData, useNew) => {
   try {
-    return await noteProDao.updateNotePro(id, updateData);
+    const db = await getDb(useNew);
+    return await noteProDao.updateNotePro(id, updateData, db);
   } catch (error) {
     console.error("Error updating NotePro ", error);
     throw error;
   }
 };
 
-const deleteNotePro = async (id) => {
-  return noteProDao.deleteNotePro(id);
+const deleteManyNotePro = async (dbName, ids) => {
+  const db = await getDb(dbName);
+  return noteProDao.deleteManyNotePro(db, ids);
 };
 
 module.exports = {
@@ -45,6 +51,6 @@ module.exports = {
   getAllNotesPro,
   getNoteProById,
   updateNotePro,
-  deleteNotePro,
-  getNoteProByYear
+  deleteManyNotePro,
+  getNoteProByYear,
 };

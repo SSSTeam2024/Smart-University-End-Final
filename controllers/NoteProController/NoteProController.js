@@ -1,16 +1,19 @@
-const noteProService = require('../../services/NoteProServices/NoteProService');
+const noteProService = require("../../services/NoteProServices/NoteProService");
 
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
 
 const createNotePro = async (req, res) => {
   try {
-    const {
-      notes
-    } = req.body;
+    const { notes } = req.body;
 
-   let NotePro = await noteProService.createNotePro({
-    notes
-      });
- 
+    let NotePro = await noteProService.createNotePro(
+      {
+        notes,
+      },
+      useNewDb(req)
+    );
 
     res.status(201).json(NotePro);
   } catch (error) {
@@ -19,9 +22,19 @@ const createNotePro = async (req, res) => {
   }
 };
 
+// const getAllNotesPro = async (req, res) => {
+//   try {
+//     const notesPro = await noteProService.getAllNotesPro();
+//     res.status(200).json(notesPro);
+//   } catch (error) {
+//     console.error("Error fetching all notes Pro:", error);
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 const getAllNotesPro = async (req, res) => {
   try {
-    const notesPro = await noteProService.getAllNotesPro();
+    const notesPro = await noteProService.getAllNotesPro(useNewDb(req));
     res.status(200).json(notesPro);
   } catch (error) {
     console.error("Error fetching all notes Pro:", error);
@@ -31,9 +44,12 @@ const getAllNotesPro = async (req, res) => {
 
 const getNoteProById = async (req, res) => {
   try {
-    const notePro = await noteProService.getNoteProById(req.body._id);
+    const notePro = await noteProService.getNoteProById(
+      req.body._id,
+      useNewDb(req)
+    );
     if (!notePro) {
-      return res.status(404).json({ message: 'notePro not found' });
+      return res.status(404).json({ message: "notePro not found" });
     }
     res.status(200).json(notePro);
   } catch (error) {
@@ -45,9 +61,9 @@ const getNoteProById = async (req, res) => {
 const getNoteProByYear = async (req, res) => {
   try {
     const { annee } = req.body;
-    const notePro = await noteProService.getNoteProByYear(annee);
+    const notePro = await noteProService.getNoteProByYear(annee, useNewDb(req));
     if (!notePro) {
-      return res.status(404).json({ message: 'notePro not found' });
+      return res.status(404).json({ message: "notePro not found" });
     }
     res.status(200).json(notePro);
   } catch (error) {
@@ -58,20 +74,22 @@ const getNoteProByYear = async (req, res) => {
 
 const updateNotePro = async (req, res) => {
   try {
-      const {
-          _id,
-          personnel,
-          note1,
-          note2,
-          note3,
-          note4,
-          note5,
-          note_finale,
-          annee,
-          observation
-      } = req.body;
+    const {
+      _id,
+      personnel,
+      note1,
+      note2,
+      note3,
+      note4,
+      note5,
+      note_finale,
+      annee,
+      observation,
+    } = req.body;
 
-      const updatedNotePro = await noteProService.updateNotePro(_id, {
+    const updatedNotePro = await noteProService.updateNotePro(
+      _id,
+      {
         personnel,
         note1,
         note2,
@@ -80,31 +98,43 @@ const updateNotePro = async (req, res) => {
         note5,
         note_finale,
         annee,
-        observation
-        
-      });
+        observation,
+      },
+      useNewDb(req)
+    );
 
-      if (!updatedNotePro) {
-          return res.status(404).json({ message: 'notePro not found' });
-      }
+    if (!updatedNotePro) {
+      return res.status(404).json({ message: "notePro not found" });
+    }
 
-      res.status(200).json(updatedNotePro);
+    res.status(200).json(updatedNotePro);
   } catch (error) {
-      console.error("Error updating notePro :", error);
-      res.status(500).json({ message: error.message });
+    console.error("Error updating notePro :", error);
+    res.status(500).json({ message: error.message });
   }
 };
 
-const deleteNotePro = async (req, res) => {
+const deleteManyNote = async (req, res) => {
   try {
-    const deletedNotePro = await noteProService.deletenotePro(req.body._id);
-    if (!deletedNotePro) {
-      return res.status(404).json({ message: 'notePro not found' });
+    const noteIds = req.body.ids;
+
+    if (!noteIds || noteIds.length === 0) {
+      return res.status(400).send("No IDs provided");
     }
-    res.status(200).json({ message: 'notePro deleted successfully' });
+
+    const deleteNoteResult = await noteProService.deleteManyNotePro(
+      useNewDb(req),
+      noteIds
+    );
+
+    if (deleteNoteResult.deletedCount === 0) {
+      return res.status(404).send("No Notes found with provided IDs");
+    }
+
+    res.sendStatus(200);
   } catch (error) {
-    console.error("Error deleting notePro", error);
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).send(error.message);
   }
 };
 
@@ -113,6 +143,6 @@ module.exports = {
   getAllNotesPro,
   getNoteProById,
   updateNotePro,
-  deleteNotePro,
-  getNoteProByYear
+  deleteManyNote,
+  getNoteProByYear,
 };

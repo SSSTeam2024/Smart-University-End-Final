@@ -1,5 +1,9 @@
-const leaveBalanceService = require('../../services/CongéServices/leaveBalanceService');
-const mongoose = require('mongoose');
+const leaveBalanceService = require("../../services/CongéServices/leaveBalanceService");
+const mongoose = require("mongoose");
+
+function useNewDb(req) {
+  return req.headers["x-use-new-db"] === "true";
+}
 
 const createLeaveBalance = async (req, res) => {
   try {
@@ -10,18 +14,21 @@ const createLeaveBalance = async (req, res) => {
       daysUsed,
       remainingDays,
       year,
-      lastUpdated
+      lastUpdated,
     } = req.body;
 
-    const leaveBalance = await leaveBalanceService.createLeaveBalance({
-      personnelId,
-      leaveType,
-      subcategory,
-      daysUsed,
-      remainingDays,
-      year,
-      lastUpdated
-    });
+    const leaveBalance = await leaveBalanceService.createLeaveBalance(
+      {
+        personnelId,
+        leaveType,
+        subcategory,
+        daysUsed,
+        remainingDays,
+        year,
+        lastUpdated,
+      },
+      useNewDb(req)
+    );
 
     res.json(leaveBalance);
   } catch (error) {
@@ -31,7 +38,7 @@ const createLeaveBalance = async (req, res) => {
 };
 // const createLeaveBalance = async (req, res) => {
 //   try {
-  
+
 //     const { personnelId, leaveType, subcategory, daysUsed, year } = req.body;
 
 //     // // Example validation
@@ -48,53 +55,75 @@ const createLeaveBalance = async (req, res) => {
 //   }
 // };
 
-
 const createOrUpdateLeaveBalance = async (req, res) => {
   try {
-    const {   personnelId,
+    const {
+      personnelId,
       leaveType,
       subcategory,
       daysUsed,
       remainingDays,
       year,
-      lastUpdated } = req.body;
+      lastUpdated,
+    } = req.body;
     // Basic validation
     if (
-      !personnelId || !leaveType || !year ||
-      typeof requestedDays !== 'number' || requestedDays <= 0
+      !personnelId ||
+      !leaveType ||
+      !year ||
+      typeof requestedDays !== "number" ||
+      requestedDays <= 0
     ) {
-      return res.status(400).json({ message: 'Required fields are missing or invalid.' });
+      return res
+        .status(400)
+        .json({ message: "Required fields are missing or invalid." });
     }
 
     // Check if personnelId and leaveType are valid ObjectId
-    if (!mongoose.Types.ObjectId.isValid(personnelId) || !mongoose.Types.ObjectId.isValid(leaveType)) {
-      return res.status(400).json({ message: 'Invalid personnelId or leaveType.' });
+    if (
+      !mongoose.Types.ObjectId.isValid(personnelId) ||
+      !mongoose.Types.ObjectId.isValid(leaveType)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Invalid personnelId or leaveType." });
     }
 
     // Prepare leave balance data to pass to the service
-    const leaveBalanceData = { personnelId, leaveType, subcategory, year, requestedDays };
+    const leaveBalanceData = {
+      personnelId,
+      leaveType,
+      subcategory,
+      year,
+      requestedDays,
+    };
 
     // Call the service to create or update the leave balance
-    const leaveBalance = await leaveBalanceService.createOrUpdateLeaveBalance(leaveBalanceData);
+    const leaveBalance = await leaveBalanceService.createOrUpdateLeaveBalance(
+      leaveBalanceData,
+      useNewDb(req)
+    );
 
     res.status(201).json(leaveBalance);
   } catch (error) {
-    console.error('Error creating or updating leave balance:', error);
-    
+    console.error("Error creating or updating leave balance:", error);
+
     // Specific error message for CastError
-    if (error.name === 'CastError') {
-      return res.status(400).json({ message: `Invalid ${error.path} provided.` });
+    if (error.name === "CastError") {
+      return res
+        .status(400)
+        .json({ message: `Invalid ${error.path} provided.` });
     }
-    
+
     res.status(500).json({ message: error.message });
   }
 };
 
-
-
 const getAllLeaveBalance = async (req, res) => {
   try {
-    const LeaveBalances = await leaveBalanceService.getAllLeaveBalance();
+    const LeaveBalances = await leaveBalanceService.getAllLeaveBalance(
+      useNewDb(req)
+    );
     res.status(200).json(LeaveBalances);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -103,9 +132,12 @@ const getAllLeaveBalance = async (req, res) => {
 
 const getLeaveBalanceById = async (req, res) => {
   try {
-    const LeaveBalance = await leaveBalanceService.getLeaveBalanceById(req.params.id);
+    const LeaveBalance = await leaveBalanceService.getLeaveBalanceById(
+      req.params.id,
+      useNewDb(req)
+    );
     if (!LeaveBalance) {
-      return res.status(404).json({ message: 'LeaveBalance not found' });
+      return res.status(404).json({ message: "LeaveBalance not found" });
     }
     res.status(200).json(LeaveBalance);
   } catch (error) {
@@ -115,9 +147,13 @@ const getLeaveBalanceById = async (req, res) => {
 
 const updateLeaveBalance = async (req, res) => {
   try {
-    const updatedLeaveBalance = await leaveBalanceService.updateLeaveBalance(req.params.id, req.body);
+    const updatedLeaveBalance = await leaveBalanceService.updateLeaveBalance(
+      req.params.id,
+      req.body,
+      useNewDb(req)
+    );
     if (!updatedLeaveBalance) {
-      return res.status(404).json({ message: 'LeaveBalance not found' });
+      return res.status(404).json({ message: "LeaveBalance not found" });
     }
     res.status(200).json(updatedLeaveBalance);
   } catch (error) {
@@ -127,11 +163,14 @@ const updateLeaveBalance = async (req, res) => {
 
 const deleteLeaveBalance = async (req, res) => {
   try {
-    const deletedLeaveBalance = await leaveBalanceService.deleteLeaveBalance(req.params.id);
+    const deletedLeaveBalance = await leaveBalanceService.deleteLeaveBalance(
+      req.params.id,
+      useNewDb(req)
+    );
     if (!deletedLeaveBalance) {
-      return res.status(404).json({ message: 'LeaveBalance not found' });
+      return res.status(404).json({ message: "LeaveBalance not found" });
     }
-    res.status(200).json({ message: 'LeaveBalance deleted' });
+    res.status(200).json({ message: "LeaveBalance deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -143,5 +182,5 @@ module.exports = {
   getAllLeaveBalance,
   getLeaveBalanceById,
   updateLeaveBalance,
-  deleteLeaveBalance
+  deleteLeaveBalance,
 };

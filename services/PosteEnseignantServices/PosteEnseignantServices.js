@@ -1,26 +1,33 @@
 const posteEnseignantDao = require("../../dao/PosteEnseignantDao/PosteEnseignantDao");
+const { getDb } = require("../../config/dbSwitcher");
 
-const createPosteEnseignant = async (userData) => {
-  return await posteEnseignantDao.createPosteEnseignant(userData);
+const createPosteEnseignant = async (userData, useNew) => {
+  const db = await getDb(useNew);
+  return await posteEnseignantDao.createPosteEnseignant(userData, db);
 };
 
-const updatePosteEnseignantDao = async (id, updateData) => {
-  return await posteEnseignantDao.updatePosteEnseignant(id, updateData);
+const updatePosteEnseignantDao = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return await posteEnseignantDao.updatePosteEnseignant(id, updateData, db);
 };
 
-const getPosteEnseignantDaoById = async (id) => {
-  return await posteEnseignantDao.getPosteEnseignantById(id);
+const getPosteEnseignantDaoById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await posteEnseignantDao.getPosteEnseignantById(id, db);
 };
 
-const getPostesEnseignantDao = async () => {
-  return await posteEnseignantDao.getPostesEnseignant();
+const getPostesEnseignantDao = async (useNew) => {
+  const db = await getDb(useNew);
+  return await posteEnseignantDao.getPostesEnseignant(db);
 };
 
-const deletePosteEnseignantDao = async (id) => {
-  return await posteEnseignantDao.deletePosteEnseignant(id);
+const deletePosteEnseignantDao = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await posteEnseignantDao.deletePosteEnseignant(id, db);
 };
-const getPosteByValue = async ({ poste_ar, poste_fr }) => {
-  return await posteEnseignantDao.getPosteByValue(poste_ar, poste_fr);
+const getPosteByValue = async ({ poste_ar, poste_fr }, useNew) => {
+  const db = await getDb(useNew);
+  return await posteEnseignantDao.getPosteByValue(poste_ar, poste_fr, db);
 };
 
 module.exports = {

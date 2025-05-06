@@ -1,14 +1,23 @@
-const niveauClasse = require("../../model/NiveauClasseModel/NiveauClasseModel");
+const niveauClasseSchema = require("../../model/NiveauClasseModel/NiveauClasseModel");
 
-const createNiveauClasse = async (niveau) => {
+function getNiveauClasseModel(dbConnection) {
+  return (
+    dbConnection.models.NiveauClasse ||
+    dbConnection.model("NiveauClasse", niveauClasseSchema)
+  );
+}
+
+const createNiveauClasse = async (niveau, dbName) => {
   try {
+    const niveauClasse = await getNiveauClasseModel(dbName);
     return await niveauClasse.create(niveau);
   } catch (error) {
     throw error;
   }
 };
 
-const getNiveauxClasse = async () => {
+const getNiveauxClasse = async (dbName) => {
+  const niveauClasse = await getNiveauClasseModel(dbName);
   return await niveauClasse.find().populate([
     {
       path: "sections",
@@ -25,40 +34,43 @@ const getNiveauxClasse = async () => {
   ]);
 };
 
-const updateNiveauClasse = async (id, updateData) => {
+const updateNiveauClasse = async (id, updateData, dbName) => {
+  const niveauClasse = await getNiveauClasseModel(dbName);
   return await niveauClasse
     .findByIdAndUpdate(id, updateData, { new: true })
     .populate("sections");
 };
 
-const deleteNiveauClasse = async (id) => {
+const deleteNiveauClasse = async (id, dbName) => {
+  const niveauClasse = await getNiveauClasseModel(dbName);
   return await niveauClasse.findByIdAndDelete(id);
 };
 
-const getNiveauClasseById = async (id) => {
+const getNiveauClasseById = async (id, dbName) => {
+  const niveauClasse = await getNiveauClasseModel(dbName);
   return await niveauClasse.findById(id).populate("sections");
 };
 
-// get sections by id niveau
-
-async function getSectionsByIdNiveau(niveauClasseId) {
+async function getSectionsByIdNiveau(niveauClasseId, dbName) {
   try {
+    const niveauClasse = await getNiveauClasseModel(dbName);
     return await niveauClasse.findById(niveauClasseId).populate("sections");
   } catch (error) {
     throw error;
   }
 }
-// getSections By Id Cycle
 
-async function getCyclesByIdNiveau(niveauClasseId) {
+async function getCyclesByIdNiveau(niveauClasseId, dbName) {
   try {
+    const niveauClasse = await getNiveauClasseModel(dbName);
     return await niveauClasse.findById(niveauClasseId).populate("cycles");
   } catch (error) {
     throw error;
   }
 }
 
-const getNiveauByValue = async (name_niveau_ar, name_niveau_fr) => {
+const getNiveauByValue = async (name_niveau_ar, name_niveau_fr, dbName) => {
+  const niveauClasse = await getNiveauClasseModel(dbName);
   return await niveauClasse.findOne({ name_niveau_ar, name_niveau_fr });
 };
 

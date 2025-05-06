@@ -24,4 +24,5 @@ const CoursEnseignantSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("CoursEnseignant", CoursEnseignantSchema);
+// module.exports = mongoose.model("CoursEnseignant", CoursEnseignantSchema);
+module.exports = CoursEnseignantSchema;

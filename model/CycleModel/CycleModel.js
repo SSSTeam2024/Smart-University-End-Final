@@ -8,4 +8,5 @@ const cycleSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Cycle", cycleSchema);
+// module.exports = mongoose.model("Cycle", cycleSchema);
+module.exports = cycleSchema;

@@ -1,7 +1,14 @@
-const seanceModel = require("../../model/SeancesModel/SeanceModel");
+const seanceSchema = require("../../model/SeancesModel/SeanceModel");
 
-const createSeance = async (seance) => {
+function getSeanceModel(dbConnection) {
+  return (
+    dbConnection.models.Seance || dbConnection.model("Seance", seanceSchema)
+  );
+}
+
+const createSeance = async (seance, dbName) => {
   try {
+    const seanceModel = await getSeanceModel(dbName);
     return await seanceModel.create(seance);
   } catch (error) {
     console.error("Error creating seance:", error);
@@ -9,8 +16,9 @@ const createSeance = async (seance) => {
   }
 };
 
-const getSeances = async () => {
+const getSeances = async (dbName) => {
   try {
+    const seanceModel = await getSeanceModel(dbName);
     return await seanceModel
       .find()
       .populate("classe")
@@ -23,8 +31,9 @@ const getSeances = async () => {
   }
 };
 
-const getSeancesByIdEmploiPeriodique = async (idEmploi) => {
+const getSeancesByIdEmploiPeriodique = async (idEmploi, dbName) => {
   try {
+    const seanceModel = await getSeanceModel(dbName);
     const query = {
       emploiPeriodique_id: idEmploi,
     };
@@ -41,8 +50,9 @@ const getSeancesByIdEmploiPeriodique = async (idEmploi) => {
   }
 };
 
-const getSeanceByDayAndTime = async (emploiPeriodique_id, day) => {
+const getSeanceByDayAndTime = async (emploiPeriodique_id, day, dbName) => {
   try {
+    const seanceModel = await getSeanceModel(dbName);
     const query = {
       jour: day,
       emploiPeriodique_id: emploiPeriodique_id,
@@ -59,8 +69,9 @@ const getSeanceByDayAndTime = async (emploiPeriodique_id, day) => {
   }
 };
 
-const updateSeance = async (id, updateData) => {
+const updateSeance = async (id, updateData, dbName) => {
   try {
+    const seanceModel = await getSeanceModel(dbName);
     return await seanceModel
       .findByIdAndUpdate(id, updateData, { new: true })
       .populate("classe")
@@ -73,8 +84,9 @@ const updateSeance = async (id, updateData) => {
   }
 };
 
-const deleteSeance = async (id) => {
+const deleteSeance = async (id, dbName) => {
   try {
+    const seanceModel = await getSeanceModel(dbName);
     return await seanceModel.findByIdAndDelete(id);
   } catch (error) {
     console.error("Error deleting seance:", error);
@@ -82,8 +94,9 @@ const deleteSeance = async (id) => {
   }
 };
 
-const getSeanceById = async (id) => {
+const getSeanceById = async (id, dbName) => {
   try {
+    const seanceModel = await getSeanceModel(dbName);
     return await seanceModel
       .findById(id)
       .populate("classe")
@@ -96,8 +109,14 @@ const getSeanceById = async (id) => {
   }
 };
 
-const getSeancesByIdTeacher = async (teacherId, jour, emploi_periodique_id) => {
+const getSeancesByIdTeacher = async (
+  teacherId,
+  jour,
+  emploi_periodique_id,
+  dbName
+) => {
   try {
+    const seanceModel = await getSeanceModel(dbName);
     const query = {
       enseignant: teacherId,
       jour: jour,
@@ -117,9 +136,11 @@ const getSeancesByIdTeacher = async (teacherId, jour, emploi_periodique_id) => {
 
 const getPeriodicSessionsByTeacher = async (
   teacherId,
-  emploi_periodique_id
+  emploi_periodique_id,
+  dbName
 ) => {
   try {
+    const seanceModel = await getSeanceModel(dbName);
     const query = {
       enseignant: teacherId,
       emploiPeriodique_id: emploi_periodique_id,
@@ -129,15 +150,17 @@ const getPeriodicSessionsByTeacher = async (
       .populate("classe")
       .populate("matiere")
       .populate("enseignant")
-      .populate("salle").populate("emploiPeriodique_id");
+      .populate("salle")
+      .populate("emploiPeriodique_id");
   } catch (error) {
     console.error("Error fetching seances:", error);
     throw error;
   }
 };
 
-const getSessionsByRoomId = async (roomId) => {
+const getSessionsByRoomId = async (roomId, dbName) => {
   try {
+    const seanceModel = await getSeanceModel(dbName);
     const query = {
       salle: roomId,
     };
@@ -153,8 +176,9 @@ const getSessionsByRoomId = async (roomId) => {
   }
 };
 
-const getSeancesByTeacher = async (teacherId, semestre) => {
+const getSeancesByTeacher = async (teacherId, semestre, dbName) => {
   try {
+    const seanceModel = await getSeanceModel(dbName);
     return await seanceModel
       .find({ enseignant: teacherId, semestre: semestre })
       .populate({
@@ -164,13 +188,13 @@ const getSeancesByTeacher = async (teacherId, semestre) => {
       .populate({
         path: "classe",
         populate: {
-          path: "parcours", // Populating parcours
+          path: "parcours",
           populate: {
-            path: "modules", // Populating modules inside parcours
-            model: "ModuleParcours", // Assuming modules are part of the `ModuleParcours` model
+            path: "modules",
+            model: "ModuleParcours",
             populate: {
-              path: "matiere", // Populating matiere inside ModuleParcours
-              model: "Matiere", // Assuming matiere is a reference to the `Matiere` model
+              path: "matiere",
+              model: "Matiere",
             },
           },
         },
@@ -179,26 +203,14 @@ const getSeancesByTeacher = async (teacherId, semestre) => {
     console.error("Error fetching seances:", error);
     throw error;
   }
-
-  // try {
-  //   const query = {
-  //     enseignant: teacherId,
-  //     semestre: semestre,
-  //   };
-  //   return await seanceModel
-  //     .find(query)
-  //     .populate("classe")
-  //     .populate("matiere")
-  //     .populate("enseignant")
-  //     .populate("salle")
-  //     .populate("emploiPeriodique_id");
-  // } catch (error) {
-  // console.error("Error fetching seances:", error);
-  // throw error;
-  // }
 };
 
-const fetchSeancesByIdTeacherAndSemestre = async (enseignantId, semestre) => {
+const fetchSeancesByIdTeacherAndSemestre = async (
+  enseignantId,
+  semestre,
+  dbName
+) => {
+  const seanceModel = await getSeanceModel(dbName);
   return await seanceModel
     .find({ enseignant: enseignantId, semestre })
     .populate("matiere")

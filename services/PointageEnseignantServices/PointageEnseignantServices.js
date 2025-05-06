@@ -1,30 +1,45 @@
 const PointageEnseignantDao = require("../../dao/PointageEnseignantDao/PointageEnseignantDao");
+const { getDb } = require("../../config/dbSwitcher");
 
-const createNewPointageEnseignant = async (pointageEnseignantData) => {
+const createNewPointageEnseignant = async (pointageEnseignantData, useNew) => {
+  const db = await getDb(useNew);
   return await PointageEnseignantDao.createPointageEnseignant(
-    pointageEnseignantData
+    pointageEnseignantData,
+    db
   );
 };
 
-const updatePointageEnseignant = async (id, updateData) => {
-  return await PointageEnseignantDao.updatePointageEnseignant(id, updateData);
+const updatePointageEnseignant = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return await PointageEnseignantDao.updatePointageEnseignant(
+    id,
+    updateData,
+    db
+  );
 };
 
-const getPointageEnseignantById = async (id) => {
-  return await PointageEnseignantDao.getPointageEnseignantById(id);
+const getPointageEnseignantById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await PointageEnseignantDao.getPointageEnseignantById(id, db);
 };
 
-const getAllPointageEnseignant = async () => {
-  const result = await PointageEnseignantDao.getPointageEnseignants();
+const getAllPointageEnseignant = async (useNew) => {
+  const db = await getDb(useNew);
+  const result = await PointageEnseignantDao.getPointageEnseignants(db);
   return result;
 };
 
-const deletePointageEnseignant = async (id) => {
-  return await PointageEnseignantDao.deletePointageEnseignant(id);
+const deletePointageEnseignant = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await PointageEnseignantDao.deletePointageEnseignant(id, db);
 };
 
-const getPointageByEnseignantId = async (enseignantId) => {
-  return await PointageEnseignantDao.getPointageByEnseignantId(enseignantId);
+const getPointageByEnseignantId = async (enseignantId, useNew) => {
+  const db = await getDb(useNew);
+  return await PointageEnseignantDao.getPointageByEnseignantId(
+    enseignantId,
+    db
+  );
 };
 
 module.exports = {

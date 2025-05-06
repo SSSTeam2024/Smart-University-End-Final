@@ -1,5 +1,6 @@
 const teacherPeriodDao = require("../../dao/TeacherPeriodDao/TeacherPeriodDao");
 // const parseDateV2 = require("../../utils/globalFunctions");
+const { getDb } = require("../../config/dbSwitcher");
 
 const createTeacherPeriod = async (params) => {
   try {
@@ -22,6 +23,17 @@ const getTeacherPeriod = async (ids_array, semestre) => {
   }
 
   return teachersPeriods;
+};
+
+const getAllTeacherPeriod = async (dbName) => {
+  try {
+    const db = await getDb(dbName);
+    const result = await teacherPeriodDao.getAllTeacherPeriods(db);
+    return result;
+  } catch (error) {
+    console.error("Error when fetching teacher periods", error);
+    throw error;
+  }
 };
 
 const getTeacherPeriodsByTeacherId = async (id, semestre) => {
@@ -143,6 +155,12 @@ const formatDate = (date) => {
   const year = date.getUTCFullYear();
   return `${day}-${month}-${year}`;
 };
+
+const deleteManyPeriods = async (dbName, ids) => {
+  const db = await getDb(dbName);
+  return await teacherPeriodDao.deleteManyPeriods(db, ids);
+};
+
 module.exports = {
   createTeacherPeriod,
   updateTeacherPeriod,
@@ -150,4 +168,6 @@ module.exports = {
   getTeacherPeriodByIdClassPeriod,
   getTeacherPeriodsByTeacherId,
   getPeriodsBySemesterAndTeacher,
+  getAllTeacherPeriod,
+  deleteManyPeriods,
 };

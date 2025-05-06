@@ -70,4 +70,4 @@ const enseignantSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Enseignant", enseignantSchema);
+module.exports = enseignantSchema;

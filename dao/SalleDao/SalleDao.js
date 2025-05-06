@@ -1,19 +1,35 @@
-const DepartementModel = require("../../model/departementModel/DepartementModel");
-const salleModel = require("../../model/SallesModel/SallesModel")
+const departementSchema = require("../../model/departementModel/DepartementModel");
+const salleSchema = require("../../model/SallesModel/SallesModel");
+
+function getDepartementModel(dbConnection) {
+  return (
+    dbConnection.models.Departement ||
+    dbConnection.model("Departement", departementSchema)
+  );
+}
+
+function getSalleModel(dbConnection) {
+  return dbConnection.models.Salle || dbConnection.model("Salle", salleSchema);
+}
 
 const createSalle = async (salle) => {
+  const salleModel = await getSalleModel(dbName);
   return await salleModel.create(salle);
 };
 
 const getSalles = async () => {
-  return await salleModel.find().populate('departement');
+  const salleModel = await getSalleModel(dbName);
+  return await salleModel.find().populate("departement");
 };
 
 const updateSalle = async (id, updateData) => {
+  const salleModel = await getSalleModel(dbName);
   return await salleModel.findByIdAndUpdate(id, updateData, { new: true });
 };
 
 const deleteSalle = async (id) => {
+  const salleModel = await getSalleModel(dbName);
+  const DepartementModel = await getDepartementModel(dbName);
   const deletedSalle = await salleModel.findByIdAndDelete(id);
   if (deletedSalle) {
     await DepartementModel.updateMany(
@@ -24,15 +40,14 @@ const deleteSalle = async (id) => {
   return deletedSalle;
 };
 const getSalleById = async (id) => {
-  return await salleModel.findById(id).populate('departement');
+  const salleModel = await getSalleModel(dbName);
+  return await salleModel.findById(id).populate("departement");
 };
 
-
 module.exports = {
-    getSalles,
-    createSalle,
-    updateSalle,
-    deleteSalle,
-    getSalleById,
-
+  getSalles,
+  createSalle,
+  updateSalle,
+  deleteSalle,
+  getSalleById,
 };

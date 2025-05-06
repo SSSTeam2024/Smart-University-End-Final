@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const permissionSchema = new Schema({
@@ -6,7 +6,8 @@ const permissionSchema = new Schema({
   path: { type: String, required: true },
   section: { type: String, required: true },
   sub_section: { type: String, required: true },
-  documentEdition: { type: String, required: false }
+  documentEdition: { type: String, required: false },
 });
 
-module.exports = mongoose.model('Permission', permissionSchema);
+// module.exports = mongoose.model('Permission', permissionSchema);
+module.exports = permissionSchema;

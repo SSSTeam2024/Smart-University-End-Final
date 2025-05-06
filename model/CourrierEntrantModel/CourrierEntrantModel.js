@@ -25,4 +25,5 @@ const courrierEntrantSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("CourrierEntrant", courrierEntrantSchema);
+// module.exports = mongoose.model("CourrierEntrant", courrierEntrantSchema);
+module.exports = courrierEntrantSchema;

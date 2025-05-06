@@ -1,4 +1,6 @@
-const ActualiteDao = require('../../dao/ActualiteDao/ActualiteDao');
+const ActualiteDao = require("../../dao/ActualiteDao/ActualiteDao");
+const { getDb } = require("../../config/dbSwitcher");
+
 const fs = require("fs").promises;
 
 async function saveMediaToServer(documents) {
@@ -28,29 +30,33 @@ async function saveFile(base64String, fileName, filePath) {
   }
 }
 
-const createActualite = async (ActualiteData, documents) => {
+const getAllActualites = async (useNew) => {
+  const db = await getDb(useNew);
+  return await ActualiteDao.getAllActualites(db);
+};
+
+const createActualite = async (ActualiteData, documents, useNew) => {
   try {
+    const db = await getDb(useNew);
     const saveResult = await saveMediaToServer(documents);
     if (!saveResult) {
       throw new Error("Not all files were saved successfully.");
     }
-    return await ActualiteDao.createActualite(ActualiteData);
+    return await ActualiteDao.createActualite(ActualiteData, db);
   } catch (error) {
     console.error("Error creating Actualite:", error);
     throw error;
   }
 };
 
-const getAllActualites = async () => {
-  return ActualiteDao.getAllActualites();
-};
-
-const getActualiteById = async (id) => {
+const getActualiteById = async (id, useNew) => {
+  const db = await getDb(useNew);
   return ActualiteDao.getActualiteById(id);
 };
 
-const updateActualite = async (id, updateData, documents) => {
+const updateActualite = async (id, updateData, documents, useNew) => {
   try {
+    const db = await getDb(useNew);
     // Save the new media files to the server
     if (documents && documents.length > 0) {
       const saveResult = await saveMediaToServer(documents);
@@ -60,15 +66,21 @@ const updateActualite = async (id, updateData, documents) => {
     }
 
     // Update the Actualite in the database with new data
-    return await ActualiteDao.updateActualite(id, updateData);
+    return await ActualiteDao.updateActualite(id, updateData, db);
   } catch (error) {
     console.error("Error updating Actualite:", error);
     throw error;
   }
 };
 
-const deleteActualite = async (id) => {
-  return ActualiteDao.deleteActualite(id);
+const deleteActualite = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return ActualiteDao.deleteActualite(id, db);
+};
+
+const deleteManyActualites = async (dbName, ids) => {
+  const db = await getDb(dbName);
+  return await ActualiteDao.deleteManyActualites(db, ids);
 };
 
 module.exports = {
@@ -76,5 +88,6 @@ module.exports = {
   getAllActualites,
   getActualiteById,
   updateActualite,
-  deleteActualite
+  deleteActualite,
+  deleteManyActualites,
 };

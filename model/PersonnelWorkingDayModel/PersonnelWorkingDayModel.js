@@ -11,7 +11,8 @@ const personnelWorkingDaySchema = new mongoose.Schema({
   part_time: String,
 });
 
-module.exports = mongoose.model(
-  "PersonnelWorkingDay",
-  personnelWorkingDaySchema
-);
+// module.exports = mongoose.model(
+//   "PersonnelWorkingDay",
+//   personnelWorkingDaySchema
+// );
+module.exports = personnelWorkingDaySchema;
