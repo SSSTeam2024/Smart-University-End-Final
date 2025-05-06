@@ -91,7 +91,8 @@ const handleDemandePersonnel = async (req, res) => {
       await demandePersonnelService.handleDemandePersonnel(
         demandId,
         modelName,
-        modelLangage
+        modelLangage,
+        useNewDb(req)
       );
 
     if (!updatedDemandePersonnel) {
