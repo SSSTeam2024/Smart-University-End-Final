@@ -33,7 +33,12 @@ const deleteManyDemandePersonnel = async (useNew, ids) => {
   return demandePersonnelDao.deleteManyDemandePersonnel(db, ids);
 };
 
-const handleDemandePersonnel = async (demandId, fileName, modelLangage) => {
+const handleDemandePersonnel = async (
+  demandId,
+  fileName,
+  modelLangage,
+  useNew
+) => {
   const db = await getDb(useNew);
   const [fileNamePart1, fileNamePart2] = fileName.split(".");
   const generatedDocInfo = await shortCodesReplacer.generateDoc(
