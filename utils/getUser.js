@@ -32,7 +32,6 @@ const getUserByIdV1 = async (id, userType, db) => {
   }
 
   return {
-    _id: user?._id,
     nom_fr: user?.nom_fr,
     prenom_fr: user?.prenom_fr,
     email: user?.email,
