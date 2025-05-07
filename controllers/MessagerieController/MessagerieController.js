@@ -1,7 +1,7 @@
 const messageService = require("../../dao/MessaegrieDao/MessagerieDao");
 const messageServices = require("../../services/MessagerieServices/MessagerieServices");
 const globalFunctions = require("../../utils/globalFunctions");
-
+const { getDb } = require("../../config/dbSwitcher");
 const { getUserByIdV2 } = require("../../utils/getUser");
 
 function useNewDb(req) {
@@ -118,12 +118,9 @@ const sendMessage = async (req, res) => {
 
 const fetchReplies = async (req, res) => {
   const { messageId } = req.params;
-
+  const db = await getDb(useNewDb(req));
   try {
-    const replies = await messageService.getRepliesByMessageId(
-      messageId,
-      useNewDb(req)
-    );
+    const replies = await messageService.getRepliesByMessageId(messageId, db);
     return res.status(200).json(replies);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -141,14 +138,10 @@ const fetchReplies = async (req, res) => {
 // };
 const getInbox = async (req, res) => {
   try {
+    const db = await getDb(useNewDb(req));
     const { userId, userType } = req.params;
-    const messages = await messageService.getUserInbox(
-      userId,
-      userType,
-      useNewDb(req)
-    );
+    const messages = await messageService.getUserInbox(userId, userType, db);
     res.status(200).json(messages);
-    // console.log("inbox",messages)
   } catch (error) {
     res
       .status(500)
@@ -157,11 +150,12 @@ const getInbox = async (req, res) => {
 };
 const getArchivedInbox = async (req, res) => {
   try {
+    const db = await getDb(useNewDb(req));
     const { userId, userType } = req.params;
     const messages = await messageService.getUserArchivedInbox(
       userId,
       userType,
-      useNewDb(req)
+      db
     );
     res.status(200).json(messages);
   } catch (error) {
@@ -183,11 +177,12 @@ const getArchivedInbox = async (req, res) => {
 // };
 const getSentMessages = async (req, res) => {
   try {
+    const db = await getDb(useNewDb(req));
     const { userId, userType } = req.params;
     const messages = await messageService.getUserSentMessages(
       userId,
       userType,
-      useNewDb(req)
+      db
     );
     res.status(200).json(messages);
   } catch (error) {
@@ -198,26 +193,28 @@ const getSentMessages = async (req, res) => {
 };
 const getArchivedSentMessages = async (req, res) => {
   try {
+    const db = await getDb(useNewDb(req));
     const { userId, userType } = req.params;
     const messages = await messageService.getUserArchivedSentMessages(
       userId,
       userType,
-      useNewDb(req)
+      db
     );
     res.status(200).json(messages);
   } catch (error) {
     res
       .status(500)
-      .json({ error: "Failed to fetch sent messages", details: error.message });
+      .json({
+        error: "Failed to fetch archived messages",
+        details: error.message,
+      });
   }
 };
 
 const markMessageAsRead = async (req, res) => {
   try {
-    const message = await messageService.markAsRead(
-      req.params.messageId,
-      useNewDb(req)
-    );
+    const db = await getDb(useNewDb(req));
+    const message = await messageService.markAsRead(req.params.messageId, db);
     res.status(200).json(message);
   } catch (error) {
     res.status(500).json({
@@ -228,10 +225,8 @@ const markMessageAsRead = async (req, res) => {
 };
 const markMessageAsUnread = async (req, res) => {
   try {
-    const message = await messageService.markAsUnread(
-      req.params.messageId,
-      useNewDb(req)
-    );
+    const db = await getDb(useNewDb(req));
+    const message = await messageService.markAsUnread(req.params.messageId, db);
     res.status(200).json(message);
   } catch (error) {
     res.status(500).json({
@@ -243,6 +238,7 @@ const markMessageAsUnread = async (req, res) => {
 
 const archiveMessage = async (req, res) => {
   try {
+    const db = await getDb(useNewDb(req));
     const { messageId } = req.params;
     const { userId, userType } = req.body;
 
@@ -250,7 +246,7 @@ const archiveMessage = async (req, res) => {
       messageId,
       userId,
       userType,
-      useNewDb(req)
+      db
     );
     res
       .status(200)
@@ -263,6 +259,7 @@ const archiveMessage = async (req, res) => {
 };
 const restoreMessage = async (req, res) => {
   try {
+    const db = await getDb(useNewDb(req));
     const { messageId } = req.params;
     const { userId, userType } = req.body;
 
@@ -270,7 +267,7 @@ const restoreMessage = async (req, res) => {
       messageId,
       userId,
       userType,
-      useNewDb(req)
+      db
     );
     res
       .status(200)
@@ -292,6 +289,7 @@ const restoreMessage = async (req, res) => {
 // };
 const deleteMessage = async (req, res) => {
   try {
+    const db = await getDb(useNewDb(req));
     const { messageId } = req.params;
     const { userId, userType } = req.body; // Get the user who is archiving the message
 
@@ -302,7 +300,7 @@ const deleteMessage = async (req, res) => {
       messageId,
       userId,
       userType,
-      useNewDb(req)
+      db
     );
     res
       .status(200)
@@ -317,21 +315,14 @@ const deleteMessage = async (req, res) => {
 // DELETE MESSAGE (Only for current user)
 const deleteMessageForUser = async (req, res) => {
   try {
+    const db = await getDb(useNewDb(req));
     const { userId, userType } = req.body;
     const messageId = req.params.id;
 
-    const message = await messageService.findMessageById(
-      messageId,
-      useNewDb(req)
-    );
+    const message = await messageService.findMessageById(messageId, db);
     if (!message) return res.status(404).json({ message: "Message not found" });
 
-    await messageService.markMessageAsDeleted(
-      messageId,
-      userId,
-      userType,
-      useNewDb(req)
-    );
+    await messageService.markMessageAsDeleted(messageId, userId, userType, db);
 
     res.json({ message: "Message deleted for this user" });
   } catch (error) {
@@ -362,12 +353,13 @@ const deleteMessageForUser = async (req, res) => {
 // GET DELETED MESSAGES FOR USER
 const getDeletedMessagesForUser = async (req, res) => {
   try {
+    const db = await getDb(useNewDb(req));
     const { userId, userType } = req.body; // Ensure body contains userId & userType
 
     const deletedMessages = await messageService.findDeletedMessagesForUser(
       userId,
       userType,
-      useNewDb(req)
+      db
     );
 
     res.json({ deletedMessages });
@@ -378,6 +370,7 @@ const getDeletedMessagesForUser = async (req, res) => {
 };
 const transferMessage = async (req, res) => {
   try {
+    const db = await getDb(useNewDb(req));
     const { messageId } = req.params;
     const { newReceiver, forwardedBy } = req.body;
 
@@ -396,7 +389,7 @@ const transferMessage = async (req, res) => {
       messageId,
       newReceiver,
       forwardedBy,
-      useNewDb(req)
+      db
     );
 
     res.status(200).json({ message: "Message transferred", updatedMessage });

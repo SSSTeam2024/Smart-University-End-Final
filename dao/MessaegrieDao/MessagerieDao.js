@@ -29,11 +29,10 @@ const populateUserDetails = async (messages, dbName) => {
         message.receiver.userType,
         dbName
       );
-
       return {
         ...message.toObject(),
-        sender: { ...message.sender, ...senderDetails?._doc },
-        receiver: { ...message.receiver, ...receiverDetails?._doc },
+        sender: { ...message.sender, ...senderDetails },
+        receiver: { ...message.receiver, ...receiverDetails },
       };
     })
   );

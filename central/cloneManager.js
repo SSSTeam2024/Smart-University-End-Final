@@ -17,7 +17,7 @@ async function cloneDatabaseForNewYear() {
   // Generate new target DB name based on current year + 1
   const currentYear = new Date().getFullYear();
   const targetYear = currentYear + 1;
-  const targetDbName = `db_${targetYear}`;
+  const targetDbName = `db_${currentYear}_${targetYear}`;
 
   const sourceDb = client.db(sourceDbName);
   const targetDb = client.db(targetDbName);

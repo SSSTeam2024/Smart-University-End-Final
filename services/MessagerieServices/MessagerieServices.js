@@ -1,5 +1,6 @@
-const MessagerieDao = require('../../dao/MessaegrieDao/MessagerieDao')
+const MessagerieDao = require("../../dao/MessaegrieDao/MessagerieDao");
 const fs = require("fs").promises;
+const { getDb } = require("../../config/dbSwitcher");
 
 async function saveMediaToServer(documents) {
   try {
@@ -8,7 +9,6 @@ async function saveMediaToServer(documents) {
       await saveFile(file.base64String, file.name, file.path);
       counter++;
       console.log(`File number ${counter} saved`);
-     
     }
     if (counter === documents.length) return true;
   } catch (error) {
@@ -18,8 +18,7 @@ async function saveMediaToServer(documents) {
 }
 
 async function saveFile(base64String, fileName, filePath) {
- 
-  const cleanedBase64 = base64String.split(',')[1];
+  const cleanedBase64 = base64String.split(",")[1];
 
   const binaryData = Buffer.from(cleanedBase64, "base64");
   const fullFilePath = filePath + fileName;
@@ -32,13 +31,14 @@ async function saveFile(base64String, fileName, filePath) {
   }
 }
 
-const createMessage = async (data, documents) => {
+const createMessage = async (data, documents, useNew) => {
   try {
+    const db = await getDb(useNew);
     const saveResult = await saveMediaToServer(documents);
     if (!saveResult) {
       throw new Error("Not all files were saved successfully.");
     }
-    return await MessagerieDao.createMessage(data);
+    return await MessagerieDao.createMessage(data, db);
   } catch (error) {
     console.error("Error creating Actualite:", error);
     throw error;
@@ -46,6 +46,5 @@ const createMessage = async (data, documents) => {
 };
 
 module.exports = {
-    createMessage
- 
+  createMessage,
 };
