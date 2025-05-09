@@ -12,22 +12,22 @@ function getSalleModel(dbConnection) {
   return dbConnection.models.Salle || dbConnection.model("Salle", salleSchema);
 }
 
-const createSalle = async (salle) => {
+const createSalle = async (salle, dbName) => {
   const salleModel = await getSalleModel(dbName);
   return await salleModel.create(salle);
 };
 
-const getSalles = async () => {
+const getSalles = async (dbName) => {
   const salleModel = await getSalleModel(dbName);
   return await salleModel.find().populate("departement");
 };
 
-const updateSalle = async (id, updateData) => {
+const updateSalle = async (id, updateData, dbName) => {
   const salleModel = await getSalleModel(dbName);
   return await salleModel.findByIdAndUpdate(id, updateData, { new: true });
 };
 
-const deleteSalle = async (id) => {
+const deleteSalle = async (id, dbName) => {
   const salleModel = await getSalleModel(dbName);
   const DepartementModel = await getDepartementModel(dbName);
   const deletedSalle = await salleModel.findByIdAndDelete(id);
@@ -39,7 +39,7 @@ const deleteSalle = async (id) => {
   }
   return deletedSalle;
 };
-const getSalleById = async (id) => {
+const getSalleById = async (id, dbName) => {
   const salleModel = await getSalleModel(dbName);
   return await salleModel.findById(id).populate("departement");
 };

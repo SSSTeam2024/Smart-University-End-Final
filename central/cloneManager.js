@@ -17,7 +17,7 @@ async function cloneDatabaseForNewYear() {
   // Generate new target DB name based on current year + 1
   const currentYear = new Date().getFullYear();
   const targetYear = currentYear + 1;
-  const targetDbName = `db_${currentYear}_${targetYear}`;
+  const targetDbName = `db_${currentYear}-${targetYear}`;
 
   const sourceDb = client.db(sourceDbName);
   const targetDb = client.db(targetDbName);
@@ -50,7 +50,7 @@ async function cloneDatabaseForNewYear() {
 async function promoteDatabase() {
   const currentYear = new Date().getFullYear();
   const targetYear = currentYear + 1;
-  const targetDbName = `db_${currentYear}_${targetYear}`;
+  const targetDbName = `db_${currentYear}-${targetYear}`;
 
   const client = await connect();
   const centralDb = client.db("interim_db");

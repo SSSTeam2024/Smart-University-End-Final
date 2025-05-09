@@ -2,23 +2,26 @@ const teacherPeriodDao = require("../../dao/TeacherPeriodDao/TeacherPeriodDao");
 // const parseDateV2 = require("../../utils/globalFunctions");
 const { getDb } = require("../../config/dbSwitcher");
 
-const createTeacherPeriod = async (params) => {
+const createTeacherPeriod = async (params, dbName) => {
   try {
-    return await teacherPeriodDao.createTeacherPeriod(params);
+    const db = await getDb(dbName);
+    return await teacherPeriodDao.createTeacherPeriod(params, db);
   } catch (error) {
     console.error("Error when creating teacher period", error);
     throw error;
   }
 };
 
-const updateTeacherPeriod = async (id, nbr_heure) => {
-  return await teacherPeriodDao.updateTeacherPeriod(id, nbr_heure);
+const updateTeacherPeriod = async (id, nbr_heure, dbName) => {
+  const db = await getDb(dbName);
+  return await teacherPeriodDao.updateTeacherPeriod(id, nbr_heure, db);
 };
 
-const getTeacherPeriod = async (ids_array, semestre) => {
+const getTeacherPeriod = async (ids_array, semestre, dbName) => {
+  const db = await getDb(dbName);
   let teachersPeriods = [];
   for (const id of ids_array) {
-    const result = await teacherPeriodDao.getTeacherPeriod(id, semestre);
+    const result = await teacherPeriodDao.getTeacherPeriod(id, semestre, db);
     teachersPeriods.push({ id_teacher: id, periods: result });
   }
 
@@ -36,27 +39,33 @@ const getAllTeacherPeriod = async (dbName) => {
   }
 };
 
-const getTeacherPeriodsByTeacherId = async (id, semestre) => {
-  const result = await teacherPeriodDao.getTeacherPeriod(id, semestre);
+const getTeacherPeriodsByTeacherId = async (id, semestre, dbName) => {
+  const db = await getDb(dbName);
+  const result = await teacherPeriodDao.getTeacherPeriod(id, semestre, db);
 
   return result;
 };
 
 const getTeacherPeriodByIdClassPeriod = async (
   emploiPeriodique_id,
-  id_teacher
+  id_teacher,
+  dbName
 ) => {
+  const db = await getDb(dbName);
   return teacherPeriodDao.getTeacherPeriodByIdClassPeriod(
     emploiPeriodique_id,
-    id_teacher
+    id_teacher,
+    db
   );
 };
 
-const getPeriodsBySemesterAndTeacher = async (semester, teacherId) => {
+const getPeriodsBySemesterAndTeacher = async (semester, teacherId, dbName) => {
   try {
+    const db = await getDb(dbName);
     const result = await teacherPeriodDao.fetchPeriodsBySemesterAndTeacherId(
       semester,
-      teacherId
+      teacherId,
+      db
     );
     let newPeriods = [];
     if (result.length > 0) {

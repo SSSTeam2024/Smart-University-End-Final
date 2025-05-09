@@ -1,9 +1,9 @@
-const ReclamationSchema = require("../../model/ReclamationPersonnelModel/ReclamationPersonnelModel");
+const ReclamationPersonnelSchema = require("../../model/ReclamationPersonnelModel/ReclamationPersonnelModel");
 
 function getReclamationPersonnelModel(dbConnection) {
   return (
-    dbConnection.models.Reclamation ||
-    dbConnection.model("Reclamation", ReclamationSchema)
+    dbConnection.models.ReclamationPersonnel ||
+    dbConnection.model("ReclamationPersonnel", ReclamationPersonnelSchema)
   );
 }
 
@@ -15,7 +15,7 @@ const createReclamation = async (reclamationData, dbName) => {
 
 const getAllReclamations = async (dbName) => {
   const reclamationPersonnelModel = await getReclamationPersonnelModel(dbName);
-  return await reclamationPersonnelModel.find(dbName).populate("personnelId");
+  return await reclamationPersonnelModel.find().populate("personnelId");
 };
 
 const getReclamationById = async (id, dbName) => {

@@ -14,4 +14,6 @@ router.put("/edit-note-pro", noteProController.updateNotePro);
 
 router.delete("/delete-note-pro", noteProController.deleteManyNote);
 
+router.delete("/delete-many", noteProController.deleteManyNote);
+
 module.exports = router;
