@@ -105,6 +105,7 @@ const IntervenantRoutes = require("./IntervenantRoutes/IntervenantRoutes");
 const PersonnelWorkingDayRoutes = require("./PersonnelWorkingDayRoutes/PersonnelWorkingDayRoutes");
 const PointageEnseignantRoutes = require("./PointageEnseignantRoutes/PointageEnseignantRoutes");
 const cloneRoutes = require("./CloneRoutes/CloneRoutes");
+const ResultatRoutes = require("./ResultatRoutes/ResultatRoutes");
 
 // gestion des conges
 router.use("/examen", examenRoutes);
@@ -253,7 +254,7 @@ router.use("/clone", cloneRoutes);
 // Create a new database when clone is complete
 router.use("/databases", DatabaseNamesRoutes);
 
-// it will already exists and we will use this to update the name in each time the migrate operations are done
-// router.use("/actuel-database", ActuelDatabaseRoutes);
+//! Resultat
+router.use("/resultat", ResultatRoutes);
 
 module.exports = router;

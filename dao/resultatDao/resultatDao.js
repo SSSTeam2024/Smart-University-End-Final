@@ -20,32 +20,30 @@ const getResultat = async (dbName) => {
   });
 };
 
-// const updateSalle = async (id, updateData, dbName) => {
-//   const salleModel = await getSalleModel(dbName);
-//   return await salleModel.findByIdAndUpdate(id, updateData, { new: true });
-// };
+const updateResultat = async (id, updateData, dbName) => {
+  const resultatModel = await getResultatModel(dbName);
+  return await resultatModel.findByIdAndUpdate(id, updateData, { new: true });
+};
 
-// const deleteSalle = async (id, dbName) => {
-//   const salleModel = await getSalleModel(dbName);
-//   const DepartementModel = await getDepartementModel(dbName);
-//   const deletedSalle = await salleModel.findByIdAndDelete(id);
-//   if (deletedSalle) {
-//     await DepartementModel.updateMany(
-//       { salles: id },
-//       { $pull: { salles: id } }
-//     );
-//   }
-//   return deletedSalle;
-// };
-// const getSalleById = async (id, dbName) => {
-//   const salleModel = await getSalleModel(dbName);
-//   return await salleModel.findById(id).populate("departement");
-// };
+const deleteResultat = async (id, dbName) => {
+  const resultatModel = await getResultatModel(dbName);
+  const deletedResultat = await resultatModel.findByIdAndDelete(id);
+
+  return deletedResultat;
+};
+
+const getResultatById = async (id, dbName) => {
+  const resultatModel = await getResultatModel(dbName);
+  return await resultatModel.findById(id).populate({
+    path: "etudiants",
+    populate: { path: "etudiant" },
+  });
+};
 
 module.exports = {
   getResultat,
   createResultat,
-  //   updateSalle,
-  //   deleteSalle,
-  //   getSalleById,
+  deleteResultat,
+  updateResultat,
+  getResultatById,
 };

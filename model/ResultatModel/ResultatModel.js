@@ -8,6 +8,7 @@ const resultatSchema = new mongoose.Schema(
         moyenne_sem1: String,
         moyenne_sem2: String,
         moyenne_rattrapage: String,
+        moyenne_generale: String,
         avis: String,
       },
     ],

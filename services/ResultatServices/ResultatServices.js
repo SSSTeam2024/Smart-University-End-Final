@@ -19,7 +19,25 @@ const getResultats = async (useNew) => {
   return resultats;
 };
 
+const updateResultat = async (id, updateData, useNew) => {
+  const db = await getDb(useNew);
+  return await resultatDao.updateResultat(id, updateData, db);
+};
+
+const deleteResultatById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await resultatDao.deleteResultat(id, db);
+};
+
+const getResultatById = async (id, useNew) => {
+  const db = await getDb(useNew);
+  return await resultatDao.getResultatById(id, db);
+};
+
 module.exports = {
   getResultats,
   createResultat,
+  deleteResultatById,
+  updateResultat,
+  getResultatById,
 };
