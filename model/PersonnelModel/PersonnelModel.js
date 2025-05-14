@@ -56,7 +56,8 @@ const personnelSchema = new mongoose.Schema(
     identifinat_unique: String,
     num_cin: String,
     date_delivrance: String,
-
+    password: String,
+    api_token: String,
     state: String,
     dependence: String,
     code_postale: String,
