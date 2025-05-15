@@ -13,4 +13,6 @@ router.delete("/delete-mission", MissionController.deleteMission);
 // Delete many Missions
 router.delete("/delete-many", MissionController.deleteManyMissions);
 
+router.get("/by-personnel-id/:id", MissionController.getMissionsByPersonnelId);
+
 module.exports = router;

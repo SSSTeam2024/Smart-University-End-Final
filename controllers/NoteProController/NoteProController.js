@@ -138,6 +138,28 @@ const deleteManyNote = async (req, res) => {
   }
 };
 
+const getNotesProByPersonnelId = async (req, res) => {
+  try {
+    const noteId = req.params.id;
+
+    const notes = await noteProService.getNotesProByPersonnelId(
+      noteId,
+      useNewDb(req)
+    );
+
+    if (!notes) {
+      return res.status(404).send("Aucun Notes pour ce personnel !!");
+    }
+    res.json(notes);
+  } catch (error) {
+    console.error(
+      "Error while fetching notes by personnel id in controllers",
+      error
+    );
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   createNotePro,
   getAllNotesPro,
@@ -145,4 +167,5 @@ module.exports = {
   updateNotePro,
   deleteManyNote,
   getNoteProByYear,
+  getNotesProByPersonnelId,
 };

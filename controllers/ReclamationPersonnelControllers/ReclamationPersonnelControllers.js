@@ -176,6 +176,29 @@ const deleteManyReclamations = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+
+const getReclamationsByPersonnelId = async (req, res) => {
+  try {
+    const personnelId = req.params.id;
+
+    const reclamations = await reclamationService.getReclamationsPersonnelId(
+      personnelId,
+      useNewDb(req)
+    );
+
+    if (!reclamations) {
+      return res.status(404).send("Aucun Réclamation pour ce personnel !!");
+    }
+    res.json(reclamations);
+  } catch (error) {
+    console.error(
+      "Error while fetching reclamations by personnel id in controllers",
+      error
+    );
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   createReclamation,
   getAllReclamations,
@@ -183,4 +206,5 @@ module.exports = {
   updateReclamation,
   deleteReclamation,
   deleteManyReclamations,
+  getReclamationsByPersonnelId,
 };

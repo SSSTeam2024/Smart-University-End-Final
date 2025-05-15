@@ -22,4 +22,9 @@ router.delete(
 
 router.delete("/delete-many", reclamationController.deleteManyReclamations);
 
+router.get(
+  "/by-personnel-id/:id",
+  reclamationController.getReclamationsByPersonnelId
+);
+
 module.exports = router;

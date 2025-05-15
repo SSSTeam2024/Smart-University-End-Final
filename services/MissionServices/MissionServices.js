@@ -31,10 +31,23 @@ const deleteManyMissions = async (useNew, ids) => {
   return await missionDao.deleteManyMissions(db, ids);
 };
 
+const getMissionsPersonnelId = async (id, useNew) => {
+  try {
+    const db = await getDb(useNew);
+    return missionDao.getMissionsByPersonnelId(id, db);
+  } catch (error) {
+    console.error(
+      "Error while fetching missions by personnel id in services",
+      error
+    );
+  }
+};
+
 module.exports = {
   createMission,
   getAllMissions,
   getMissionById,
   deleteMission,
   deleteManyMissions,
+  getMissionsPersonnelId,
 };

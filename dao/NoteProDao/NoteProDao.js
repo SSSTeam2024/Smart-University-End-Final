@@ -43,6 +43,19 @@ const deleteManyNotePro = async (dbName, ids) => {
   return await noteProModel.deleteMany(query);
 };
 
+const getNoteProByPersonnelId = async (id, dbName) => {
+  try {
+    const noteProModel = await getNoteProModel(dbName);
+    const notesPro = await noteProModel.find({
+      personnel: id,
+    });
+    return notesPro;
+  } catch (error) {
+    console.error("Error while getting notesPro by personnel id in Dao ");
+    throw error;
+  }
+};
+
 module.exports = {
   createNotePro,
   getAllNotesPro,
@@ -50,4 +63,5 @@ module.exports = {
   updateNotePro,
   getNoteProByYear,
   deleteManyNotePro,
+  getNoteProByPersonnelId,
 };
