@@ -47,6 +47,21 @@ const deleteManyReclamationPersonnel = async (dbName, ids) => {
   return await reclamationPersonnelModel.deleteMany(query);
 };
 
+const getReclamationsByPersonnelId = async (id, dbName) => {
+  try {
+    const reclamationPersonnelModel = await getReclamationPersonnelModel(
+      dbName
+    );
+    const reclamations = await reclamationPersonnelModel.find({
+      personnelId: id,
+    });
+    return reclamations;
+  } catch (error) {
+    console.error("Error while getting reclamations by personnel id in Dao ");
+    throw error;
+  }
+};
+
 module.exports = {
   createReclamation,
   getAllReclamations,
@@ -54,4 +69,5 @@ module.exports = {
   updateReclamation,
   deleteReclamation,
   deleteManyReclamationPersonnel,
+  getReclamationsByPersonnelId,
 };
