@@ -106,6 +106,7 @@ const PersonnelWorkingDayRoutes = require("./PersonnelWorkingDayRoutes/Personnel
 const PointageEnseignantRoutes = require("./PointageEnseignantRoutes/PointageEnseignantRoutes");
 const cloneRoutes = require("./CloneRoutes/CloneRoutes");
 const ResultatRoutes = require("./ResultatRoutes/ResultatRoutes");
+const SocieteRoutes = require("./SocieteRoutes/SocieteRoutes");
 
 // gestion des conges
 router.use("/examen", examenRoutes);
@@ -256,5 +257,8 @@ router.use("/databases", DatabaseNamesRoutes);
 
 //! Resultat
 router.use("/resultat", ResultatRoutes);
+
+//! Societe
+router.use("/societe", SocieteRoutes);
 
 module.exports = router;

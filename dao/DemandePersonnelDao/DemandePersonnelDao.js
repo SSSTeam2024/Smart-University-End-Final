@@ -95,6 +95,19 @@ const deleteManyDemandePersonnel = async (dbName, ids) => {
   return await demandePersonnelModel.deleteMany(query);
 };
 
+const getDemandeByPersonnelId = async (id, dbName) => {
+  try {
+    const DemandePersonnel = await getDemandePersonnelModel(dbName);
+    const demandes = await DemandePersonnel.find({
+      personnelId: id,
+    });
+    return demandes;
+  } catch (error) {
+    console.error("Error while getting demande by personnel id in Dao ");
+    throw error;
+  }
+};
+
 module.exports = {
   createDemandePersonnel,
   getAllDemandePersonnels,
@@ -102,4 +115,5 @@ module.exports = {
   updateDemandePersonnel,
   deleteDemandePersonnel,
   deleteManyDemandePersonnel,
+  getDemandeByPersonnelId,
 };
