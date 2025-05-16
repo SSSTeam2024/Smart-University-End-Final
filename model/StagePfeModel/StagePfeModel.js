@@ -2,15 +2,27 @@ const mongoose = require("mongoose");
 
 const stagePfeSchema = new mongoose.Schema(
   {
-    etudiant: String,
+    etudiant: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Enseignant",
+    },
     type_stage: String,
-    binome: String,
+    binome: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Enseignant",
+      default: null,
+    },
     encadrant_univ: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Departement",
+      ref: "Enseignant",
+      efault: null,
     },
     encadrant_societe: String,
-    societe: String,
+    societe: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Societe",
+      efault: null,
+    },
     status_stage: String,
     date_debut: String,
     date_fin: String,
@@ -19,8 +31,16 @@ const stagePfeSchema = new mongoose.Schema(
     description: String,
     avis: String,
     note: String,
-    rapporteur: String,
-    chef_jury: String,
+    rapporteur: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Enseignant",
+      efault: null,
+    },
+    chef_jury: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Enseignant",
+      efault: null,
+    },
   },
   { timestamps: true }
 );

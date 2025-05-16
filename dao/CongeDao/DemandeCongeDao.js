@@ -61,7 +61,7 @@ const getDemandeCongeByPersonnelId = async (id, dbName) => {
     const DemandeConge = await getDemandeCongeModel(dbName);
     const demandesConge = await DemandeConge.find({
       personnelId: id,
-    });
+    }).populate("leaveType");
     return demandesConge;
   } catch (error) {
     console.error("Error while getting demande conge by personnel id in Dao ");
