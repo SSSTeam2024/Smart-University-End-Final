@@ -41,6 +41,19 @@ const deleteManyDeplacements = async (dbName, ids) => {
   return await deplacementModel.deleteMany(query);
 };
 
+const getDeplacementByPersonnelId = async (id, dbName) => {
+  try {
+    const deplacementModel = await getDeplacementModel(dbName);
+    const deplacements = await deplacementModel.find({
+      personnel: id,
+    });
+    return deplacements;
+  } catch (error) {
+    console.error("Error while getting deplacements by personnel id in Dao ");
+    throw error;
+  }
+};
+
 module.exports = {
   createDeplacement,
   getAllDeplacements,
@@ -48,4 +61,5 @@ module.exports = {
   updateDeplacement,
   deleteDeplacement,
   deleteManyDeplacements,
+  getDeplacementByPersonnelId,
 };
