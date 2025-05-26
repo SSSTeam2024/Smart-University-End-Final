@@ -108,6 +108,7 @@ const cloneRoutes = require("./CloneRoutes/CloneRoutes");
 const ResultatRoutes = require("./ResultatRoutes/ResultatRoutes");
 const SocieteRoutes = require("./SocieteRoutes/SocieteRoutes");
 const StagePfeRoutes = require("./StagePfeRoutes/StagePfeRoutes");
+const StageProRoutes = require("./StageProRoutes/StageProRoutes");
 
 // gestion des conges
 router.use("/examen", examenRoutes);
@@ -265,4 +266,6 @@ router.use("/societe", SocieteRoutes);
 //! Stage Pfe
 router.use("/stage-pfe", StagePfeRoutes);
 
+//! Stage Pro
+router.use("/stage-pro", StageProRoutes);
 module.exports = router;
