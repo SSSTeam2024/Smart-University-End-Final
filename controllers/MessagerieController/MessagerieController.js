@@ -53,7 +53,7 @@ const sendMessage = async (req, res) => {
   try {
     const {
       sender,
-      receiver,
+      receivers,
       subject,
       content,
       attachmentsBase64Strings,
@@ -61,31 +61,40 @@ const sendMessage = async (req, res) => {
       parentMessageId,
     } = req.body;
 
-    if (attachmentsBase64Strings.length !== attachmentsExtensions.length) {
-      return res
-        .status(400)
-        .json({ error: "Mismatch between attachment data and extensions." });
+    // Validate attachments
+    if (
+      attachmentsBase64Strings.length !== attachmentsExtensions.length
+    ) {
+      return res.status(400).json({
+        error: "Mismatch between attachment data and extensions.",
+      });
     }
 
-    const attachementsPath = "files/messagerieFiles/";
-    const attachementsFilenames = attachmentsExtensions.map((ext, index) =>
+    const attachmentsPath = "files/messagerieFiles/";
+    const attachmentsFilenames = attachmentsExtensions.map((ext, index) =>
       globalFunctions.generateUniqueFilename(ext, `MessagerieFiles_${index}`)
     );
 
     const documents = attachmentsBase64Strings.map((base64String, index) => ({
       base64String,
       extension: attachmentsExtensions[index],
-      name: attachementsFilenames[index],
-      path: attachementsPath,
+      name: attachmentsFilenames[index],
+      path: attachmentsPath,
+    }));
+
+    // Inject 'status: unread' into each receiver object
+    const receiversWithStatus = receivers.map((r) => ({
+      ...r,
+      status: "unread",
     }));
 
     const message = await messageServices.createMessage(
       {
         sender,
-        receiver,
+        receivers: receiversWithStatus,
         subject,
         content,
-        attachments: attachementsFilenames,
+        attachments: attachmentsFilenames,
         parentMessageId: parentMessageId || null,
       },
       documents,
@@ -97,24 +106,28 @@ const sendMessage = async (req, res) => {
       sender.userType,
       useNewDb(req)
     );
-    const receiverDetails = await getUserByIdV2(
-      receiver.userId,
-      receiver.userType,
-      useNewDb(req)
+
+    const receiversWithDetails = await Promise.all(
+      receiversWithStatus.map(async (r) => {
+        const details = await getUserByIdV2(r.userId, r.userType, useNewDb(req));
+        return { ...r, ...details };
+      })
     );
 
     res.status(201).json({
       ...message.toObject(),
-      sender: { ...sender, ...senderDetails?._doc },
-      receiver: { ...receiver, ...receiverDetails?._doc },
+      sender: { ...sender, ...senderDetails },
+      receivers: receiversWithDetails,
     });
   } catch (error) {
     console.error("Error sending message:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to send message", details: error.message });
+    res.status(500).json({
+      error: "Failed to send message",
+      details: error.message,
+    });
   }
 };
+
 
 const fetchReplies = async (req, res) => {
   const { messageId } = req.params;

@@ -24,15 +24,22 @@ const populateUserDetails = async (messages, dbName) => {
         message.sender.userType,
         dbName
       );
-      const receiverDetails = await getUserByIdV1(
-        message.receiver.userId,
-        message.receiver.userType,
-        dbName
+      // Fetch receiver details for each receiver in the array
+      const receiversWithDetails = await Promise.all(
+        message.receivers.map(async (receiver) => {
+          const details = await getUserByIdV1(
+            receiver.userId,
+            receiver.userType,
+            dbName
+          );
+          return { ...receiver.toObject?.() ?? receiver, ...details };
+        })
       );
+
       return {
         ...message.toObject(),
         sender: { ...message.sender, ...senderDetails },
-        receiver: { ...message.receiver, ...receiverDetails },
+        receivers: receiversWithDetails,
       };
     })
   );
@@ -69,24 +76,60 @@ const populateMessageDetails = async (message, dbName) => {
   };
 };
 
+// const getUserInbox = async (userId, userType, dbName) => {
+//   const Message = await getMessageModel(dbName);
+//   const messages = await Message.find({
+//     receivers: {
+//       $elemMatch: {
+//         userId: userId,
+//         userType: userType,
+//         status: { $nin: ["archived", "deleted"] },
+//       },
+//     },
+//     deletedBy: { $not: { $elemMatch: { userId, userType } } }, // Exclude deleted messages
+//   }).sort({ createdAt: -1 });
+//   return populateUserDetails(messages, dbName);
+// };
 const getUserInbox = async (userId, userType, dbName) => {
   const Message = await getMessageModel(dbName);
   const messages = await Message.find({
-    "receiver.userId": userId,
-    "receiver.userType": userType,
-    receiverStatus: { $nin: ["archived", "deleted"] },
-    deletedBy: { $not: { $elemMatch: { userId, userType } } }, // Exclude deleted messages
+    receivers: {
+      $elemMatch: {
+        userId: userId,
+        userType: userType,
+        status: { $nin: ["archived", "deleted"] },
+      },
+    },
+    deletedBy: {
+      $not: {
+        $elemMatch: {
+          userId: userId,
+          userType: userType,
+        },
+      },
+    },
   }).sort({ createdAt: -1 });
+  
+
   return populateUserDetails(messages, dbName);
 };
+
 const getUserArchivedInbox = async (userId, userType, dbName) => {
   const Message = await getMessageModel(dbName);
   // console.log("Fetching archived inbox for:", { userId, userType });
   const messages = await Message.find({
-    "receiver.userId": userId,
-    "receiver.userType": userType,
-    receiverStatus: "archived",
+    // "receiver.userId": userId,
+    // "receiver.userType": userType,
+    // receiverStatus: "archived",
     // receiverStatus: { $nin: ["deleted"] },
+      receivers: {
+      $elemMatch: {
+        userId: userId,
+        userType: userType,
+        status: "archived",
+        status: { $nin: ["deleted"] },
+      },
+    },
     deletedBy: { $not: { $elemMatch: { userId, userType } } },
   }).sort({ createdAt: -1 });
   //  console.log("Fetched Messages:", messages);
@@ -121,7 +164,14 @@ const markAsRead = async (messageId, dbName) => {
   const Message = await getMessageModel(dbName);
   return await Message.findByIdAndUpdate(
     messageId,
-    { receiverStatus: "read" },
+    // { receiverStatus: "read" },
+    {receivers: {
+      $elemMatch: {
+        userId: userId,
+        userType: userType,
+        status: "read",
+      },
+    },},
     { new: true }
   );
 };
@@ -129,7 +179,15 @@ const markAsUnread = async (messageId, dbName) => {
   const Message = await getMessageModel(dbName);
   return await Message.findByIdAndUpdate(
     messageId,
-    { receiverStatus: "unread" },
+    // { receiverStatus: "unread" },
+    { receivers: {
+      $elemMatch: {
+        userId: userId,
+        userType: userType,
+        status: "unread",
+       
+      },
+    },},
     { new: true }
   );
 };
