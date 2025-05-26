@@ -324,10 +324,34 @@ const deleteDemandeConge = async (req, res) => {
   }
 };
 
+const getDemandeCongeByPersonnelId = async (req, res) => {
+  try {
+    const personnelId = req.params.id;
+
+    const demandesConge =
+      await DemandeCongeService.getDemandesCongeByPersonnelId(
+        personnelId,
+        useNewDb(req)
+      );
+
+    if (!demandesConge) {
+      return res.status(404).send("Aucun Demande Conge pour ce personnel !!");
+    }
+    res.json(demandesConge);
+  } catch (error) {
+    console.error(
+      "Error while fetching demandes conge by personnel id in controllers",
+      error
+    );
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   createDemandeConge,
   getAllDemandeConges,
   getDemandeCongeById,
   updateDemandeConge,
   deleteDemandeConge,
+  getDemandeCongeByPersonnelId,
 };

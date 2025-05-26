@@ -50,6 +50,7 @@ const addPersonnel = async (req, res) => {
       nombre_fils,
       PhotoProfilFileExtension,
       PhotoProfilFileBase64String,
+      password,
     } = req.body;
 
     // If PhotoProfilFileBase64String is provided, prepare the document array
@@ -107,6 +108,7 @@ const addPersonnel = async (req, res) => {
       nom_conjoint,
       job_conjoint,
       nombre_fils,
+      password,
       photo_profil: PhotoProfilFileBase64String
         ? globalFunctions.generateUniqueFilename(
             PhotoProfilFileExtension,
@@ -310,10 +312,9 @@ const updatePersonnelById = async (req, res) => {
   }
 };
 
-// controller
 const getPersonnelById = async (req, res) => {
   try {
-    const personnelId = req.body.personnelId; // Corrected to match your request body
+    const personnelId = req.params.id;
 
     const getPersonnel = await personnelService.getPersonnelDaoById(
       personnelId,
@@ -349,10 +350,45 @@ const deletePersonnelById = async (req, res) => {
   }
 };
 
+const login = async (req, res) => {
+  try {
+    const { cin, password } = req.body;
+    const personnel = await personnelService.login(
+      cin,
+      password,
+      useNewDb(req)
+    );
+    res.json({ message: "Login successful", personnel });
+  } catch (error) {
+    res.status(401).send(error.message);
+  }
+};
+
+const logout = async (req, res) => {
+  try {
+    const { personnelId } = req.params;
+    const updatedPersonnel = await personnelService.logoutPersonnel(
+      personnelId,
+      useNewDb(req)
+    );
+
+    if (!updatedPersonnel) {
+      return res.status(404).json({ error: "Personnel not found" });
+    }
+
+    res.json({ message: "Logout successful" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error logging out Personnel" });
+  }
+};
+
 module.exports = {
   addPersonnel,
   getPersonnels,
   getPersonnelById,
   updatePersonnelById,
   deletePersonnelById,
+  login,
+  logout,
 };

@@ -15,4 +15,10 @@ router.delete("/delete-deplacement", deplacementController.deleteDeplacement);
 // Delete many Deplacement
 router.delete("/delete-many", deplacementController.deleteManyDeplacements);
 
+// Get Deplacements by personnel id
+router.get(
+  "/by-personnel-id/:id",
+  deplacementController.getDeplacementByPersonnelId
+);
+
 module.exports = router;

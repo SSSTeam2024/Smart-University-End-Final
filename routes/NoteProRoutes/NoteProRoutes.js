@@ -16,4 +16,6 @@ router.delete("/delete-note-pro", noteProController.deleteManyNote);
 
 router.delete("/delete-many", noteProController.deleteManyNote);
 
+router.get("/by-personnel-id/:id", noteProController.getNotesProByPersonnelId);
+
 module.exports = router;

@@ -63,6 +63,18 @@ const handleDemandePersonnel = async (
   return result;
 };
 
+const getDemandesByPersonnelId = async (id, useNew) => {
+  try {
+    const db = await getDb(useNew);
+    return demandePersonnelDao.getDemandeByPersonnelId(id, db);
+  } catch (error) {
+    console.error(
+      "Error while fetching demandes by personnel id in services",
+      error
+    );
+  }
+};
+
 module.exports = {
   createDemandePersonnel,
   getAllDemandePersonnels,
@@ -71,4 +83,5 @@ module.exports = {
   deleteDemandePersonnel,
   deleteManyDemandePersonnel,
   handleDemandePersonnel,
+  getDemandesByPersonnelId,
 };

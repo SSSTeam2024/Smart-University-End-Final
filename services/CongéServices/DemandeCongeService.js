@@ -270,10 +270,23 @@ const deleteDemandeConge = async (id, useNew) => {
   return DemandeCongeDao.deleteDemandeConge(id, db);
 };
 
+const getDemandesCongeByPersonnelId = async (id, useNew) => {
+  try {
+    const db = await getDb(useNew);
+    return DemandeCongeDao.getDemandeCongeByPersonnelId(id, db);
+  } catch (error) {
+    console.error(
+      "Error while fetching demandes conge by personnel id in services",
+      error
+    );
+  }
+};
+
 module.exports = {
   createDemandeConge,
   getAllDemandeConges,
   getDemandeCongeById,
   updateDemandeConge,
   deleteDemandeConge,
+  getDemandesCongeByPersonnelId,
 };

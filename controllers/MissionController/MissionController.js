@@ -125,10 +125,33 @@ const deleteManyMissions = async (req, res) => {
   }
 };
 
+const getMissionsByPersonnelId = async (req, res) => {
+  try {
+    const missionsId = req.params.id;
+
+    const missions = await missionService.getMissionsPersonnelId(
+      missionsId,
+      useNewDb(req)
+    );
+
+    if (!missions) {
+      return res.status(404).send("Aucun Mission pour ce personnel !!");
+    }
+    res.json(missions);
+  } catch (error) {
+    console.error(
+      "Error while fetching missions by personnel id in controllers",
+      error
+    );
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   createMission,
   getAllMissions,
   getMissionById,
   deleteMission,
   deleteManyMissions,
+  getMissionsByPersonnelId,
 };

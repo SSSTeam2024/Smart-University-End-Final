@@ -40,6 +40,19 @@ const deleteManyMissions = async (dbName, ids) => {
   return await missionModel.deleteMany(query);
 };
 
+const getMissionsByPersonnelId = async (id, dbName) => {
+  try {
+    const missionModel = await getMissionModel(dbName);
+    const missions = await missionModel.find({
+      personnel: id,
+    });
+    return missions;
+  } catch (error) {
+    console.error("Error while getting missions by personnel id in Dao ");
+    throw error;
+  }
+};
+
 module.exports = {
   createMission,
   getAllMissions,
@@ -47,4 +60,5 @@ module.exports = {
   updateMission,
   deleteMission,
   deleteManyMissions,
+  getMissionsByPersonnelId,
 };

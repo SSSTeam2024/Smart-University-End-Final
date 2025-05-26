@@ -1,6 +1,8 @@
 const personnelDao = require("../../dao/PersonnelDao/PersonnelDao");
 const fs = require("fs");
 const path = require("path");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const { getDb } = require("../../config/dbSwitcher");
 
 const registerPersonnelDao = async (userData, documents = [], useNew) => {
@@ -38,6 +40,35 @@ const updatePersonnelDao = async (id, updateData, useNew) => {
 const getPersonnelDaoById = async (id, useNew) => {
   const db = await getDb(useNew);
   return await personnelDao.getPersonnelById(id, db);
+};
+
+const login = async (cin, password, useNew) => {
+  const db = await getDb(useNew);
+  const personnel = await personnelDao.getPersonnelByCIN(cin, db);
+
+  if (!personnel) {
+    throw new Error("Personnel not found");
+  }
+
+  if (await bcrypt.compare(password, personnel.password)) {
+    const accessToken = jwt.sign({ login: personnel.num_CIN }, "yourSecretKey");
+
+    await personnelDao.updateJwtToken(personnel._id, String(accessToken), db);
+
+    let updatedPersonnel = await personnelDao.getPersonnelById(
+      personnel._id,
+      db
+    );
+
+    return updatedPersonnel;
+  } else {
+    throw new Error("Incorrect password");
+  }
+};
+
+const logoutPersonnel = async (personnelId, useNew) => {
+  const db = await getDb(useNew);
+  return await personnelDao.logoutPersonnel(personnelId, db);
 };
 
 async function saveDocumentToServer(documents) {
@@ -82,4 +113,6 @@ module.exports = {
   deletePersonnelDao,
   updatePersonnelDao,
   getPersonnelDaoById,
+  login,
+  logoutPersonnel,
 };

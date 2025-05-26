@@ -120,6 +120,7 @@ const fetchAllTeachersPeriods = async (dbName) => {
     );
   }
 };
+
 const getTeachersGroupedByGrade = async (dbName) => {
   try {
     const enseignantModel = await getEnseignantModel(dbName);

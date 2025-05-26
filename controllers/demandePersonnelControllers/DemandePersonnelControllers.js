@@ -17,14 +17,27 @@ const createDemandePersonnel = async (req, res) => {
   }
 };
 
-// const getAllDemandePersonnels = async (req, res) => {
-//   try {
-//     const DemandePersonnels = await demandePersonnelService.getAllDemandePersonnels();
-//     res.status(200).json(DemandePersonnels);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
+const getDemandesByPersonnelId = async (req, res) => {
+  try {
+    const personnelId = req.params.id;
+
+    const demandes = await demandePersonnelService.getDemandesByPersonnelId(
+      personnelId,
+      useNewDb(req)
+    );
+
+    if (!demandes) {
+      return res.status(404).send("Aucun Demande pour ce personnel !!");
+    }
+    res.json(demandes);
+  } catch (error) {
+    console.error(
+      "Error while fetching demandes by personnel id in controllers",
+      error
+    );
+    res.status(500).send(error.message);
+  }
+};
 
 const getAllDemandePersonnels = async (req, res) => {
   try {
@@ -137,4 +150,5 @@ module.exports = {
   deleteDemandePersonnel,
   deleteManyDemandePersonnel,
   handleDemandePersonnel,
+  getDemandesByPersonnelId,
 };

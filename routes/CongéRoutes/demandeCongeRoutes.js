@@ -1,20 +1,35 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const demandeCongeController = require('../../controllers/CongéControllers/DemandeCongeController');
+const demandeCongeController = require("../../controllers/CongéControllers/DemandeCongeController");
 
 // Create a new demand
-router.post('/add-demande-conge', demandeCongeController.createDemandeConge);
+router.post("/add-demande-conge", demandeCongeController.createDemandeConge);
 
 // Get all demandeEtudiants
-router.get('/get-all-demande-conge', demandeCongeController.getAllDemandeConges);
+router.get(
+  "/get-all-demande-conge",
+  demandeCongeController.getAllDemandeConges
+);
 
 // Get a single demandeEtudiant by ID
-router.get('/get-demande-conge/:id', demandeCongeController.getDemandeCongeById);
+router.get(
+  "/get-demande-conge/:id",
+  demandeCongeController.getDemandeCongeById
+);
 
 // Update a demandeEtudiant by ID
-router.put('/edit-demande-conge', demandeCongeController.updateDemandeConge);
+router.put("/edit-demande-conge", demandeCongeController.updateDemandeConge);
 
 // Delete a demandeEtudiant by ID
-router.delete('/delete-demande-conge', demandeCongeController.deleteDemandeConge);
+router.delete(
+  "/delete-demande-conge",
+  demandeCongeController.deleteDemandeConge
+);
+
+// Get a demande conge by personnel ID
+router.get(
+  "/by-personnel-id/:id",
+  demandeCongeController.getDemandeCongeByPersonnelId
+);
 
 module.exports = router;

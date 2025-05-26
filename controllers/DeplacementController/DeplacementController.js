@@ -224,6 +224,28 @@ const deleteManyDeplacements = async (req, res) => {
   }
 };
 
+const getDeplacementByPersonnelId = async (req, res) => {
+  try {
+    const personnelId = req.params.id;
+
+    const deplacements = await deplacementService.getDeplacementsByPersonnelId(
+      personnelId,
+      useNewDb(req)
+    );
+
+    if (!deplacements) {
+      return res.status(404).send("Aucun Deplacement pour ce personnel !!");
+    }
+    res.json(deplacements);
+  } catch (error) {
+    console.error(
+      "Error while fetching deplacements by personnel id in controllers",
+      error
+    );
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   createDeplacement,
   getAllDeplacements,
@@ -231,4 +253,5 @@ module.exports = {
   updateDeplacement,
   deleteDeplacement,
   deleteManyDeplacements,
+  getDeplacementByPersonnelId,
 };

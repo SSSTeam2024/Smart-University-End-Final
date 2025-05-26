@@ -43,4 +43,10 @@ router.delete(
   demandePersonnelController.deleteManyDemandePersonnel
 );
 
+// Get Demande By Personnel ID
+router.get(
+  "/by-personnel-id/:id",
+  demandePersonnelController.getDemandesByPersonnelId
+);
+
 module.exports = router;

@@ -56,10 +56,24 @@ const deleteDemandeConge = async (id, dbName) => {
   return DemandeConge.findByIdAndDelete(id);
 };
 
+const getDemandeCongeByPersonnelId = async (id, dbName) => {
+  try {
+    const DemandeConge = await getDemandeCongeModel(dbName);
+    const demandesConge = await DemandeConge.find({
+      personnelId: id,
+    }).populate("leaveType");
+    return demandesConge;
+  } catch (error) {
+    console.error("Error while getting demande conge by personnel id in Dao ");
+    throw error;
+  }
+};
+
 module.exports = {
   createDemandeConge,
   getAllDemandeConges,
   getDemandeCongeById,
   updateDemandeConge,
   deleteDemandeConge,
+  getDemandeCongeByPersonnelId,
 };

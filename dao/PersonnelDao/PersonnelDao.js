@@ -35,6 +35,7 @@ const deletePersonnel = async (id, dbName) => {
 
 const getPersonnelById = async (id, dbName) => {
   const personnelModel = getPersonnelModel(dbName);
+
   return await personnelModel
     .findById(id)
     .populate("etat_compte")
@@ -63,6 +64,52 @@ const assignPapierToPersonnel = async (personnelId, papierIds, dbName) => {
   }
 };
 
+//! Login api
+const findPersonnelByToken = async (token, dbName) => {
+  let api_token = token;
+  const personnelModel = getPersonnelModel(dbName);
+  return await personnelModel.findOne({ api_token });
+};
+
+const updateJwtToken = async (id, token, dbName) => {
+  const personnelModel = getPersonnelModel(dbName);
+  return await personnelModel.findByIdAndUpdate(
+    { _id: id },
+    {
+      $set: {
+        api_token: token,
+      },
+    }
+  );
+};
+
+const logoutPersonnel = async (personnelId, dbName) => {
+  try {
+    const personnelModel = getPersonnelModel(dbName);
+    return await personnelModel.findByIdAndUpdate(
+      personnelId,
+      { api_token: null },
+      { new: true }
+    );
+  } catch (error) {
+    console.error("Error logging out student:", error);
+    throw error;
+  }
+};
+
+const getPersonnelByCIN = async (cin_personnel, dbName) => {
+  try {
+    const personnelModel = getPersonnelModel(dbName);
+    const personnel = await personnelModel.findOne({
+      num_cin: cin_personnel,
+    });
+    return personnel;
+  } catch (error) {
+    console.error("Error while getting personnel by cin");
+    throw error;
+  }
+};
+
 module.exports = {
   createPersonnel,
   getPersonnels,
@@ -70,4 +117,8 @@ module.exports = {
   getPersonnelById,
   deletePersonnel,
   assignPapierToPersonnel,
+  findPersonnelByToken,
+  updateJwtToken,
+  logoutPersonnel,
+  getPersonnelByCIN,
 };
