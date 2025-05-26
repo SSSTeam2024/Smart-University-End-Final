@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const stagePfeSchema = new mongoose.Schema(
+const stageProSchema = new mongoose.Schema(
   {
     etudiant: {
       type: mongoose.Schema.Types.ObjectId,
@@ -51,4 +51,4 @@ const stagePfeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = stagePfeSchema;
+module.exports = stageProSchema;

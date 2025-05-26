@@ -1,11 +1,11 @@
-const stagePfeServices = require("../../services/StagePfeServices/StagePfeServices");
+const stageProServices = require("../../services/StageProServices/StageProServices");
 const globalFunctions = require("../../utils/globalFunctions");
 
 function useNewDb(req) {
   return req.headers["x-use-new-db"] === "true";
 }
 
-const createStagePfe = async (req, res) => {
+const createStagePro = async (req, res) => {
   try {
     const {
       etudiant,
@@ -38,12 +38,12 @@ const createStagePfe = async (req, res) => {
       file_rapport_extension,
     } = req.body;
 
-    const affactationEtudiantPath = "files/affectationEtudiantFiles/";
-    const affactationBinomePath = "files/affectationBinomeFiles/";
-    const propositionPath = "files/propositionFiles/";
-    const propositionSignePath = "files/propositionSigneFiles/";
-    const attestationPath = "files/attestationFiles/";
-    const rapportPath = "files/rapportFiles/";
+    const affactationEtudiantPath = "files/stagePro/affectationEtudiantFiles/";
+    const affactationBinomePath = "files/stagePro/affectationBinomeFiles/";
+    const propositionPath = "files/stagePro/propositionFiles/";
+    const propositionSignePath = "files/stagePro/propositionSigneFiles/";
+    const attestationPath = "files/stagePro/attestationFiles/";
+    const rapportPath = "files/stagePro/rapportFiles/";
 
     let file_rapport = globalFunctions.generateUniqueFilename(
       file_rapport_extension,
@@ -114,7 +114,7 @@ const createStagePfe = async (req, res) => {
       },
     ];
 
-    const StagePfe = await stagePfeServices.createStagePfe(
+    const StagePro = await stageProServices.createStagePro(
       {
         etudiant,
         type_stage,
@@ -142,16 +142,16 @@ const createStagePfe = async (req, res) => {
       documents,
       useNewDb(req)
     );
-    res.status(200).json(StagePfe);
+    res.status(200).json(StagePro);
   } catch (error) {
-    console.error("Error while creating new stage pfe in controllers", error);
+    console.error("Error while creating new stage Pro in controllers", error);
     res.status(500).send(error.message);
   }
 };
 
-const updateStagePfe = async (req, res) => {
+const updateStagePro = async (req, res) => {
   try {
-    const stagePfeId = req.params.id;
+    const stageProId = req.params.id;
     const {
       etudiant,
       type_stage,
@@ -183,14 +183,14 @@ const updateStagePfe = async (req, res) => {
       file_rapport_extension,
     } = req.body;
 
-    const affactationEtudiantPath = "files/affectationEtudiantFiles/";
-    const affactationBinomePath = "files/affectationBinomeFiles/";
-    const propositionPath = "files/propositionFiles/";
-    const propositionSignePath = "files/propositionSigneFiles/";
-    const attestationPath = "files/attestationFiles/";
-    const rapportPath = "files/rapportFiles/";
+    const affactationEtudiantPath = "files/stagePro/affectationEtudiantFiles/";
+    const affactationBinomePath = "files/stagePro/affectationBinomeFiles/";
+    const propositionPath = "files/stagePro/propositionFiles/";
+    const propositionSignePath = "files/stagePro/propositionSigneFiles/";
+    const attestationPath = "files/stagePro/attestationFiles/";
+    const rapportPath = "files/stagePro/rapportFiles/";
 
-    let stagePfeBody = {
+    let stageProBody = {
       etudiant,
       type_stage,
       binome,
@@ -223,7 +223,7 @@ const updateStagePfe = async (req, res) => {
         file_rapport_extension,
         "Rapport"
       );
-      stagePfeBody.file_rapport = file;
+      stageProBody.file_rapport = file;
 
       documents.push({
         base64String: file_rapport_base64,
@@ -241,7 +241,7 @@ const updateStagePfe = async (req, res) => {
         file_affectation_etudiant_extension,
         "AffectationEtudiant"
       );
-      stagePfeBody.file_affectation_etudiant = file;
+      stageProBody.file_affectation_etudiant = file;
 
       documents.push({
         base64String: file_affectation_etudiant_base64,
@@ -256,7 +256,7 @@ const updateStagePfe = async (req, res) => {
         file_affectation_binome_extension,
         "AffectationBinome"
       );
-      stagePfeBody.file_affectation_binome = file;
+      stageProBody.file_affectation_binome = file;
 
       documents.push({
         base64String: file_affectation_binome_base64,
@@ -271,7 +271,7 @@ const updateStagePfe = async (req, res) => {
         file_proposition_extension,
         "Proposition"
       );
-      stagePfeBody.file_proposition = file;
+      stageProBody.file_proposition = file;
 
       documents.push({
         base64String: file_proposition_base64,
@@ -286,7 +286,7 @@ const updateStagePfe = async (req, res) => {
         file_proposition_signe_extension,
         "PropositionSigne"
       );
-      stagePfeBody.file_proposition_signe = file;
+      stageProBody.file_proposition_signe = file;
 
       documents.push({
         base64String: file_proposition_signe_base64,
@@ -301,7 +301,7 @@ const updateStagePfe = async (req, res) => {
         file_attestation_extension,
         "Attestation"
       );
-      stagePfeBody.file_attestation = file;
+      stageProBody.file_attestation = file;
 
       documents.push({
         base64String: file_attestation_base64,
@@ -311,47 +311,47 @@ const updateStagePfe = async (req, res) => {
       });
     }
 
-    const updatedStagePfe = await stagePfeServices.updateStagePfe(
-      stagePfeId,
-      stagePfeBody,
+    const updatedStagePro = await stageProServices.updateStagePro(
+      stageProId,
+      stageProBody,
       documents,
       useNewDb(req)
     );
 
-    if (!updatedStagePfe) {
-      return res.status(404).send("Stage Pfe not found!");
+    if (!updatedStagePro) {
+      return res.status(404).send("Stage Pro not found!");
     }
-    res.json(updatedStagePfe);
+    res.json(updatedStagePro);
   } catch (error) {
-    console.error("Error while update stage pfe in controllers", error);
+    console.error("Error while update stage Pro in controllers", error);
     res.status(500).send(error.message);
   }
 };
 
-const getStagesPfe = async (req, res) => {
+const getStagesPro = async (req, res) => {
   try {
-    const VoieEnvoi = await stagePfeServices.getStagesPfe(useNewDb(req));
+    const VoieEnvoi = await stageProServices.getStagesPro(useNewDb(req));
     res.status(200).json(VoieEnvoi);
   } catch (error) {
     console.error(
-      "Error While fetching all stages pfe in controllers: ",
+      "Error While fetching all stages Pro in controllers: ",
       error
     );
     res.status(500).send(error.message);
   }
 };
 
-const deleteStagePfe = async (req, res) => {
+const deleteStagePro = async (req, res) => {
   try {
-    const stagePfeId = req.params.id;
+    const stageProId = req.params.id;
 
-    const deletedStagePfe = await stagePfeServices.deleteStagePfe(
-      stagePfeId,
+    const deletedStagePro = await stageProServices.deleteStagePro(
+      stageProId,
       useNewDb(req)
     );
 
-    if (!deletedStagePfe) {
-      return res.status(404).send("Stage Pfe not found");
+    if (!deletedStagePro) {
+      return res.status(404).send("Stage Pro not found");
     }
     res.sendStatus(200);
   } catch (error) {
@@ -361,8 +361,8 @@ const deleteStagePfe = async (req, res) => {
 };
 
 module.exports = {
-  deleteStagePfe,
-  getStagesPfe,
-  createStagePfe,
-  updateStagePfe,
+  deleteStagePro,
+  getStagesPro,
+  createStagePro,
+  updateStagePro,
 };

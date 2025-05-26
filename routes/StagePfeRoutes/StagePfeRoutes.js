@@ -4,8 +4,8 @@ const stagePfeControllers = require("../../controllers/StagePfeControllers/Stage
 const router = express.Router();
 
 router.post("/create-new", stagePfeControllers.createStagePfe);
-// router.put("/update-VoieEnvoi/:id", stagePfeControllers.updateVoieEnvoiById);
+router.put("/update-one/:id", stagePfeControllers.updateStagePfe);
 router.get("/get-all", stagePfeControllers.getStagesPfe);
-// router.delete("/delete-VoieEnvoi/:id", stagePfeControllers.deleteVoieEnvoiById);
+router.delete("/delete/:id", stagePfeControllers.deleteStagePfe);
 
 module.exports = router;

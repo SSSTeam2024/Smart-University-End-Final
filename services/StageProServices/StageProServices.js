@@ -1,37 +1,37 @@
 const fs = require("fs");
-const StagePfeDao = require("../../dao/StagePfeDao/StagePfeDao");
+const StageProDao = require("../../dao/StageProDao/StageProDao");
 const globalFunctions = require("../../utils/globalFunctions");
 const { getDb } = require("../../config/dbSwitcher");
 
-const createStagePfe = async (stagePfe, documents, useNew) => {
+const createStagePro = async (stagePro, documents, useNew) => {
   try {
     const db = await getDb(useNew);
     let saveResult = await saveDocumentsToServer(documents);
-    return await StagePfeDao.createStagePfe(stagePfe, db);
+    return await StageProDao.createStagePro(stagePro, db);
   } catch (error) {
-    console.error("Error creating stage pfe in services:", error);
+    console.error("Error creating stage Pro in services:", error);
   }
 };
 
-const updateStagePfe = async (id, updateData, documents, useNew) => {
+const updateStagePro = async (id, updateData, documents, useNew) => {
   const db = await getDb(useNew);
   let saveResult = await saveDocumentsToServer(documents);
-  return await StagePfeDao.updateStagePfe(id, updateData, db);
+  return await StageProDao.updateStagePro(id, updateData, db);
 };
 
-const getStagesPfe = async (useNew) => {
+const getStagesPro = async (useNew) => {
   try {
     const db = await getDb(useNew);
-    const result = await StagePfeDao.getStagesPfe(db);
+    const result = await StageProDao.getStagesPro(db);
     return result;
   } catch (error) {
-    console.error("Error fetching all stages pfe in services:", error);
+    console.error("Error fetching all stages Pro in services:", error);
   }
 };
 
-const deleteStagePfe = async (id, useNew) => {
+const deleteStagePro = async (id, useNew) => {
   const db = await getDb(useNew);
-  return await StagePfeDao.deleteStagePfe(id, db);
+  return await StageProDao.deleteStagePro(id, db);
 };
 
 async function saveFile(base64String, fileName, file_path) {
@@ -60,8 +60,8 @@ async function saveDocumentsToServer(documents) {
 }
 
 module.exports = {
-  createStagePfe,
-  updateStagePfe,
-  getStagesPfe,
-  deleteStagePfe,
+  createStagePro,
+  updateStagePro,
+  getStagesPro,
+  deleteStagePro,
 };
