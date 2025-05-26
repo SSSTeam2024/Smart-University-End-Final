@@ -112,14 +112,68 @@ const getTemplateBodyByContext = async (req, res) => {
 const updateTemplateBodyById = async (req, res) => {
   try {
     const { id } = req.params;
-    const updateData = req.body;
+    const {
+      title,
+      fileBase64,
+      fileExtension,
+      fileName,
+      oldFileName,
+      langue,
+      intended_for,
+      has_code,
+      has_number,
+    } = req.body;
 
-    const updatedTemplate = await templateBodyService.updateTemplateBodyById(
-      id,
-      updateData,
-      useNewDb(req)
-    );
-    res.status(200).json(updatedTemplate);
+    let documents = [];
+
+    const modelsPath = "files/Modeles/";
+
+    const randomString = globalFunctions.generateRandomString();
+
+    if (fileName && fileBase64 && fileExtension) {
+      let doc = `${fileName}_${randomString}.${fileExtension}`;
+
+      documents.push({
+        base64String: fileBase64,
+        name: doc,
+        extension: fileExtension,
+        path: modelsPath,
+      });
+
+      const updatedTemplate = await templateBodyService.updateTemplateBodyById(
+        id,
+        {
+          title,
+          doc,
+          langue,
+          intended_for,
+          has_code,
+          has_number,
+        },
+        documents,
+        oldFileName,
+        useNewDb(req)
+      );
+      res.status(200).json(updatedTemplate);
+    }
+    else {
+      const updatedTemplate = await templateBodyService.updateTemplateBodyById(
+        id,
+        {
+          title,
+          langue,
+          intended_for,
+          has_code,
+          has_number,
+        },
+        documents,
+        '',
+        useNewDb(req)
+      );
+      res.status(200).json(updatedTemplate);
+    }
+
+
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

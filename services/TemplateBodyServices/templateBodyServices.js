@@ -74,7 +74,8 @@ const getTemplateBodyByContext = async (intended_for, useNew) => {
   );
   return result;
 };
-const updateTemplateBodyById = async (id, data, useNew) => {
+const updateTemplateBodyById = async (id, data, documents,
+  oldFileName, useNew) => {
   const db = await getDb(useNew);
   if (!id) throw new Error("ID du modèle requis");
   if (!data || Object.keys(data).length === 0) {
@@ -88,6 +89,27 @@ const updateTemplateBodyById = async (id, data, useNew) => {
   );
   if (!updatedTemplate) {
     throw new Error("Modèle introuvable ou échec de la mise à jour");
+  }
+
+  if (documents.length !== 0) {
+    const saveResult = await saveMediaToServer(documents);
+    if (!saveResult) {
+      throw new Error("Not all files were saved successfully.");
+    }
+    try {
+      fs.unlink(`./files/Modeles/${oldFileName}`, (err) => {
+        conso.log(err);
+        if (err) {
+          console.error('Error deleting the file:', err);
+        } else {
+          console.log('File deleted successfully');
+        }
+      });
+
+    } catch (error) {
+      console.log(error);
+    }
+
   }
 
   return updatedTemplate;
