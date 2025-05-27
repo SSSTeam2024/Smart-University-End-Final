@@ -113,7 +113,6 @@ const createStagePro = async (req, res) => {
         path: rapportPath,
       },
     ];
-
     const StagePro = await stageProServices.createStagePro(
       {
         etudiant,
