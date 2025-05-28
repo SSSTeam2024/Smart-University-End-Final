@@ -446,6 +446,7 @@ const updateStudent = async (req, res) => {
       matricule_number,
       passeport_number,
       cnss_number,
+      files,
     } = req.body;
 
     // Define file paths
