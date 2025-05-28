@@ -177,6 +177,28 @@ const deleteManyReclamations = async (req, res) => {
   }
 };
 
+const getReclamationsByEtudiantId = async (req, res) => {
+  try {
+    const etudiantId = req.params.id;
+
+    const reclamations = await reclamationService.getReclamationsByEtudiantId(
+      etudiantId,
+      useNewDb(req)
+    );
+
+    if (!reclamations) {
+      return res.status(404).send("Aucun Réclamation pour ce etudiant !!");
+    }
+    res.json(reclamations);
+  } catch (error) {
+    console.error(
+      "Error while fetching reclamations by etudiant id in controllers",
+      error
+    );
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   createReclamation,
   getAllReclamations,
@@ -184,4 +206,5 @@ module.exports = {
   updateReclamation,
   deleteReclamation,
   deleteManyReclamations,
+  getReclamationsByEtudiantId,
 };

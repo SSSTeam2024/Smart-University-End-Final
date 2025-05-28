@@ -71,6 +71,18 @@ const deleteManyReclamation = async (dbName, ids) => {
   return reclamationDao.deleteManyReclamationsEtudiants(db, ids);
 };
 
+const getReclamationsByEtudiantId = async (id, useNew) => {
+  try {
+    const db = await getDb(useNew);
+    return reclamationDao.getReclamationsByEtudiantId(id, db);
+  } catch (error) {
+    console.error(
+      "Error while fetching reclamations by etudiant id in services",
+      error
+    );
+  }
+};
+
 module.exports = {
   createReclamation,
   getAllReclamations,
@@ -78,4 +90,5 @@ module.exports = {
   updateReclamation,
   deleteReclamation,
   deleteManyReclamation,
+  getReclamationsByEtudiantId,
 };
