@@ -44,6 +44,7 @@ const getDemandeEtudiantById = async (req, res) => {
     if (!DemandeEtudiant) {
       return res.status(404).json({ message: "DemandeEtudiant not found" });
     }
+    return res.json(DemandeEtudiant);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
