@@ -33,8 +33,19 @@ const getSocieteByName = async (name, useNew) => {
   }
 };
 
+const getSocieteById = async (id, useNew) => {
+  try {
+    const db = await getDb(useNew);
+    const result = await SocieteDao.getSocieteByid(id, db);
+    return result;
+  } catch (error) {
+    console.error("Error fetching societe by id in services", error.message);
+  }
+};
+
 module.exports = {
   getSocietes,
   createSociete,
   getSocieteByName,
+  getSocieteById,
 };

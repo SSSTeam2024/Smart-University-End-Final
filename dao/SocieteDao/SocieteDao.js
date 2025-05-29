@@ -27,6 +27,15 @@ const getSocieteByName = async (name, dbName) => {
   }
 };
 
+const getSocieteByid = async (id, dbName) => {
+  try {
+    const societeModel = await getSocieteModel(dbName);
+    return await societeModel.findById(id);
+  } catch (error) {
+    console.error("In dao getting societe by id !!", error.message);
+  }
+};
+
 // const updateSalle = async (id, updateData, dbName) => {
 //   const salleModel = await getSalleModel(dbName);
 //   return await salleModel.findByIdAndUpdate(id, updateData, { new: true });
@@ -49,6 +58,7 @@ module.exports = {
   getSocietes,
   createSociete,
   getSocieteByName,
+  getSocieteByid,
   //   updateSalle,
   //   deleteSalle,
   //   getSalleById,
