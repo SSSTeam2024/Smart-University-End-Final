@@ -15,8 +15,14 @@ const getGenerartedDocsByQrCode = async (num_qr_code, useNew) => {
   return await generatedDocDao.getGenerartedDocsByQrCode(num_qr_code, db);
 };
 
+const deleteGeneratedDocByDocName = async (docName, useNew) => {
+  const db = await getDb(useNew);
+  return await generatedDocDao.deleteGeneratedDocByDocName(docName, db);
+};
+
 module.exports = {
   saveGeneratedDoc,
   getGeneratedDocsByModelId,
   getGenerartedDocsByQrCode,
+  deleteGeneratedDocByDocName
 };

@@ -26,6 +26,11 @@ const DemandePersonnelSchema = new Schema({
   },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
+  extra_data: [{
+    name: String,
+    value: String,
+    body: String
+  }],
 });
 
 module.exports = DemandePersonnelSchema;

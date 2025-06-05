@@ -16,6 +16,26 @@ const getSocietes = async (dbName) => {
   return await societeModel.find();
 };
 
+const getSocieteByName = async (name, dbName) => {
+  try {
+    const societeModel = await getSocieteModel(dbName);
+    return await societeModel.findOne({
+      nom: name,
+    });
+  } catch (error) {
+    console.error("In dao getting societe by name !!", error.message);
+  }
+};
+
+const getSocieteByid = async (id, dbName) => {
+  try {
+    const societeModel = await getSocieteModel(dbName);
+    return await societeModel.findById(id);
+  } catch (error) {
+    console.error("In dao getting societe by id !!", error.message);
+  }
+};
+
 // const updateSalle = async (id, updateData, dbName) => {
 //   const salleModel = await getSalleModel(dbName);
 //   return await salleModel.findByIdAndUpdate(id, updateData, { new: true });
@@ -33,14 +53,12 @@ const getSocietes = async (dbName) => {
 //   }
 //   return deletedSalle;
 // };
-// const getSalleById = async (id, dbName) => {
-//   const salleModel = await getSalleModel(dbName);
-//   return await salleModel.findById(id).populate("departement");
-// };
 
 module.exports = {
   getSocietes,
   createSociete,
+  getSocieteByName,
+  getSocieteByid,
   //   updateSalle,
   //   deleteSalle,
   //   getSalleById,

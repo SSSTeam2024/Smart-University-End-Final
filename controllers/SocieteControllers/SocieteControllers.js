@@ -34,7 +34,36 @@ const getAllSocietes = async (req, res) => {
   }
 };
 
+const getSocieteByName = async (req, res) => {
+  try {
+    const { name } = req.body;
+    const societe = await SocieteServices.getSocieteByName(name, useNewDb(req));
+    res.json(societe);
+  } catch (error) {
+    console.error(
+      "Error while fetching societe by name in controllers",
+      error.message
+    );
+  }
+};
+
+const getSocieteById = async (req, res) => {
+  try {
+    const { id } = req.body;
+    console.log("in controllers", id);
+    const societe = await SocieteServices.getSocieteById(id, useNewDb(req));
+    res.json(societe);
+  } catch (error) {
+    console.error(
+      "Error while fetching societe by id in controllers",
+      error.message
+    );
+  }
+};
+
 module.exports = {
   getAllSocietes,
   addNewSociete,
+  getSocieteByName,
+  getSocieteById,
 };

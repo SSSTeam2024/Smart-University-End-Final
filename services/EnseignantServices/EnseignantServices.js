@@ -147,7 +147,7 @@ const login = async (cin, password, useNew) => {
 
     await enseignantDao.updateJwtToken(teacher._id, String(accessToken), db);
 
-    let updatedTeacher = await enseignantDao.getEnseignantById(teacher._id);
+    let updatedTeacher = await enseignantDao.getEnseignantById(teacher._id, db);
 
     return updatedTeacher;
   } else {

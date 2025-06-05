@@ -78,6 +78,11 @@ const typeSeanceSchema = require("../model/TypeSeanceModel/TypeSeanceModel");
 const variableGlobaleSchema = require("../model/VariableGlobaleModel/variableGlobaleModel");
 const voieEnvoiSchema = require("../model/VoieEnvoiModel/VoieEnvoiModel");
 
+const societeSchema = require("../model/SocieteModel/SocieteModel");
+const stagePfeSchema = require("../model/StagePfeModel/StagePfeModel");
+const extraShortCodeSchema = require("../model/ShortCodeModel/extraShortCodeModel")
+const diversDocExtraSchema = require("../model/DiversDocExtraModel/DiversDocExtraModel")
+
 function registerModels(conn) {
   conn.model("User", userSchema);
   conn.model("Enseignant", enseignantSchema);
@@ -161,5 +166,10 @@ function registerModels(conn) {
   conn.model("TypeSeance", typeSeanceSchema);
   conn.model("VariableGlobale", variableGlobaleSchema);
   conn.model("VoieEnvoi", voieEnvoiSchema);
+
+  conn.model("Societe", societeSchema);
+  conn.model("StagePfe", stagePfeSchema);
+  conn.model("ExtraShortCode", extraShortCodeSchema)
+  conn.model("DiversDocExtra", diversDocExtraSchema)
 }
 module.exports = { registerModels };

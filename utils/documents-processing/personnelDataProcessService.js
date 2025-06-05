@@ -10,7 +10,7 @@ async function processFrenshPersonnelData(demandId, db) {
     demandId,
     db
   );
-  console.log("demandData", demandData);
+
   const personnel = demandData.personnelId;
 
   const allGlobalVars = await globalVarsDao.getVariableGlobales(db);
@@ -34,13 +34,16 @@ async function processFrenshPersonnelData(demandId, db) {
     orderNumber = (generatedDocs.length + 1).toString().padStart(2, "0");
   }
 
-  const [an1, an2] = currentGlobalVars.annee_universitaire.split("/");
+  // const [an1, an2] = currentGlobalVars.annee_universitaire.split("/");
 
-  const [part1an1, part2an1] = an1.split("0");
-  const [part1an2, part2an2] = an2.split("0");
-  filnal_order_number = "N° " + orderNumber + "/" + part2an1 + part2an2;
+  // const [part1an1, part2an1] = an1.split("0");
+  // const [part1an2, part2an2] = an2.split("0");
 
-  const qrData = `${demandId}-${filnal_order_number}`;
+  const currentYear = new Date().getFullYear().toString();
+
+  final_order_number = "N° " + orderNumber + "/" + currentYear;
+
+  const qrData = `${demandId}-${final_order_number}`;
   const hashedData = CryptoJS.SHA256(qrData).toString(CryptoJS.enc.Hex);
   const qrImage = await fetchQRImageBuffer(
     "http://verify.eniga.smartschools.tn/verify.html?id=" + String(hashedData)
@@ -88,7 +91,7 @@ async function processFrenshPersonnelData(demandId, db) {
     site_web_etab: currentGlobalVars.website,
     annee_univ: currentGlobalVars.annee_universitaire,
     ville_fr: currentGlobalVars.gouvernorat_fr,
-    num_ordre: filnal_order_number,
+    num_ordre: final_order_number,
     qr_code: {
       _type: "image",
       source: qrImage,
@@ -101,6 +104,13 @@ async function processFrenshPersonnelData(demandId, db) {
       hashedData
     )}`,
   };
+
+  for (let index = 0; index < demandData.extra_data.length; index++) {
+    const currentBody = demandData.extra_data[index].body;
+    const currentValue = demandData.extra_data[index].value;
+    data[currentBody] = currentValue;
+  }
+
   return {
     information: data,
     generatedDocInfo: {
@@ -119,7 +129,7 @@ async function processArabicPersonnelData(demandId, db) {
     demandId,
     db
   );
-  console.log("demandData", demandData);
+
   const personnel = demandData.personnelId;
 
   const allGlobalVars = await globalVarsDao.getVariableGlobales(db);
@@ -136,7 +146,7 @@ async function processArabicPersonnelData(demandId, db) {
     demandData.piece_demande._id,
     db
   );
-  console.log("generatedDocs", generatedDocs);
+
   let orderNumber = "";
   if (generatedDocs.length === 0) {
     orderNumber = "01";
@@ -144,13 +154,16 @@ async function processArabicPersonnelData(demandId, db) {
     orderNumber = (generatedDocs.length + 1).toString().padStart(2, "0");
   }
 
-  const [an1, an2] = currentGlobalVars.annee_universitaire.split("/");
+  // const [an1, an2] = currentGlobalVars.annee_universitaire.split("/");
 
-  const [part1an1, part2an1] = an1.split("0");
-  const [part1an2, part2an2] = an2.split("0");
-  filnal_order_number = orderNumber + "/" + part2an1 + part2an2 + " عدد";
+  // const [part1an1, part2an1] = an1.split("0");
+  // const [part1an2, part2an2] = an2.split("0");
 
-  const qrData = `${demandId}-${filnal_order_number}`;
+  const currentYear = new Date().getFullYear().toString();
+
+  final_order_number = orderNumber + "/" + currentYear + " عدد";
+
+  const qrData = `${demandId}-${final_order_number}`;
   const hashedData = CryptoJS.SHA256(qrData).toString(CryptoJS.enc.Hex);
   const qrImage = await fetchQRImageBuffer(
     "http://verify.eniga.smartschools.tn/verify.html?id=" + String(hashedData)
@@ -199,7 +212,7 @@ async function processArabicPersonnelData(demandId, db) {
     annee_univ: currentGlobalVars.annee_universitaire,
     ville_ar: currentGlobalVars.gouvernorat_ar,
     //* Params
-    num_ordre: filnal_order_number,
+    num_ordre: final_order_number,
     qr_code: {
       _type: "image",
       source: qrImage,
@@ -215,6 +228,20 @@ async function processArabicPersonnelData(demandId, db) {
     open_parenthese: "(",
     closed_parenthese: ")",
   };
+
+
+  for (let index = 0; index < demandData.extra_data.length; index++) {
+
+    const currentBody = demandData.extra_data[index].body;
+    const currentValue = demandData.extra_data[index].value;
+
+    if (currentBody === 'noms_enfants' || currentBody === 'dates_naiss' || currentBody === 'status_fils' || currentBody === 'dates_etats') {
+      data[currentBody] = currentValue.replace(/#/g, '\n');
+    } else {
+      data[currentBody] = currentValue;
+    }
+
+  }
   return {
     information: data,
     generatedDocInfo: {
