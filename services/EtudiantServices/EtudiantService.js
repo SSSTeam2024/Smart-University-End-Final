@@ -181,7 +181,7 @@ const login = async (cin, password, useNew) => {
   if (await bcrypt.compare(password, etudiant.password)) {
     const accessToken = jwt.sign({ login: etudiant.num_CIN }, "yourSecretKey");
 
-    await etudiantDao.updateJwtToken(etudiant._id, String(accessToken));
+    await etudiantDao.updateJwtToken(etudiant._id, String(accessToken), db);
 
     let updatedEtudiant = await etudiantDao.getEtudiantById(etudiant._id, db);
 

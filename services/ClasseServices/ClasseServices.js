@@ -99,11 +99,11 @@ async function getAssignedMatieres(classeId, useNew) {
 }
 
 const getClassesByTeacherId = async (idTeacher, semestre, useNew) => {
-  const db = await getDb(useNew);
+  // const db = await getDb(useNew);
   let sessions = await seanceService.getSeancesByTeacher(
     idTeacher,
     semestre,
-    db
+    useNew
   );
   let classes = sessions.map((s) => s.classe);
 

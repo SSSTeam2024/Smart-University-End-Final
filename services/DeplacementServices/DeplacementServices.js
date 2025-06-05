@@ -29,13 +29,14 @@ async function saveFile(base64String, fileName, filePath) {
   }
 }
 
-const createDeplacement = async (deplacementData, documents) => {
+const createDeplacement = async (deplacementData, documents, dbName) => {
   try {
     const saveResult = await saveMediaToServer(documents);
     if (!saveResult) {
       throw new Error("Not all files were saved successfully.");
     }
-    return await deplacementDao.createDeplacement(deplacementData);
+    const db = await getDb(dbName);
+    return await deplacementDao.createDeplacement(deplacementData, db);
   } catch (error) {
     console.error("Error creating Deplacement:", error);
     throw error;
