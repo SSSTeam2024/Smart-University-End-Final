@@ -14,6 +14,7 @@ const registerPersonnelDao = async (userData, documents = [], useNew) => {
     }
 
     const newPersonnel = await personnelDao.createPersonnel(userData, db);
+     console.log("new Personnel service", newPersonnel);
     return newPersonnel;
   } catch (error) {
     console.error("Error registering personnel:", error);

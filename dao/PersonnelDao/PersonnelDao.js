@@ -20,7 +20,19 @@ const getPersonnels = async (dbName) => {
     .populate("categorie")
     .populate("grade")
     .populate("poste")
-    .populate("service");
+    .populate("service")
+     .populate({
+      path: "historique_positions.poste",
+      model: "PostePersonnel",
+    })
+    .populate({
+      path: "historique_positions.grade",
+      model: "GradePersonnel",
+    })
+    .populate({
+      path: "historique_positions.categorie",
+      model: "CategoriePersonnel",
+    });
 };
 
 const updatePersonnel = async (id, updateData, dbName) => {
