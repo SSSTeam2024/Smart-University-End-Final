@@ -4,7 +4,11 @@ const societeSchema = new mongoose.Schema(
   {
     nom: String,
     encadrant: [String],
-    infos: String,
+    matricule: String,
+    adresse: String,
+    responsable: String,
+    siteweb: String,
+    phone: String,
   },
   { timestamps: true }
 );

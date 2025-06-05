@@ -17,10 +17,19 @@ const getStagesPfe = async (dbName) => {
   return await StagePfe.find()
     .populate("etudiant")
     .populate("binome")
-    .populate("encadrant_univ")
+    .populate("encadrant_univ1")
+    .populate("encadrant_univ2")
     .populate("societe")
-    .populate("rapporteur")
-    .populate("chef_jury");
+    .populate("rapporteur1")
+    .populate("rapporteur2")
+    .populate("chef_jury")
+    .populate({
+      path: "type_stage",
+      populate: {
+        path: "classes",
+        model: "Classe", // Ensure this is the correct model name
+      },
+    });
 };
 
 const updateStagePfe = async (id, updateData, dbName) => {
