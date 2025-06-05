@@ -37,8 +37,15 @@ const getGenerartedDocsByQrCode = async (num_qr_code, dbName) => {
     .populate("personnel");
 };
 
+const deleteGeneratedDocByDocName = async (docName, dbName) => {
+
+  const GeneratedDocModel = await getGeneratedDocModelModel(dbName);
+  return await GeneratedDocModel.deleteOne({ doc: docName });
+}
+
 module.exports = {
   saveGenerated,
   getGenerartedDocsByModelId,
   getGenerartedDocsByQrCode,
+  deleteGeneratedDocByDocName
 };
