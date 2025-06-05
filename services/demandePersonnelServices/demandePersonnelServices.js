@@ -2,6 +2,9 @@ const demandePersonnelDao = require("../../dao/DemandePersonnelDao/DemandePerson
 const shortCodesReplacer = require("../../utils/documents-processing/easy-template-x");
 const wordToPdfTransformer = require("../../files/libreoffice");
 const { getDb } = require("../../config/dbSwitcher");
+const generatedDocService = require("../GeneratedDocServices/GeneratedDocServices");
+
+const fs = require("fs").promises;
 
 const createDemandePersonnel = async (demandePersonnelData, useNew) => {
   const db = await getDb(useNew);
@@ -25,7 +28,43 @@ const updateDemandePersonnel = async (id, updateData, useNew) => {
 
 const deleteDemandePersonnel = async (id, useNew) => {
   const db = await getDb(useNew);
-  return demandePersonnelDao.deleteDemandePersonnel(id, db);
+  // return demandePersonnelDao.deleteDemandePersonnel(id, db);
+  const toBeDeleted = await demandePersonnelDao.getDemandePersonnelById(id, db);
+
+  const result = await demandePersonnelDao.deleteDemandePersonnel(id, db);
+
+  if (toBeDeleted.status === 'traité') {
+    const oldPdfFileName = toBeDeleted.generated_doc;
+
+    const oldDoxFileName = oldPdfFileName.replace(/\.[^/.]+$/, ".docx");
+
+    const restul2 = await generatedDocService.deleteGeneratedDocByDocName(oldPdfFileName, useNew)
+
+    try {
+      fs.unlink(`./files/generated_docs/docx/employee_docx/${oldDoxFileName}`, (err) => {
+        conso.log(err);
+        if (err) {
+          console.error('Error deleting the file:', err);
+        } else {
+          console.log('File deleted successfully');
+        }
+      });
+
+      fs.unlink(`./files/generated_docs/pdf/employee_pdf/${oldPdfFileName}`, (err) => {
+        conso.log(err);
+        if (err) {
+          console.error('Error deleting the file:', err);
+        } else {
+          console.log('File deleted successfully');
+        }
+      });
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  return result;
 };
 
 const deleteManyDemandePersonnel = async (useNew, ids) => {

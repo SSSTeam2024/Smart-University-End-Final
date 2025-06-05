@@ -62,7 +62,24 @@ const getTemplateBodyById = async (id, useNew) => {
 
 const deleteTemplateBody = async (id, useNew) => {
   const db = await getDb(useNew);
+  const toBeDeleted = await templateBodyDao.getTemplateBodyById(id, db);
+  const oldFileName = toBeDeleted.doc;
   const result = await templateBodyDao.deleteTemplateBody(id, db);
+
+  try {
+    fs.unlink(`./files/Modeles/${oldFileName}`, (err) => {
+      conso.log(err);
+      if (err) {
+        console.error('Error deleting the file:', err);
+      } else {
+        console.log('File deleted successfully');
+      }
+    });
+
+  } catch (error) {
+    console.log(error);
+  }
+
   return result;
 };
 
@@ -74,6 +91,7 @@ const getTemplateBodyByContext = async (intended_for, useNew) => {
   );
   return result;
 };
+
 const updateTemplateBodyById = async (id, data, documents,
   oldFileName, useNew) => {
   const db = await getDb(useNew);

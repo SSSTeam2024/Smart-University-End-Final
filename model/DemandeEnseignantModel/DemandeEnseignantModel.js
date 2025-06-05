@@ -24,6 +24,11 @@ const DemandeEnseignantSchema = new Schema({
     default: "en attente",
   },
   generated_doc: { type: String, required: false, default: null },
+  extra_data: [{
+    name: String,
+    value: String,
+    body: String
+  }],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

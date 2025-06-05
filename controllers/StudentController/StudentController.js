@@ -7,6 +7,7 @@ const TypeInscriptionEtudiant = require("../../model/TypeInscriptionEtudiantMode
 const generateCode = require("../../utils/generateCode");
 const emailService = require("../../services/EmailServices/emailService");
 const emailStructure = require("../../utils/emailInscription");
+const { v4: uuidv4 } = require("uuid");
 
 function useNewDb(req) {
   return req.headers["x-use-new-db"] === "true";
@@ -375,12 +376,12 @@ const updateStudent = async (req, res) => {
   try {
     console.log(
       `[${requestId}] Received request to update student with ID:`,
-      req.body.id
+      req.body._id
     );
 
     // Destructure the request body
     const {
-      id,
+      _id,
       nom_fr,
       nom_ar,
       prenom_fr,
@@ -446,115 +447,97 @@ const updateStudent = async (req, res) => {
       matricule_number,
       passeport_number,
       cnss_number,
-      files,
+      files = [],
     } = req.body;
 
     // Define file paths
-    const face1CINPath = "files/etudiantFiles/Face1CIN/";
-    const face2CINPath = "files/etudiantFiles/Face2CIN/";
-    const fichePaiementPath = "files/etudiantFiles/FichePaiement/";
-    const photoProfilPath = "files/etudiantFiles/PhotoProfil/";
-
-    // Function to generate unique filenames
-    const generateUniqueFilename = (extension, name) => {
-      if (!extension) {
-        console.log(`[${requestId}] File extension is missing for ${name}.`);
-        throw new Error(`File extension is missing for ${name}.`);
-      }
-      return `${Date.now()}_${Math.random()
-        .toString(36)
-        .substring(2, 15)}_${name}.${extension}`;
+   const filePaths = {
+      face1CIN: "files/etudiantFiles/Face1CIN/",
+      face2CIN: "files/etudiantFiles/Face2CIN/",
+      fichePaiement: "files/etudiantFiles/FichePaiement/",
+      photoProfil: "files/etudiantFiles/PhotoProfil/",
+      // additional: "files/etudiantFiles/Additional/",
     };
 
-    // Helper function to save files
+    const generateUniqueFilename = (extension, name) => {
+      if (!extension) {
+        throw new Error(`File extension is missing for ${name}.`);
+      }
+      return `${uuidv4()}_${name}.${extension}`;
+    };
+
     const saveFile = (base64String, filePath, fileName) => {
       if (base64String) {
+        fs.mkdirSync(filePath, { recursive: true });
         const buffer = Buffer.from(base64String, "base64");
-        const fullPath = `${filePath}${fileName}`;
-        fs.writeFileSync(fullPath, buffer); // Save the file
+        const fullPath = path.join(filePath, fileName);
+        fs.writeFileSync(fullPath, buffer);
         console.log(`[${requestId}] File saved at: ${fullPath}`);
-        return fullPath; // Return the full path of the saved file
+        return fullPath;
       }
       return null;
     };
 
     // Prepare documents array
-    const documents = [];
+   const documents = [];
+
     if (Face1CINFileBase64String && Face1CINFileExtension) {
-      const face1CINName = generateUniqueFilename(
-        Face1CINFileExtension,
-        "face_1_CIN"
-      );
-      saveFile(Face1CINFileBase64String, face1CINPath, face1CINName);
-      documents.push({ name: face1CINName });
+      const name = generateUniqueFilename(Face1CINFileExtension, "face_1_CIN");
+      saveFile(Face1CINFileBase64String, filePaths.face1CIN, name);
+      documents.push({ name });
     }
+
     if (Face2CINFileBase64String && Face2CINFileExtension) {
-      const face2CINName = generateUniqueFilename(
-        Face2CINFileExtension,
-        "face_2_CIN"
-      );
-      saveFile(Face2CINFileBase64String, face2CINPath, face2CINName);
-      documents.push({ name: face2CINName });
+      const name = generateUniqueFilename(Face2CINFileExtension, "face_2_CIN");
+      saveFile(Face2CINFileBase64String, filePaths.face2CIN, name);
+      documents.push({ name });
     }
+
     if (FichePaiementFileBase64String && FichePaiementFileExtension) {
-      const fichePaiementName = generateUniqueFilename(
+      const name = generateUniqueFilename(
         FichePaiementFileExtension,
         "fiche_paiement"
       );
-      saveFile(
-        FichePaiementFileBase64String,
-        fichePaiementPath,
-        fichePaiementName
-      );
-      documents.push({ name: fichePaiementName });
+      saveFile(FichePaiementFileBase64String, filePaths.fichePaiement, name);
+      documents.push({ name });
     }
+
     if (PhotoProfilFileBase64String && PhotoProfilFileExtension) {
-      const photoProfilName = generateUniqueFilename(
+      const name = generateUniqueFilename(
         PhotoProfilFileExtension,
         "photo_profil"
       );
-      saveFile(PhotoProfilFileBase64String, photoProfilPath, photoProfilName);
-      documents.push({ name: photoProfilName });
+      saveFile(PhotoProfilFileBase64String, filePaths.photoProfil, name);
+      documents.push({ name });
     }
+
 
     // Construct update object
 
-    subscriptionFiles = [];
-    for (let i = 0; i < files.length; i++) {
-      const fileTypeNameFr = files[i].name_fr;
-      const base64String = files[i].base64String;
-      const fileExtension = files[i].extension;
-      if (!base64String || !fileExtension) {
+     let subscriptionFiles = [];
+      for (const file of files) {
+      const { name_fr, base64String, extension } = file;
+      if (!base64String || !extension) {
         return res.status(400).json({
-          error: `Base64 string or extension is undefined for file type: ${fileTypeNameFr}`,
+          error: `Missing base64 or extension for file type: ${name_fr}`,
         });
       }
 
-      const filePath = `files/etudiantFiles/Additional/${fileTypeNameFr}/`;
-      let fileFullPath = globalFunctions.generateUniqueFilename(
-        fileExtension,
-        fileTypeNameFr
-      );
+      const dir = path.join(filePaths.additional, name_fr);
+      const filename = generateUniqueFilename(extension, name_fr);
+      saveFile(base64String, dir, filename);
 
       subscriptionFiles.push({
-        fileType: fileTypeNameFr,
-        name: fileFullPath,
-      });
-
-      documents.push({
-        base64String,
-        extension: fileExtension,
-        name: fileFullPath,
-        path: filePath,
+        fileType: name_fr,
+        name: filename,
       });
     }
 
-    const filesArray = subscriptionFiles.map((file) => {
-      return {
-        file_type: file.fileType,
-        fileName: file.name,
-      };
-    });
+    const filesArray = subscriptionFiles.map((file) => ({
+      file_type: file.fileType,
+      fileName: file.name,
+    }));
+  
 
     const updateFields = {
       nom_fr,
@@ -617,21 +600,19 @@ const updateStudent = async (req, res) => {
       files: filesArray,
     };
 
-    // Conditionally add file paths to update object
-    if (documents.length > 0) {
-      documents.forEach((doc) => {
-        if (doc.name.includes("face_1_CIN")) updateFields.face_1_CIN = doc.name;
-        if (doc.name.includes("face_2_CIN")) updateFields.face_2_CIN = doc.name;
-        if (doc.name.includes("fiche_paiement"))
-          updateFields.fiche_paiement = doc.name;
-        if (doc.name.includes("photo_profil"))
-          updateFields.photo_profil = doc.name;
-      });
+     // Assign uploaded file names to specific fields
+    for (const doc of documents) {
+      if (doc.name.includes("face_1_CIN")) updateFields.face_1_CIN = doc.name;
+      if (doc.name.includes("face_2_CIN")) updateFields.face_2_CIN = doc.name;
+      if (doc.name.includes("fiche_paiement"))
+        updateFields.fiche_paiement = doc.name;
+      if (doc.name.includes("photo_profil"))
+        updateFields.photo_profil = doc.name;
     }
 
-    // Update student in the database
+    // Perform the database update
     const updatedEtudiant = await studentService.updateEtudiant(
-      id,
+      _id,
       updateFields,
       useNewDb(req)
     );

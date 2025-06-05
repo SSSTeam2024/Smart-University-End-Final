@@ -61,6 +61,13 @@ const enseignantSchema = new mongoose.Schema(
     entreprise3: String,
     annee_certif3: String,
     certif3: String,
+    educations: [
+      {
+        institution: String,      
+        degree: String,           
+        graduationYear: String,   
+      },
+    ],
     category: [String],
     situation_ar: String,
     situation_fr: String,

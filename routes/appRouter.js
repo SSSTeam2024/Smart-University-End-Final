@@ -74,11 +74,14 @@ const cycleRoutes = require("./CycleRoutes/CycleRoutes");
 
 const generatedDocRoutes = require("./GeneratedDocRoutes/GeneratedDocRoutes");
 const demandeTirageRoutes = require("./DemandeTirageRoutes/DemandeTirageRoutes");
+const extraShortCodeRoutes = require("./ShortCodeRoutes/extraShortCodeRoutes");
+const diversDocExtraRoutes = require("./DiversDocExtraRoutes/DiversDocExtraRoutes");
 
 const DatabaseNamesRoutes = require("./DatabaseNamesRoutes/DatabaseNamesRoutes");
 
 router.use("/demande-tirage", demandeTirageRoutes);
-
+router.use("/extra-short-code", extraShortCodeRoutes);
+router.use("/divers-doc-extra", diversDocExtraRoutes);
 router.use("/type-parcours", typeParcoursRoutes);
 router.use("/cycle", cycleRoutes);
 

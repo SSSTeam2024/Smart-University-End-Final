@@ -80,6 +80,8 @@ const voieEnvoiSchema = require("../model/VoieEnvoiModel/VoieEnvoiModel");
 
 const societeSchema = require("../model/SocieteModel/SocieteModel");
 const stagePfeSchema = require("../model/StagePfeModel/StagePfeModel");
+const extraShortCodeSchema = require("../model/ShortCodeModel/extraShortCodeModel")
+const diversDocExtraSchema = require("../model/DiversDocExtraModel/DiversDocExtraModel")
 
 function registerModels(conn) {
   conn.model("User", userSchema);
@@ -167,5 +169,7 @@ function registerModels(conn) {
 
   conn.model("Societe", societeSchema);
   conn.model("StagePfe", stagePfeSchema);
+  conn.model("ExtraShortCode", extraShortCodeSchema)
+  conn.model("DiversDocExtra", diversDocExtraSchema)
 }
 module.exports = { registerModels };

@@ -70,6 +70,28 @@ const personnelSchema = new mongoose.Schema(
     job_conjoint: String,
     nombre_fils: String,
     category: [String],
+    historique_positions: [
+  {
+    poste: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "PostePersonnel",
+      default: null,
+    },
+    grade: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "GradePersonnel",
+      default: null,
+    },
+    categorie: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "CategoriePersonnel",
+      default: null,
+    },
+    date_affectation: String,      // Date de l'affectation (الانتداب)
+    date_titularisation: String,   // Date de titularisation (الترسيم)
+    date_depart: String            // Date de départ (المغادرة)
+  }
+]
   },
   { timestamps: true }
 );

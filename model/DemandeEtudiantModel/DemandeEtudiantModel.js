@@ -18,10 +18,15 @@ const DemandeEtudiantSchema = new Schema({
     type: String,
     enum: ["en attente", "traité", "rejeté"],
     default: "en attente",
-  }, //TODO: Add new status : notifié
+  },
   generated_doc: { type: String, required: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
+  extra_data: [{
+    name: String,
+    value: String,
+    body: String
+  }],
 });
 
 module.exports = DemandeEtudiantSchema;

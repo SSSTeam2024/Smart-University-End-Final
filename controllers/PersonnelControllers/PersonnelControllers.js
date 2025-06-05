@@ -51,6 +51,8 @@ const addPersonnel = async (req, res) => {
       PhotoProfilFileExtension,
       PhotoProfilFileBase64String,
       password,
+      historique_positions
+     
     } = req.body;
 
     // If PhotoProfilFileBase64String is provided, prepare the document array
@@ -109,6 +111,7 @@ const addPersonnel = async (req, res) => {
       job_conjoint,
       nombre_fils,
       password,
+      historique_positions,
       photo_profil: PhotoProfilFileBase64String
         ? globalFunctions.generateUniqueFilename(
             PhotoProfilFileExtension,
@@ -125,12 +128,8 @@ const addPersonnel = async (req, res) => {
     );
 
     // Populate related data before sending the response
-    const populatedPersonnel = await Personnel.findById(personnel._id)
-      .populate("etat_compte")
-      .populate("categorie")
-      .populate("grade")
-      .populate("poste")
-      .populate("service");
+    const populatedPersonnel = await personnelService.getPersonnelDaoById(personnel._id)
+  
 
     res.json(populatedPersonnel);
   } catch (error) {
@@ -155,7 +154,7 @@ const updatePersonnelById = async (req, res) => {
   try {
     console.log(
       `[${requestId}] Received request to update personnel with ID:`,
-      req.body.id
+      req.body._id
     );
 
     const personnelId = req.body._id; // Correctly use the personnel ID from the request body
@@ -169,6 +168,7 @@ const updatePersonnelById = async (req, res) => {
       return res.status(400).send("Personnel ID is required.");
     }
     const {
+      
       nom_fr,
       nom_ar,
       prenom_fr,
