@@ -2,6 +2,7 @@ const classeDao = require("../../dao/ClasseDao/ClasseDao");
 const Classe = require("../../model/ClasseModels/ClasseModels");
 const Matiere = require("../../model/MatiereModel/MatiereModel");
 const seanceService = require("../../services/SeanceServices/SeanceServices");
+// const typeStageDao = require("../../dao/TypeStageDao/TypeStageDao");
 const { getDb } = require("../../config/dbSwitcher");
 
 const createClasse = async (classeData, useNew) => {
@@ -140,6 +141,20 @@ const assignParcoursToClasse = async (
     db
   );
 };
+
+const getClassesByNiveauId = async (niveauId, useNew) => {
+  try {
+    const db = await getDb(useNew);
+
+    return await classeDao.getClassesByNiveauId(niveauId, db);
+  } catch (error) {
+    console.error(
+      "Error while fetching classes by niveau id in services",
+      error
+    );
+  }
+};
+
 module.exports = {
   createClasse,
   updateClasse,
@@ -151,4 +166,5 @@ module.exports = {
   getClassesByTeacherId,
   getClasseByValue,
   assignParcoursToClasse,
+  getClassesByNiveauId,
 };

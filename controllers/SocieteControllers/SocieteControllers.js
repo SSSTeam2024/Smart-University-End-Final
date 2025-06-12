@@ -6,13 +6,18 @@ function useNewDb(req) {
 
 const addNewSociete = async (req, res) => {
   try {
-    const { nom, encadrant, infos } = req.body;
+    const { nom, encadrant, matricule, adresse, responsable, siteweb, phone } =
+      req.body;
 
     const societe = await SocieteServices.createSociete(
       {
         nom,
         encadrant,
-        infos,
+        matricule,
+        adresse,
+        responsable,
+        siteweb,
+        phone,
       },
       useNewDb(req)
     );
