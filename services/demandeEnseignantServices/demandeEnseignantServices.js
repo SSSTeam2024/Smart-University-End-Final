@@ -84,10 +84,11 @@ const handleDemandeEnseignant = async (
   demandId,
   fileName,
   modelLangage,
+  status_history,
   useNew
 ) => {
   const db = await getDb(useNew);
-  console.log("result service enseigant", demandId, fileName, modelLangage);
+  console.log("result service enseigant", demandId, fileName, modelLangage, status_history);
   const [fileNamePart1, fileNamePart2] = fileName.split(".");
   const generatedDocInfo = await shortCodesReplacer.generateDoc(
     fileNamePart1,
@@ -105,7 +106,7 @@ const handleDemandeEnseignant = async (
   );
   const result = await demandeEnseignantDao.updateDemandeEnseignant(
     demandId,
-    { status: "traité", generated_doc: `${demandId}_${fileNamePart1}.pdf` },
+    { current_status: "générée", generated_doc: `${demandId}_${fileNamePart1}.pdf`, status_history: status_history },
     db
   );
   return result;

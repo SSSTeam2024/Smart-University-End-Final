@@ -37,7 +37,8 @@ const getAllDemandeEnseignants = async (dbName) => {
       ],
       options: { strictPopulate: false },
     })
-    .populate("piece_demande");
+    .populate("piece_demande")
+    .populate("added_by");
 };
 
 const getDemandeEnseignantById = async (id, dbName) => {

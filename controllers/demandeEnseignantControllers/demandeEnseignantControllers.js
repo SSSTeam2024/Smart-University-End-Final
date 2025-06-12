@@ -100,13 +100,14 @@ const getDemandesByTeacherId = async (req, res) => {
 };
 const handleDemandeEnseignant = async (req, res) => {
   try {
-    const { demandId, modelName, modelLangage } = req.body;
+    const { demandId, modelName, modelLangage, status_history } = req.body;
 
     const updatedDemandeEnseignant =
       await demandeEnseignantService.handleDemandeEnseignant(
         demandId,
         modelName,
         modelLangage,
+        status_history,
         useNewDb(req)
       );
 

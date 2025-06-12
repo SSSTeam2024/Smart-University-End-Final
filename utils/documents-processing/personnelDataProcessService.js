@@ -236,7 +236,12 @@ async function processArabicPersonnelData(demandId, db) {
     const currentValue = demandData.extra_data[index].value;
 
     if (currentBody === 'noms_enfants' || currentBody === 'dates_naiss' || currentBody === 'status_fils' || currentBody === 'dates_etats') {
-      data[currentBody] = currentValue.replace(/#/g, '\n');
+      const regex = /[^#]/;
+      if (currentValue !== '' && regex.test(currentValue)) {
+        data[currentBody] = currentValue.replace(/#/g, '\n');
+      } else {
+        data[currentBody] = '';
+      }
     } else {
       data[currentBody] = currentValue;
     }
