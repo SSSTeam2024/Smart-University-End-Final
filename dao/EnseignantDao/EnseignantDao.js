@@ -38,7 +38,16 @@ const getEnseignants = async (dbName) => {
     .populate("specilaite")
     .populate("grade")
     .populate("poste")
-    .populate("departements");
+    .populate("departements")
+    .populate({
+      path: "historique_positions.poste",
+      model: "PosteEnseignant",
+    })
+    .populate({
+      path: "historique_positions.grade",
+      model: "GradeEnseignant",
+    })
+
 };
 
 const updateEnseignant = async (id, updateData, dbName) => {

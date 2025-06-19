@@ -87,9 +87,26 @@ const personnelSchema = new mongoose.Schema(
       ref: "CategoriePersonnel",
       default: null,
     },
-    date_affectation: String,      // Date de l'affectation (الانتداب)
-    date_titularisation: String,   // Date de titularisation (الترسيم)
-    date_depart: String            // Date de départ (المغادرة)
+    date_affectation: String,         
+    fichier_affectation: String,       
+    date_titularisation: String,      
+    fichier_titularisation: String,   
+    date_depart: String,               
+    fichier_depart: String      
+  }
+],
+
+historique_services: [
+  {
+    service: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ServicePersonnel",
+      default: null,
+    },
+    date_affectation: String,
+    fichier_affectation: String,
+    date_fin: String,
+    fichier_fin: String
   }
 ]
   },

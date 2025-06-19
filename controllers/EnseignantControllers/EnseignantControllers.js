@@ -59,7 +59,8 @@ const addEnseignant = async (req, res) => {
       PhotoProfilFileBase64String,
       situation_fr,
       situation_ar,
-      educations
+      educations,
+      historique_positions
     } = req.body;
 
     // If PhotoProfilFileBase64String is provided, prepare the document array
@@ -126,6 +127,7 @@ const addEnseignant = async (req, res) => {
       situation_ar,
       certif3,
       educations,
+      historique_positions,
       photo_profil: PhotoProfilFileBase64String
         ? globalFunctions.generateUniqueFilename(
             PhotoProfilFileExtension,
@@ -235,7 +237,8 @@ const updateEnseignantById = async (req, res) => {
       PhotoProfilFileBase64String,
       situation_fr,
       situation_ar,
-      educations
+      educations,
+      historique_positions
     } = req.body;
 
     const photoProfilPath = "files/enseignantFiles/PhotoProfil/";
@@ -331,7 +334,8 @@ const updateEnseignantById = async (req, res) => {
       photo_profil, // Correctly assign the photo profile name
       situation_fr,
       situation_ar,
-      educations
+      educations,
+      historique_positions
     };
 
     // Call the service to update personnel
