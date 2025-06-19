@@ -263,6 +263,23 @@ const assignParcoursToClasse = async (req, res) => {
   }
 };
 
+const getAllClassesByNiveauId = async (req, res) => {
+  try {
+    const { niveauId } = req.body;
+    const classes = await classeService.getClassesByNiveauId(
+      niveauId,
+      useNewDb(req)
+    );
+    res.json(classes);
+  } catch (error) {
+    console.error(
+      "Error getting classes by niveau id in controllers : ",
+      error
+    );
+    res.status(500).send(error.message);
+  }
+};
+
 module.exports = {
   addClasse,
   updateClasseById,
@@ -275,4 +292,5 @@ module.exports = {
   getAllClassesByTeacher,
   getClasseByValue,
   assignParcoursToClasse,
+  getAllClassesByNiveauId,
 };

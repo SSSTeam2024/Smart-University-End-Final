@@ -14,11 +14,13 @@ const DemandeEtudiantSchema = new Schema({
   langue: { type: String, required: false },
   nombre_copie: { type: Number, required: false },
   response: { type: String, required: false },
-  status: {
-    type: String,
-    enum: ["en attente", "traité", "rejeté"],
-    default: "en attente",
-  },
+  file: String,
+  status_history: [{
+    value: String,
+    date: String
+  }],
+  current_status: String, //rejetee, acceptee, en attente, generee
+
   generated_doc: { type: String, required: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
@@ -27,6 +29,11 @@ const DemandeEtudiantSchema = new Schema({
     value: String,
     body: String
   }],
+  added_by: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null,
+  },
 });
 
 module.exports = DemandeEtudiantSchema;

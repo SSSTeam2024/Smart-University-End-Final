@@ -18,11 +18,12 @@ const DemandeEnseignantSchema = new Schema({
   langue: { type: String, required: false },
   nombre_copie: { type: Number, required: false },
   response: { type: String, required: false },
-  status: {
-    type: String,
-    enum: ["en attente", "traité", "rejeté"],
-    default: "en attente",
-  },
+  file: String,
+  status_history: [{
+    value: String,
+    date: String
+  }],
+  current_status: String, //rejetee, acceptee, en attente, generee
   generated_doc: { type: String, required: false, default: null },
   extra_data: [{
     name: String,
@@ -31,6 +32,11 @@ const DemandeEnseignantSchema = new Schema({
   }],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
+  added_by: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null,
+  },
 });
 
 module.exports = DemandeEnseignantSchema;

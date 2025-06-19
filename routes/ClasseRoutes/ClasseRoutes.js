@@ -24,4 +24,7 @@ router.put(
   "/assign-parcours/:classeId/:parcoursId",
   classeController.assignParcoursToClasse
 );
+
+router.post("/get-classes-by-niveau", classeController.getAllClassesByNiveauId);
+
 module.exports = router;

@@ -18,19 +18,25 @@ const DemandePersonnelSchema = new Schema({
   langue: { type: String, required: false },
   nombre_copie: { type: Number, required: false },
   response: { type: String, required: false },
+  file: String,
+  status_history: [{
+    value: String,
+    date: String
+  }],
+  current_status: String, //rejetee, acceptee, en attente, generee
   generated_doc: { type: String, required: false },
-  status: {
-    type: String,
-    enum: ["en attente", "traité", "rejeté"],
-    default: "en attente",
-  },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
   extra_data: [{
     name: String,
     value: String,
     body: String
   }],
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+  added_by: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null,
+  },
 });
 
 module.exports = DemandePersonnelSchema;

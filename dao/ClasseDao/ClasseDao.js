@@ -1,6 +1,13 @@
 const matiereSchema = require("../../model/MatiereModel/MatiereModel");
 const classeSchema = require("../../model/ClasseModels/ClasseModels");
+const typeStageSchema = require("../../model/TypeStageModel/TypeStageModel");
 
+function getTypeStageModel(dbConnection) {
+  return (
+    dbConnection.models.TypeStage ||
+    dbConnection.model("TypeStage", typeStageSchema)
+  );
+}
 function getMatiereModel(dbConnection) {
   return (
     dbConnection.models.Matiere || dbConnection.model("Matiere", matiereSchema)
@@ -252,6 +259,20 @@ const assignParcoursToClasse = async (
   }
 };
 
+const getClassesByNiveauId = async (niveauId, dbName) => {
+  try {
+    const Classe = await getClasseModel(dbName);
+
+    const classes = await Classe.find({
+      niveau_classe: niveauId,
+    }).exec();
+
+    return classes;
+  } catch (error) {
+    console.error("Error while fetching classes by niveau id in dao", error);
+  }
+};
+
 module.exports = {
   createClasse,
   getClasses,
@@ -263,4 +284,5 @@ module.exports = {
   getAssignedMatieres,
   getClasseByValue,
   assignParcoursToClasse,
+  getClassesByNiveauId,
 };

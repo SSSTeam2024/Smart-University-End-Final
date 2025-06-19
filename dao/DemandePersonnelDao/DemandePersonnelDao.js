@@ -37,7 +37,8 @@ const getAllDemandePersonnels = async (dbName) => {
       ],
       options: { strictPopulate: false },
     })
-    .populate("piece_demande");
+    .populate("piece_demande")
+    .populate("added_by");
 };
 
 const getDemandePersonnelById = async (id, dbName) => {
@@ -100,7 +101,7 @@ const getDemandeByPersonnelId = async (id, dbName) => {
     const DemandePersonnel = await getDemandePersonnelModel(dbName);
     const demandes = await DemandePersonnel.find({
       personnelId: id,
-    });
+    }).populate("piece_demande");
     return demandes;
   } catch (error) {
     console.error("Error while getting demande by personnel id in Dao ");
