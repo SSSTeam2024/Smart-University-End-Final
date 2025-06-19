@@ -1,5 +1,5 @@
 const demandeEnseignantService = require("../../services/demandeEnseignantServices/demandeEnseignantServices");
-
+const globalFunctions = require("../../utils/globalFunctions")
 function useNewDb(req) {
   return req.headers["x-use-new-db"] === "true";
 }
@@ -53,13 +53,85 @@ const getDemandeEnseignantById = async (req, res) => {
 };
 
 const updateDemandeEnseignant = async (req, res) => {
+  const {
+    enseignantId,
+    title,
+    description,
+    piece_demande,
+    langue,
+    nombre_copie,
+    response,
+    FileBase64,
+    FileExtension,
+    status_history,
+    current_status,
+    generated_doc,
+    extra_data,
+    added_by
+  } = req.body;
+
+  const filePath = "files/demandeEnseignant/";
+
+  let file = globalFunctions.generateUniqueFilename(
+    FileExtension,
+    "raison_file"
+  );
+
+  console.log(file)
+
+  let documents = [];
+
+  if (FileExtension !== '') {
+    documents.push({
+      base64String: FileBase64,
+      extension: FileExtension,
+      name: file,
+      path: filePath,
+    })
+  }
   try {
-    const updatedDemandeEnseignant =
-      await demandeEnseignantService.updateDemandeEnseignant(
+    let updatedDemandeEnseignant;
+    if (FileExtension == '') {
+      updatedDemandeEnseignant = await demandeEnseignantService.updateDemandeEnseignant(
         req.body._id,
-        req.body,
+        {
+          enseignantId,
+          title,
+          description,
+          piece_demande,
+          langue,
+          nombre_copie,
+          response,
+          status_history,
+          current_status,
+          generated_doc,
+          extra_data,
+          added_by
+        }, documents,
         useNewDb(req)
       );
+    } else {
+      updatedDemandeEnseignant = await demandeEnseignantService.updateDemandeEnseignant(
+        req.body._id,
+        {
+          enseignantId,
+          title,
+          description,
+          piece_demande,
+          langue,
+          nombre_copie,
+          response,
+          file,
+          status_history,
+          current_status,
+          generated_doc,
+          extra_data,
+          added_by
+        }, documents,
+        useNewDb(req)
+      );
+    }
+
     if (!updatedDemandeEnseignant) {
       return res.status(404).json({ message: "DemandeEnseignant not found" });
     }

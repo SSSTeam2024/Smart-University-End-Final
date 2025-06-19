@@ -22,13 +22,13 @@ router.get(
 
 // Update a demandePersonnel by ID
 router.put(
-  "/edit-demande-Personnel/:id",
+  "/edit-demande-Personnel",
   demandePersonnelController.updateDemandePersonnel
 );
 
 // Delete a demandePersonnel by ID
 router.delete(
-  "/delete-demande-Personnel/:id",
+  "/delete-demande-Personnel/:personnelId",
   demandePersonnelController.deleteDemandePersonnel
 );
 // Handle demand

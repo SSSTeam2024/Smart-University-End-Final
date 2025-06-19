@@ -1,7 +1,9 @@
 const demandeEnseignantDao = require("../../dao/DemandeEnseignantDao/DemandeEnseignantDao");
 const shortCodesReplacer = require("../../utils/documents-processing/easy-template-x");
 const wordToPdfTransformer = require("../../files/libreoffice");
-const generatedDocService = require("../GeneratedDocServices/GeneratedDocServices")
+const generatedDocService = require("../GeneratedDocServices/GeneratedDocServices");
+const fsv1 = require("fs");
+const globalFunctions = require("../../utils/globalFunctions");
 
 const fs = require("fs").promises;
 
@@ -25,10 +27,48 @@ const getDemandeEnseignantById = async (id, useNew) => {
   return demandeEnseignantDao.getDemandeEnseignantById(id, db);
 };
 
-const updateDemandeEnseignant = async (id, updateData, useNew) => {
+const updateDemandeEnseignant = async (id, updateData, documents, useNew) => {
   const db = await getDb(useNew);
+  if (documents.length > 0) {
+    saveResult = await saveDocumentToServer(documents);
+  }
   return demandeEnseignantDao.updateDemandeEnseignant(id, updateData, db);
 };
+
+async function saveDocumentToServer(documents) {
+  if (!documents || documents.length === 0) {
+    return true;
+  }
+  let counter = 0;
+  for (const file of documents) {
+    await saveFile(file.base64String, file.name, file.path);
+    counter++;
+  }
+  return counter === documents.length;
+}
+
+async function saveFile(base64String, fileName, file_path) {
+  if (!base64String) {
+    console.warn(`Skipping file ${fileName}: No base64 data provided.`);
+    return;
+  }
+
+  const binaryData = Buffer.from(base64String, "base64");
+  const filePath = file_path + fileName;
+  await globalFunctions.ensureDirectoryExistence(file_path);
+
+  return new Promise((resolve, reject) => {
+    fsv1.writeFile(filePath, binaryData, "binary", (err) => {
+      if (err) {
+        console.error("Error saving the file:", err);
+        reject(err);
+      } else {
+        console.log("File saved successfully!");
+        resolve();
+      }
+    });
+  });
+}
 
 const deleteDemandeEnseignant = async (id, useNew) => {
   const db = await getDb(useNew);
@@ -37,7 +77,7 @@ const deleteDemandeEnseignant = async (id, useNew) => {
 
   const result = await demandeEnseignantDao.deleteDemandeEnseignant(id, db);
 
-  if (toBeDeleted.status === 'traité') {
+  if (toBeDeleted.status !== 'Approuvée' || toBeDeleted.status !== 'Réfusée') {
     const oldPdfFileName = toBeDeleted.generated_doc;
 
     const oldDoxFileName = oldPdfFileName.replace(/\.[^/.]+$/, ".docx");
@@ -67,9 +107,9 @@ const deleteDemandeEnseignant = async (id, useNew) => {
       console.log(error);
     }
   }
-
   return result;
 };
+
 const getDemandesByTeacherId = async (enseignantId, useNew) => {
   const db = await getDb(useNew);
   return await demandeEnseignantDao.getDemandesByTeacherId(enseignantId, db);
@@ -106,7 +146,7 @@ const handleDemandeEnseignant = async (
   );
   const result = await demandeEnseignantDao.updateDemandeEnseignant(
     demandId,
-    { current_status: "générée", generated_doc: `${demandId}_${fileNamePart1}.pdf`, status_history: status_history },
+    { current_status: "Générée", generated_doc: `${demandId}_${fileNamePart1}.pdf`, status_history: status_history },
     db
   );
   return result;

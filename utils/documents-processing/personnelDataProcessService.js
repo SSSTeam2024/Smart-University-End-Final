@@ -105,12 +105,23 @@ async function processFrenshPersonnelData(demandId, db) {
     )}`,
   };
 
+  // for (let index = 0; index < demandData.extra_data.length; index++) {
+  //   const currentBody = demandData.extra_data[index].body;
+  //   const currentValue = demandData.extra_data[index].value;
+  //   data[currentBody] = currentValue;
+  // }
   for (let index = 0; index < demandData.extra_data.length; index++) {
+
     const currentBody = demandData.extra_data[index].body;
     const currentValue = demandData.extra_data[index].value;
-    data[currentBody] = currentValue;
-  }
 
+    if (currentBody === 'noms_enfants' || currentBody === 'dates_naiss' || currentBody === 'status_fils' || currentBody === 'dates_etats') {
+      data[currentBody] = currentValue.replace(/#/g, '\n');
+    } else {
+      data[currentBody] = currentValue;
+    }
+
+  }
   return {
     information: data,
     generatedDocInfo: {
@@ -230,6 +241,23 @@ async function processArabicPersonnelData(demandId, db) {
   };
 
 
+  // for (let index = 0; index < demandData.extra_data.length; index++) {
+
+  //   const currentBody = demandData.extra_data[index].body;
+  //   const currentValue = demandData.extra_data[index].value;
+
+  //   if (currentBody === 'noms_enfants' || currentBody === 'dates_naiss' || currentBody === 'status_fils' || currentBody === 'dates_etats') {
+  //     const regex = /[^#]/;
+  //     if (currentValue !== '' && regex.test(currentValue)) {
+  //       data[currentBody] = currentValue.replace(/#/g, '\n');
+  //     } else {
+  //       data[currentBody] = '';
+  //     }
+  //   } else {
+  //     data[currentBody] = currentValue;
+  //   }
+
+  // }
   for (let index = 0; index < demandData.extra_data.length; index++) {
 
     const currentBody = demandData.extra_data[index].body;

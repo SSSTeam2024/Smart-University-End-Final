@@ -18,6 +18,7 @@ const DemandeEnseignantSchema = new Schema({
   langue: { type: String, required: false },
   nombre_copie: { type: Number, required: false },
   response: { type: String, required: false },
+  file: String,
   status_history: [{
     value: String,
     date: String

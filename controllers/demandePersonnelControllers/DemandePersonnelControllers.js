@@ -1,5 +1,5 @@
 const demandePersonnelService = require("../../services/demandePersonnelServices/demandePersonnelServices");
-
+const globalFunctions = require("../../utils/globalFunctions")
 function useNewDb(req) {
   return req.headers["x-use-new-db"] === "true";
 }
@@ -65,22 +65,111 @@ const getDemandePersonnelById = async (req, res) => {
   }
 };
 
+// const updateDemandePersonnel = async (req, res) => {
+//   try {
+//     const updatedDemandePersonnel =
+//       await demandePersonnelService.updateDemandePersonnel(
+//         req.body._id,
+//         req.body,
+//         useNewDb(req)
+//       );
+//     if (!updatedDemandePersonnel) {
+//       return res.status(404).json({ message: "DemandePersonnel not found" });
+//     }
+//     res.status(200).json(updatedDemandePersonnel);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
 const updateDemandePersonnel = async (req, res) => {
+  const {
+    personnelId,
+    title,
+    description,
+    piece_demande,
+    langue,
+    nombre_copie,
+    response,
+    FileBase64,
+    FileExtension,
+    status_history,
+    current_status,
+    generated_doc,
+    extra_data,
+    added_by
+  } = req.body;
+
+  const filePath = "files/demandePersonnel/";
+
+  let file = globalFunctions.generateUniqueFilename(
+    FileExtension,
+    "raison_file"
+  );
+
+  console.log(file)
+
+  let documents = [];
+
+  if (FileExtension !== '') {
+    documents.push({
+      base64String: FileBase64,
+      extension: FileExtension,
+      name: file,
+      path: filePath,
+    })
+  }
   try {
-    const updatedDemandePersonnel =
-      await demandePersonnelService.updateDemandePersonnel(
+    let updatedDemandePersonnel;
+    if (FileExtension == '') {
+      updatedDemandePersonnel = await demandePersonnelService.updateDemandePersonnel(
         req.body._id,
-        req.body,
+        {
+          personnelId,
+          title,
+          description,
+          piece_demande,
+          langue,
+          nombre_copie,
+          response,
+          status_history,
+          current_status,
+          generated_doc,
+          extra_data,
+          added_by
+        }, documents,
         useNewDb(req)
       );
+    } else {
+      updatedDemandePersonnel = await demandePersonnelService.updateDemandePersonnel(
+        req.body._id,
+        {
+          personnelId,
+          title,
+          description,
+          piece_demande,
+          langue,
+          nombre_copie,
+          response,
+          file,
+          status_history,
+          current_status,
+          generated_doc,
+          extra_data,
+          added_by
+        }, documents,
+        useNewDb(req)
+      );
+    }
+
     if (!updatedDemandePersonnel) {
-      return res.status(404).json({ message: "DemandePersonnel not found" });
+      return res.status(404).json({ message: "Demande personnel not found" });
     }
     res.status(200).json(updatedDemandePersonnel);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 const deleteDemandePersonnel = async (req, res) => {
   try {
@@ -99,12 +188,13 @@ const deleteDemandePersonnel = async (req, res) => {
 };
 const handleDemandePersonnel = async (req, res) => {
   try {
-    const { demandId, modelName, modelLangage } = req.body;
+    const { demandId, modelName, modelLangage, status_history } = req.body;
     const updatedDemandePersonnel =
       await demandePersonnelService.handleDemandePersonnel(
         demandId,
         modelName,
         modelLangage,
+        status_history,
         useNewDb(req)
       );
 
