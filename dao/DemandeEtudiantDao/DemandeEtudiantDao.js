@@ -35,7 +35,8 @@ const getAllDemandeEtudiants = async (dbName) => {
       ],
     })
     .populate("piece_demande")
-    .populate("generated_doc");
+    .populate("generated_doc")
+    .populate("added_by");
 };
 
 const getDemandeEtudiantById = async (id, dbName) => {

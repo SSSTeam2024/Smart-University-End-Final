@@ -261,7 +261,8 @@ async function processArabicTeacherData(demandId, db) {
     const currentValue = demandData.extra_data[index].value;
 
     if (currentBody === 'noms_enfants' || currentBody === 'dates_naiss' || currentBody === 'status_fils' || currentBody === 'dates_etats') {
-      if (currentValue !== '' && currentValue !== '#') {
+      const regex = /[^#]/;
+      if (currentValue !== '' && regex.test(currentValue)) {
         data[currentBody] = currentValue.replace(/#/g, '\n');
       } else {
         data[currentBody] = '';

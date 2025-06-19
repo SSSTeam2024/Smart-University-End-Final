@@ -1,5 +1,5 @@
 const demandeEtudiantService = require("../../services/DemandeEtudiantServices/DemandeEtudiantServices");
-
+const globalFunctions = require("../../utils/globalFunctions")
 function useNewDb(req) {
   return req.headers["x-use-new-db"] === "true";
 }
@@ -50,21 +50,111 @@ const getDemandeEtudiantById = async (req, res) => {
   }
 };
 
+// const updateDemandeEtudiant = async (req, res) => {
+//   try {
+//     const updatedDemandeEtudiant =
+//       await demandeEtudiantService.updateDemandeEtudiant(
+//         req.body._id,
+//         req.body,
+//         useNewDb(req)
+//       );
+//     if (!updatedDemandeEtudiant) {
+//       return res.status(404).json({ message: "DemandeEtudiant not found" });
+//     }
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 const updateDemandeEtudiant = async (req, res) => {
+  const {
+    studentId,
+    title,
+    description,
+    piece_demande,
+    langue,
+    nombre_copie,
+    response,
+    FileBase64,
+    FileExtension,
+    status_history,
+    current_status,
+    generated_doc,
+    extra_data,
+    added_by
+  } = req.body;
+
+  const filePath = "files/demandeEtudiant/";
+
+  let file = globalFunctions.generateUniqueFilename(
+    FileExtension,
+    "raison_file"
+  );
+
+  console.log(file)
+
+  let documents = [];
+
+  if (FileExtension !== '') {
+    documents.push({
+      base64String: FileBase64,
+      extension: FileExtension,
+      name: file,
+      path: filePath,
+    })
+  }
   try {
-    const updatedDemandeEtudiant =
-      await demandeEtudiantService.updateDemandeEtudiant(
+    let updatedDemandeEtudiant;
+    if (FileExtension == '') {
+      updatedDemandeEtudiant = await demandeEtudiantService.updateDemandeEtudiant(
         req.body._id,
-        req.body,
+        {
+          studentId,
+          title,
+          description,
+          piece_demande,
+          langue,
+          nombre_copie,
+          response,
+          status_history,
+          current_status,
+          generated_doc,
+          extra_data,
+          added_by
+        }, documents,
         useNewDb(req)
       );
-    if (!updatedDemandeEtudiant) {
-      return res.status(404).json({ message: "DemandeEtudiant not found" });
+    } else {
+      updatedDemandeEtudiant = await demandeEtudiantService.updateDemandeEtudiant(
+        req.body._id,
+        {
+          studentId,
+          title,
+          description,
+          piece_demande,
+          langue,
+          nombre_copie,
+          response,
+          file,
+          status_history,
+          current_status,
+          generated_doc,
+          extra_data,
+          added_by
+        }, documents,
+        useNewDb(req)
+      );
     }
+
+    if (!updatedDemandeEtudiant) {
+      return res.status(404).json({ message: "Demand etudiant not found" });
+    }
+    res.status(200).json(updatedDemandeEtudiant);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 const deleteDemandeEtudiant = async (req, res) => {
   try {
@@ -123,12 +213,14 @@ const deleteManyDemandeEtudiant = async (req, res) => {
 
 const handleDemandeEtudiant = async (req, res) => {
   try {
-    const { demandId, modelName, modelLangage } = req.body;
+    const { demandId, modelName, modelLangage, status_history } = req.body;
     const updatedDemandeEtudiant =
       await demandeEtudiantService.handleDemandeEtudiant(
         demandId,
         modelName,
-        modelLangage
+        modelLangage,
+        status_history,
+        useNewDb(req)
       );
 
     if (!updatedDemandeEtudiant) {
