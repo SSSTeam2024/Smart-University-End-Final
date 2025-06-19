@@ -80,8 +80,12 @@ const voieEnvoiSchema = require("../model/VoieEnvoiModel/VoieEnvoiModel");
 
 const societeSchema = require("../model/SocieteModel/SocieteModel");
 const stagePfeSchema = require("../model/StagePfeModel/StagePfeModel");
-const extraShortCodeSchema = require("../model/ShortCodeModel/extraShortCodeModel")
-const diversDocExtraSchema = require("../model/DiversDocExtraModel/DiversDocExtraModel")
+const extraShortCodeSchema = require("../model/ShortCodeModel/extraShortCodeModel");
+const diversDocExtraSchema = require("../model/DiversDocExtraModel/DiversDocExtraModel");
+const commissionSchema = require("../model/CommissionModel/CommissionModel");
+const typeStageSchema = require("../model/TypeStageModel/TypeStageModel");
+const avisCommissionSchema = require("../model/AvisCommission/AvisCommission");
+const generatedPvSchema = require("../model/GeneratedPvModel/GeneratedPvModel");
 
 function registerModels(conn) {
   conn.model("User", userSchema);
@@ -169,7 +173,11 @@ function registerModels(conn) {
 
   conn.model("Societe", societeSchema);
   conn.model("StagePfe", stagePfeSchema);
-  conn.model("ExtraShortCode", extraShortCodeSchema)
-  conn.model("DiversDocExtra", diversDocExtraSchema)
+  conn.model("ExtraShortCode", extraShortCodeSchema);
+  conn.model("DiversDocExtra", diversDocExtraSchema);
+  conn.model("Commission", commissionSchema);
+  conn.model("TypeStage", typeStageSchema);
+  conn.model("AvisCommission", avisCommissionSchema);
+  conn.model("GeneratedPv", generatedPvSchema);
 }
 module.exports = { registerModels };

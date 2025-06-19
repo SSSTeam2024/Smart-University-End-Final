@@ -113,6 +113,9 @@ const SocieteRoutes = require("./SocieteRoutes/SocieteRoutes");
 const StagePfeRoutes = require("./StagePfeRoutes/StagePfeRoutes");
 const StageProRoutes = require("./StageProRoutes/StageProRoutes");
 const TypeStageRoutes = require("./TypeStageRoutes/TypeStageRoutes");
+const CommissionRoutes = require("./CommissionRoutes/CommissionRoutes");
+const AvisCommissionRoutes = require("./AvisCommissionRoutes/AvisCommissionRoutes");
+const GeneratedPvRoutes = require("./GeneratedPvRoutes/GeneratedPvRoutes");
 
 // gestion des conges
 router.use("/examen", examenRoutes);
@@ -275,5 +278,14 @@ router.use("/stage-pro", StageProRoutes);
 
 //! Type Stage
 router.use("/type-stage", TypeStageRoutes);
+
+//! Commission
+router.use("/commission", CommissionRoutes);
+
+//! Avis Commission
+router.use("/avis-commission", AvisCommissionRoutes);
+
+//! Generated Pv
+router.use("/generated-pv", GeneratedPvRoutes);
 
 module.exports = router;

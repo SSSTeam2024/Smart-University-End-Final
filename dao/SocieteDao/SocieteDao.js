@@ -36,30 +36,29 @@ const getSocieteByid = async (id, dbName) => {
   }
 };
 
-// const updateSalle = async (id, updateData, dbName) => {
-//   const salleModel = await getSalleModel(dbName);
-//   return await salleModel.findByIdAndUpdate(id, updateData, { new: true });
-// };
+const updateSociete = async (id, updateData, dbName) => {
+  try {
+    const societeModel = await getSocieteModel(dbName);
+    return await societeModel.findByIdAndUpdate(id, updateData, { new: true });
+  } catch (error) {
+    console.error("Error !! In dao update societe by id :", error.message);
+  }
+};
 
-// const deleteSalle = async (id, dbName) => {
-//   const salleModel = await getSalleModel(dbName);
-//   const DepartementModel = await getDepartementModel(dbName);
-//   const deletedSalle = await salleModel.findByIdAndDelete(id);
-//   if (deletedSalle) {
-//     await DepartementModel.updateMany(
-//       { salles: id },
-//       { $pull: { salles: id } }
-//     );
-//   }
-//   return deletedSalle;
-// };
+const deleteSociete = async (id, dbName) => {
+  try {
+    const societeModel = await getSocieteModel(dbName);
+    return await societeModel.findByIdAndDelete(id);
+  } catch (error) {
+    console.error("Error !! In dao delete societe by id :", error.message);
+  }
+};
 
 module.exports = {
   getSocietes,
   createSociete,
   getSocieteByName,
   getSocieteByid,
-  //   updateSalle,
-  //   deleteSalle,
-  //   getSalleById,
+  deleteSociete,
+  updateSociete,
 };

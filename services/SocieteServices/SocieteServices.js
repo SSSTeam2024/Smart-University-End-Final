@@ -43,9 +43,29 @@ const getSocieteById = async (id, useNew) => {
   }
 };
 
+const deleteSociete = async (id, useNew) => {
+  try {
+    const db = await getDb(useNew);
+    return await SocieteDao.deleteSociete(id, db);
+  } catch (error) {
+    console.error("Error delete societe by id in services : ", error.message);
+  }
+};
+
+const updateSociete = async (id, updateData, useNew) => {
+  try {
+    const db = await getDb(useNew);
+    return await SocieteDao.updateSociete(id, updateData, db);
+  } catch (error) {
+    console.error("Error update societe by id in services : ", error.message);
+  }
+};
+
 module.exports = {
   getSocietes,
   createSociete,
   getSocieteByName,
   getSocieteById,
+  deleteSociete,
+  updateSociete,
 };
