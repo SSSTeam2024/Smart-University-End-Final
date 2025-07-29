@@ -93,7 +93,6 @@ const getAvisEtudiantById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 const updateAvisEtudiant = async (req, res) => {
   try {
     const {
@@ -103,7 +102,7 @@ const updateAvisEtudiant = async (req, res) => {
       auteurId,
       groupe_classe = [],
       lien,
-      gallery,
+      gallery = [],
       pdf,
       pdfBase64String,
       pdfExtension,
@@ -116,9 +115,9 @@ const updateAvisEtudiant = async (req, res) => {
     const galleryPath = "files/avisEtudiantFiles/photo/";
 
     let documents = [];
-
     let newGalleryFileNames = [];
 
+    // Handle PDF upload
     if (pdfBase64String && pdfExtension) {
       const pdfFilename = globalFunctions.generateUniqueFilename(
         pdfExtension,
@@ -132,30 +131,32 @@ const updateAvisEtudiant = async (req, res) => {
       });
     }
 
+    // Handle gallery images upload
     if (galleryBase64Strings.length > 0 && galleryExtensions.length > 0) {
       const galleryFilenames = galleryExtensions.map((ext, index) =>
-        globalFunctions.generateUniqueFilename(
-          ext,
-          `AvisEtudiantPHOTO_${index}`
-        )
+        globalFunctions.generateUniqueFilename(ext, `AvisEtudiantPHOTO_${index}`)
       );
 
       galleryBase64Strings.forEach((base64String, index) => {
         documents.push({
-          base64String: base64String,
+          base64String,
           extension: galleryExtensions[index],
           name: galleryFilenames[index],
           path: galleryPath,
         });
       });
+
+      newGalleryFileNames = newGalleryFileNames.concat(
+        documents
+          .filter((doc) => doc.path === galleryPath)
+          .map((doc) => doc.name)
+      );
     }
 
-    newGalleryFileNames = concat(
-      documents.filter((doc) => doc.path === galleryPath).map((doc) => doc.name)
-    );
-
+    // Combine new + existing gallery file names
     newGalleryFileNames = newGalleryFileNames.concat(gallery);
 
+    // Perform update through service
     const updatedAvisEtudiant = await avisEtudiantService.updateAvisEtudiant(
       _id,
       {
@@ -164,7 +165,7 @@ const updateAvisEtudiant = async (req, res) => {
         groupe_classe,
         auteurId,
         lien,
-        pdf: documents.find((doc) => doc.path === pdfPath)?.name,
+        pdf: documents.find((doc) => doc.path === pdfPath)?.name || pdf,
         gallery: newGalleryFileNames,
         date_avis,
       },
@@ -178,7 +179,7 @@ const updateAvisEtudiant = async (req, res) => {
 
     res.status(200).json(updatedAvisEtudiant);
   } catch (error) {
-    console.error("Error updating Avis Etudiant :", error);
+    console.error("Error updating Avis Etudiant:", error);
     res.status(500).json({ message: error.message });
   }
 };

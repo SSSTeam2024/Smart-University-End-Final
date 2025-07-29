@@ -195,7 +195,12 @@ const getTeacherByCIN = async (cin_teacher, dbName) => {
     throw error;
   }
 };
-
+const findTeacherByToken = async (token, dbName) => {
+  let api_token = token;
+  const User = getEnseignantModel(dbName);
+  return await User.findOne({ api_token })
+    
+};
 const updateJwtToken = async (id, token, dbName) => {
   const enseignantModel = await getEnseignantModel(dbName);
   return await enseignantModel.findByIdAndUpdate(
@@ -234,4 +239,5 @@ module.exports = {
   getTeacherByCIN,
   updateJwtToken,
   logoutTeacher,
+  findTeacherByToken
 };

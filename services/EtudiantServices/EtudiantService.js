@@ -9,8 +9,8 @@ const jwt = require("jsonwebtoken");
 const { getDb } = require("../../config/dbSwitcher");
 
 const registerEtudiant = async (userData, documents = [], useNew) => {
+  const db = await getDb(useNew);
   try {
-    const db = await getDb(useNew);
     let saveResult = true;
 
     if (documents.length > 0) {
@@ -19,11 +19,14 @@ const registerEtudiant = async (userData, documents = [], useNew) => {
 
     if (saveResult) {
       const hashedPassword = await bcrypt.hash(userData.password, 10);
-      const newEtudiant = await etudiantDao.createEudiant({
-        ...userData,
-        password: hashedPassword,
-        db,
-      });
+      const key = "hi";
+      const newEtudiant = await etudiantDao.createEudiant(
+        {
+          ...userData,
+          password: hashedPassword,
+        },
+        db
+      );
 
       // const email = prepareEmailInscription(
       //   userData.email,

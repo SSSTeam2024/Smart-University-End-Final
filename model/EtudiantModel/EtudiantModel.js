@@ -101,10 +101,10 @@ const etudiantSchema = new mongoose.Schema(
     mention_university_fr: String,
     session_university_fr: String,
     session_university_ar: String,
-       historique_etudiant: [
+    historique_etudiant: [
       {
         date_debut: String,         
-        fichier_fin: String,       
+        date_fin: String,       
         periode: String,      
         situation: String,   
         etablissement: String,               

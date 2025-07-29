@@ -480,6 +480,24 @@ const logoutTeacher = async (req, res) => {
     res.status(500).json({ error: "Error logging out teacher" });
   }
 };
+const getTeacherByToken = async (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(401).send("Token missing");
+    }
+    const teacher = await enseignantService.getTeacherByToken(token, useNewDb(req));
+    // const newDatabase = metdataService.getNewDbCache();
+    if (!teacher) {
+      return res.status(404).send("teacher not found");
+    }
+
+    res.json(teacher);
+  } catch (error) {
+    console.error(`Get teacher by token error controller: ${error.message}`);
+    res.status(500).send(error.message);
+  }
+};
 
 module.exports = {
   addEnseignant,
@@ -493,4 +511,5 @@ module.exports = {
   loginTeacher,
   getTeacherByCin,
   logoutTeacher,
+  getTeacherByToken
 };

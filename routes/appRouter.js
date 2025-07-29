@@ -76,6 +76,7 @@ const generatedDocRoutes = require("./GeneratedDocRoutes/GeneratedDocRoutes");
 const demandeTirageRoutes = require("./DemandeTirageRoutes/DemandeTirageRoutes");
 const extraShortCodeRoutes = require("./ShortCodeRoutes/extraShortCodeRoutes");
 const diversDocExtraRoutes = require("./DiversDocExtraRoutes/DiversDocExtraRoutes");
+const encadrementRoutes = require("./EncadrementRoutes/EncadrementRoutes")
 
 const DatabaseNamesRoutes = require("./DatabaseNamesRoutes/DatabaseNamesRoutes");
 
@@ -287,5 +288,6 @@ router.use("/avis-commission", AvisCommissionRoutes);
 
 //! Generated Pv
 router.use("/generated-pv", GeneratedPvRoutes);
+router.use("/encadrement", encadrementRoutes);
 
 module.exports = router;

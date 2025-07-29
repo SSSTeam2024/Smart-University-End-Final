@@ -86,6 +86,7 @@ const commissionSchema = require("../model/CommissionModel/CommissionModel");
 const typeStageSchema = require("../model/TypeStageModel/TypeStageModel");
 const avisCommissionSchema = require("../model/AvisCommission/AvisCommission");
 const generatedPvSchema = require("../model/GeneratedPvModel/GeneratedPvModel");
+const encadrementSchema = require("../model/EncadrementModel/EncadrementModel") 
 
 function registerModels(conn) {
   conn.model("User", userSchema);
@@ -179,5 +180,6 @@ function registerModels(conn) {
   conn.model("TypeStage", typeStageSchema);
   conn.model("AvisCommission", avisCommissionSchema);
   conn.model("GeneratedPv", generatedPvSchema);
+  conn.model("Encadrement", encadrementSchema)
 }
 module.exports = { registerModels };

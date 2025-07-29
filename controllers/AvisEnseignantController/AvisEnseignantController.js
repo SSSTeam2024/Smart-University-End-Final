@@ -106,8 +106,10 @@ const updateAvisEnseignant = async (req, res) => {
       auteurId,
       departement = [],
       lien,
+      pdf,
       pdfBase64String,
       pdfExtension,
+      gallery = [],
       galleryBase64Strings = [],
       galleryExtensions = [],
       date_avis,
@@ -117,11 +119,13 @@ const updateAvisEnseignant = async (req, res) => {
     const galleryPath = "files/avisEnseignantFiles/photo/";
 
     let documents = [];
+  let newGalleryFileNames = [];
 
+    // Handle PDF upload
     if (pdfBase64String && pdfExtension) {
       const pdfFilename = globalFunctions.generateUniqueFilename(
         pdfExtension,
-        "AvisEnseignantPDF"
+        "AvisEtudiantPDF"
       );
       documents.push({
         base64String: pdfBase64String,
@@ -131,23 +135,32 @@ const updateAvisEnseignant = async (req, res) => {
       });
     }
 
+    // Handle gallery images upload
     if (galleryBase64Strings.length > 0 && galleryExtensions.length > 0) {
       const galleryFilenames = galleryExtensions.map((ext, index) =>
-        globalFunctions.generateUniqueFilename(
-          ext,
-          `AvisEnseignantPHOTO_${index}`
-        )
+        globalFunctions.generateUniqueFilename(ext, `AvisEtudiantPHOTO_${index}`)
       );
 
       galleryBase64Strings.forEach((base64String, index) => {
         documents.push({
-          base64String: base64String,
+          base64String,
           extension: galleryExtensions[index],
           name: galleryFilenames[index],
           path: galleryPath,
         });
       });
+
+      newGalleryFileNames = newGalleryFileNames.concat(
+        documents
+          .filter((doc) => doc.path === galleryPath)
+          .map((doc) => doc.name)
+      );
     }
+
+    // Combine new + existing gallery file names
+  const keptGalleryFileNames = Array.isArray(gallery) ? gallery : [];
+newGalleryFileNames = [...newGalleryFileNames, ...keptGalleryFileNames];
+
 
     const updatedAvisEnseignant =
       await avisEnseignantService.updateAvisEnseignant(
@@ -155,15 +168,11 @@ const updateAvisEnseignant = async (req, res) => {
         {
           title,
           description,
-          category,
           departement: [],
           auteurId,
-          address,
           lien,
           pdf: documents.find((doc) => doc.path === pdfPath)?.name,
-          gallery: documents
-            .filter((doc) => doc.path === galleryPath)
-            .map((doc) => doc.name),
+          gallery: newGalleryFileNames,
           date_avis,
         },
         documents,
