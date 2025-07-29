@@ -32,7 +32,7 @@ const getPersonnels = async (dbName) => {
     .populate({
       path: "historique_positions.categorie",
       model: "CategoriePersonnel",
-    }) 
+    })
     .populate({
       path: "historique_services.service",
       model: "ServicePersonnel",
@@ -59,11 +59,7 @@ const getPersonnelById = async (id, dbName) => {
     .populate("grade")
     .populate("poste")
     .populate("service")
-<<<<<<< HEAD
     .populate({
-=======
-      .populate({
->>>>>>> 9caefe7174eab97fc4ac8b715c4b4dc909ee01f0
       path: "historique_positions.poste",
       model: "PostePersonnel",
     })
@@ -74,13 +70,10 @@ const getPersonnelById = async (id, dbName) => {
     .populate({
       path: "historique_positions.categorie",
       model: "CategoriePersonnel",
-<<<<<<< HEAD
-=======
-    }) 
+    })
     .populate({
       path: "historique_services.service",
       model: "ServicePersonnel",
->>>>>>> 9caefe7174eab97fc4ac8b715c4b4dc909ee01f0
     });
 };
 

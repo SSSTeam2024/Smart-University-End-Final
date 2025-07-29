@@ -51,14 +51,9 @@ const addPersonnel = async (req, res) => {
       PhotoProfilFileExtension,
       PhotoProfilFileBase64String,
       password,
-<<<<<<< HEAD
-      historique_positions
-
-=======
       historique_positions,
       historique_services
-     
->>>>>>> 9caefe7174eab97fc4ac8b715c4b4dc909ee01f0
+
     } = req.body;
 
     // If PhotoProfilFileBase64String is provided, prepare the document array
@@ -76,8 +71,8 @@ const addPersonnel = async (req, res) => {
       ]
       : []; // Empty array if no file data
 
-  // Handle historique_positions file uploads
-   const updatedHistoriquePositions = (historique_positions || []).map((item, index) => {
+    // Handle historique_positions file uploads
+    const updatedHistoriquePositions = (historique_positions || []).map((item, index) => {
       const updatedItem = { ...item };
 
       // fichier_affectation
@@ -127,41 +122,41 @@ const addPersonnel = async (req, res) => {
 
       return updatedItem;
     });
-const updatedHistoriqueServices = (historique_services || []).map((item, index) => {
-  const updatedItem = { ...item };
+    const updatedHistoriqueServices = (historique_services || []).map((item, index) => {
+      const updatedItem = { ...item };
 
-  // fichier_affectation
-  if (item.fichier_affectationBase64 && item.fichier_affectationExtension) {
-    const filename = globalFunctions.generateUniqueFilename(
-      item.fichier_affectationExtension,
-      `service_affectation_${index}`
-    );
-    updatedItem.fichier_affectation = filename;
-    documents.push({
-      base64String: item.fichier_affectationBase64,
-      extension: item.fichier_affectationExtension,
-      name: filename,
-      path: "files/personnelFiles/historique_services/",
+      // fichier_affectation
+      if (item.fichier_affectationBase64 && item.fichier_affectationExtension) {
+        const filename = globalFunctions.generateUniqueFilename(
+          item.fichier_affectationExtension,
+          `service_affectation_${index}`
+        );
+        updatedItem.fichier_affectation = filename;
+        documents.push({
+          base64String: item.fichier_affectationBase64,
+          extension: item.fichier_affectationExtension,
+          name: filename,
+          path: "files/personnelFiles/historique_services/",
+        });
+      }
+
+      // fichier_fin
+      if (item.fichier_finBase64 && item.fichier_finExtension) {
+        const filename = globalFunctions.generateUniqueFilename(
+          item.fichier_finExtension,
+          `service_fin_${index}`
+        );
+        updatedItem.fichier_fin = filename;
+        documents.push({
+          base64String: item.fichier_finBase64,
+          extension: item.fichier_finExtension,
+          name: filename,
+          path: "files/personnelFiles/historique_services/",
+        });
+      }
+
+      return updatedItem;
     });
-  }
-
-  // fichier_fin
-  if (item.fichier_finBase64 && item.fichier_finExtension) {
-    const filename = globalFunctions.generateUniqueFilename(
-      item.fichier_finExtension,
-      `service_fin_${index}`
-    );
-    updatedItem.fichier_fin = filename;
-    documents.push({
-      base64String: item.fichier_finBase64,
-      extension: item.fichier_finExtension,
-      name: filename,
-      path: "files/personnelFiles/historique_services/",
-    });
-  }
-
-  return updatedItem;
-});
 
     // Prepare personnel data for creation
     const personnelData = {
@@ -302,7 +297,7 @@ const updatePersonnelById = async (req, res) => {
       PhotoProfilFileExtension,
       PhotoProfilFileBase64String,
       historique_positions,
-       historique_services,
+      historique_services,
     } = req.body;
 
     const photoProfilPath = "files/personnelFiles/PhotoProfil/";
