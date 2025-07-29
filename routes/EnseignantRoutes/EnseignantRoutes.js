@@ -7,6 +7,7 @@ router.post("/create-enseignant", enseignantController.addEnseignant);
 router.get("/get-all-enseignant", enseignantController.getEnseignants);
 router.put("/update-enseignant", enseignantController.updateEnseignantById);
 router.post("/get-enseignant", enseignantController.getEnseignantById);
+router.post("/get-teacher-by-token", enseignantController.getTeacherByToken);
 router.delete(
   "/delete-enseignant/:id",
   enseignantController.deleteEnseignantById

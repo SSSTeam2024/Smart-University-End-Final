@@ -73,6 +73,23 @@ const enseignantSchema = new mongoose.Schema(
     situation_fr: String,
     password: String,
     api_token: String,
+     historique_positions: [
+      {
+        poste: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "PosteEnseignant",
+          default: null,
+        },
+        grade: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "GradeEnseignant",
+          default: null,
+        },
+        date_affectation: String,     
+        date_titularisation: String,   
+        date_depart: String            
+      }
+    ]
   },
   { timestamps: true }
 );

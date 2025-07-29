@@ -101,6 +101,7 @@ const addStudent = async (req, res) => {
       mention_university_fr,
       session_university_fr,
       session_university_ar,
+      historique_etudiant
     } = req.body;
 
     const face1CINPath = "files/etudiantFiles/Face1CIN/";
@@ -193,8 +194,29 @@ const addStudent = async (req, res) => {
       };
     });
 
+const updatedHistoriqueEtudiant = (historique_etudiant || []).map((item, index) => {
+      const updatedItem = { ...item };
+
+      // fichier_affectation
+      if (item.fichier_departBase64 && item.fichier_departExtension) {
+        const filename = globalFunctions.generateUniqueFilename(
+          item.fichier_departExtension,
+          `fichier_depart_${index}`
+        );
+        updatedItem.fichier_affectation = filename;
+        documents.push({
+          base64String: item.fichier_departBase64,
+          extension: item.fichier_departExtension,
+          name: filename,
+          path: "files/etudiantFiles/historique/",
+        });
+      }
+        return updatedItem;
+    });
+
     const code = generateCode.generateCompositeCode();
     let pwd = String(num_CIN).split("").reverse().join("");
+    
     const etudiant = await studentService.registerEtudiant(
       {
         nom_fr,
@@ -277,6 +299,7 @@ const addStudent = async (req, res) => {
         mention_university_fr,
         session_university_fr,
         session_university_ar,
+        historique_etudiant: updatedHistoriqueEtudiant
       },
       documents,
       useNewDb(req)
@@ -447,6 +470,7 @@ const updateStudent = async (req, res) => {
       matricule_number,
       passeport_number,
       cnss_number,
+      historique_etudiant,
       files = [],
     } = req.body;
 
@@ -538,6 +562,24 @@ const updateStudent = async (req, res) => {
       fileName: file.name,
     }));
   
+    const historiqueEtudiantPath = "files/etudiantFiles/historique/";
+
+    const updatedHistoriqueEtudiant = (historique_etudiant || []).map((item, index) => {
+      const updatedItem = { ...item };
+
+      // fichier_affectation
+      if (item.fichier_departBase64 && item.fichier_departExtension) {
+        const filename = generateUniqueFilename(
+          item.fichier_departExtension,
+          `fichier_depart_${index}`
+        );
+        saveFile(item.fichier_departBase64, historiqueEtudiantPath, filename);
+        updatedItem.fichier_depart = filename;
+      }
+
+    
+      return updatedItem;
+    });
 
     const updateFields = {
       nom_fr,
@@ -598,6 +640,7 @@ const updateStudent = async (req, res) => {
       passeport_number,
       cnss_number,
       files: filesArray,
+      historique_etudiant: updatedHistoriqueEtudiant
     };
 
      // Assign uploaded file names to specific fields

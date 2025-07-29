@@ -38,7 +38,16 @@ const getEnseignants = async (dbName) => {
     .populate("specilaite")
     .populate("grade")
     .populate("poste")
-    .populate("departements");
+    .populate("departements")
+    .populate({
+      path: "historique_positions.poste",
+      model: "PosteEnseignant",
+    })
+    .populate({
+      path: "historique_positions.grade",
+      model: "GradeEnseignant",
+    })
+
 };
 
 const updateEnseignant = async (id, updateData, dbName) => {
@@ -186,7 +195,12 @@ const getTeacherByCIN = async (cin_teacher, dbName) => {
     throw error;
   }
 };
-
+const findTeacherByToken = async (token, dbName) => {
+  let api_token = token;
+  const User = getEnseignantModel(dbName);
+  return await User.findOne({ api_token })
+    
+};
 const updateJwtToken = async (id, token, dbName) => {
   const enseignantModel = await getEnseignantModel(dbName);
   return await enseignantModel.findByIdAndUpdate(
@@ -225,4 +239,5 @@ module.exports = {
   getTeacherByCIN,
   updateJwtToken,
   logoutTeacher,
+  findTeacherByToken
 };

@@ -23,19 +23,19 @@ const getAllAvisEtudiants = async (dbName) => {
 
 const getAvisEtudiantById = async (id, dbName) => {
   const avisEtudiantModel = await getAvisEtudiantModel(dbName);
-  return AvisEtudiant.findById(id).populate("groupe_classe");
+  return avisEtudiantModel.findById(id).populate("groupe_classe");
 };
 
 const updateAvisEtudiant = async (id, updateData, dbName) => {
   const avisEtudiantModel = await getAvisEtudiantModel(dbName);
-  return AvisEtudiant.findByIdAndUpdate(id, updateData, { new: true }).populate(
+  return avisEtudiantModel.findByIdAndUpdate(id, updateData, { new: true }).populate(
     "groupe_classe"
   );
 };
 
 const deleteAvisEtudiant = async (id, dbName) => {
   const avisEtudiantModel = await getAvisEtudiantModel(dbName);
-  return AvisEtudiant.findByIdAndDelete(id);
+  return avisEtudiantModel.findByIdAndDelete(id);
 };
 
 const deleteAvisEtudiants = async (dbName, ids) => {

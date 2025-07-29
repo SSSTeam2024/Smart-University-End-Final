@@ -84,6 +84,14 @@ const extraShortCodeSchema = require("../model/ShortCodeModel/extraShortCodeMode
 const diversDocExtraSchema = require("../model/DiversDocExtraModel/DiversDocExtraModel")
 const studentsMessageSchema = require("../model/StudentsMessageModel/StudentsMessageModel")
 const studentsRoomSchema = require("../model/StudentsRoomModel/StudentsRoomModel")
+const extraShortCodeSchema = require("../model/ShortCodeModel/extraShortCodeModel");
+const diversDocExtraSchema = require("../model/DiversDocExtraModel/DiversDocExtraModel");
+const commissionSchema = require("../model/CommissionModel/CommissionModel");
+const typeStageSchema = require("../model/TypeStageModel/TypeStageModel");
+const avisCommissionSchema = require("../model/AvisCommission/AvisCommission");
+const generatedPvSchema = require("../model/GeneratedPvModel/GeneratedPvModel");
+const encadrementSchema = require("../model/EncadrementModel/EncadrementModel")
+
 function registerModels(conn) {
 
   //message and room massenger for students
@@ -176,7 +184,12 @@ function registerModels(conn) {
 
   conn.model("Societe", societeSchema);
   conn.model("StagePfe", stagePfeSchema);
-  conn.model("ExtraShortCode", extraShortCodeSchema)
-  conn.model("DiversDocExtra", diversDocExtraSchema)
+  conn.model("ExtraShortCode", extraShortCodeSchema);
+  conn.model("DiversDocExtra", diversDocExtraSchema);
+  conn.model("Commission", commissionSchema);
+  conn.model("TypeStage", typeStageSchema);
+  conn.model("AvisCommission", avisCommissionSchema);
+  conn.model("GeneratedPv", generatedPvSchema);
+  conn.model("Encadrement", encadrementSchema)
 }
 module.exports = { registerModels };

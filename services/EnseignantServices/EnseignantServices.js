@@ -164,6 +164,10 @@ const logoutTeacher = async (teacherId, useNew) => {
   const db = await getDb(useNew);
   return await enseignantDao.logoutTeacher(teacherId, db);
 };
+const getTeacherByToken = async (token, dbName) => {
+  const db = await getDb(dbName);
+  return await enseignantDao.findTeacherByToken(token, db);
+};
 
 module.exports = {
   registerEnseignantDao,
@@ -177,4 +181,5 @@ module.exports = {
   login,
   getEtudiantByCin,
   logoutTeacher,
+  getTeacherByToken
 };

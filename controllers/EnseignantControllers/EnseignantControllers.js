@@ -59,7 +59,8 @@ const addEnseignant = async (req, res) => {
       PhotoProfilFileBase64String,
       situation_fr,
       situation_ar,
-      educations
+      educations,
+      historique_positions
     } = req.body;
 
     // If PhotoProfilFileBase64String is provided, prepare the document array
@@ -126,6 +127,7 @@ const addEnseignant = async (req, res) => {
       situation_ar,
       certif3,
       educations,
+      historique_positions,
       photo_profil: PhotoProfilFileBase64String
         ? globalFunctions.generateUniqueFilename(
             PhotoProfilFileExtension,
@@ -235,7 +237,8 @@ const updateEnseignantById = async (req, res) => {
       PhotoProfilFileBase64String,
       situation_fr,
       situation_ar,
-      educations
+      educations,
+      historique_positions
     } = req.body;
 
     const photoProfilPath = "files/enseignantFiles/PhotoProfil/";
@@ -331,7 +334,8 @@ const updateEnseignantById = async (req, res) => {
       photo_profil, // Correctly assign the photo profile name
       situation_fr,
       situation_ar,
-      educations
+      educations,
+      historique_positions
     };
 
     // Call the service to update personnel
@@ -476,6 +480,24 @@ const logoutTeacher = async (req, res) => {
     res.status(500).json({ error: "Error logging out teacher" });
   }
 };
+const getTeacherByToken = async (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(401).send("Token missing");
+    }
+    const teacher = await enseignantService.getTeacherByToken(token, useNewDb(req));
+    // const newDatabase = metdataService.getNewDbCache();
+    if (!teacher) {
+      return res.status(404).send("teacher not found");
+    }
+
+    res.json(teacher);
+  } catch (error) {
+    console.error(`Get teacher by token error controller: ${error.message}`);
+    res.status(500).send(error.message);
+  }
+};
 
 module.exports = {
   addEnseignant,
@@ -489,4 +511,5 @@ module.exports = {
   loginTeacher,
   getTeacherByCin,
   logoutTeacher,
+  getTeacherByToken
 };
