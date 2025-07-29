@@ -9,4 +9,5 @@ router.post('/get-template-body', templateBodyController.getAllTemplateBodyById)
 router.delete('/delete-template-body/:id', templateBodyController.deleteTemplateBody);
 router.post('/get-template-bodies-by-context', templateBodyController.getTemplateBodyByContext);
 router.put('/update-template/:id', templateBodyController.updateTemplateBodyById);
+router.get('/by-admin/:adminId', templateBodyController.getTemplateBodiesByAdminId);
 module.exports = router;

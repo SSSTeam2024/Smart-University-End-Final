@@ -16,6 +16,7 @@ const addTemplateBody = async (req, res) => {
       intended_for,
       has_code,
       has_number,
+      handled_by
     } = req.body;
 
     let documents = [];
@@ -41,6 +42,7 @@ const addTemplateBody = async (req, res) => {
         intended_for,
         has_code,
         has_number,
+        handled_by
       },
       documents,
       useNewDb(req)
@@ -109,6 +111,24 @@ const getTemplateBodyByContext = async (req, res) => {
   }
 };
 
+const getTemplateBodiesByAdminId = async (req, res) => {
+  try {
+    const { adminId } = req.params;
+    console.log(adminId)
+    if (!adminId) return res.status(400).json({ message: "adminId param is required" });
+
+    const templates = await templateBodyService.getTemplateBodiesByAdminId(adminId, useNewDb(req));
+
+    return res.json(templates);
+  } catch (error) {
+    console.error("Error fetching template bodies by adminId:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+
+
+
 const updateTemplateBodyById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -122,6 +142,7 @@ const updateTemplateBodyById = async (req, res) => {
       intended_for,
       has_code,
       has_number,
+      handled_by
     } = req.body;
 
     let documents = [];
@@ -149,6 +170,7 @@ const updateTemplateBodyById = async (req, res) => {
           intended_for,
           has_code,
           has_number,
+          handled_by
         },
         documents,
         oldFileName,
@@ -165,6 +187,7 @@ const updateTemplateBodyById = async (req, res) => {
           intended_for,
           has_code,
           has_number,
+          handled_by
         },
         documents,
         '',
@@ -185,4 +208,5 @@ module.exports = {
   deleteTemplateBody,
   getTemplateBodyByContext,
   updateTemplateBodyById,
+  getTemplateBodiesByAdminId
 };

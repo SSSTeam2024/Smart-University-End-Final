@@ -8,8 +8,29 @@ const globalFunctions = require("../../utils/globalFunctions");
 
 const fs = require("fs").promises;
 
-const createDemandePersonnel = async (demandePersonnelData, useNew) => {
+// const createDemandePersonnel = async (demandePersonnelData, useNew) => {
+//   const db = await getDb(useNew);
+//   return demandePersonnelDao.createDemandePersonnel(demandePersonnelData, db);
+// };
+
+const createDemandePersonnel = async (demandePersonnelData, documents, useNew) => {
   const db = await getDb(useNew);
+
+  // Check for existing demande with same criteria and status "En attente"
+  const existingDemande = await demandePersonnelDao.findExistingPendingDemande({
+    personnelId: demandePersonnelData.personnelId,
+    piece_demande: demandePersonnelData.piece_demande,
+    langue: demandePersonnelData.langue,
+  }, db);
+
+  if (existingDemande) {
+    throw new Error("Une demande similaire est déjà en attente.");
+  }
+
+  if (documents.length > 0) {
+    saveResult = await saveDocumentToServer(documents);
+  }
+
   return demandePersonnelDao.createDemandePersonnel(demandePersonnelData, db);
 };
 
@@ -81,42 +102,66 @@ const updateDemandePersonnel = async (id, updateData, documents, useNew) => {
 const deleteDemandePersonnel = async (id, useNew) => {
   const db = await getDb(useNew);
 
-  const toBeDeleted = await demandePersonnelDao.getDemandeByPersonnelId(id, db);
+  const toBeDeleted = await demandePersonnelDao.getDemandePersonnelById(id, db);
+
+  const regex = /extra_files\.(jpeg|png|jpg|pdf|docx)$/;
+
+  for (const extra of toBeDeleted.extra_data) {
+    if (regex.test(extra.value)) {
+      try {
+        fs.unlink(`./files/demandePersonnel/extraFilesDemande/${extra.value}`, (err) => {
+          conso.log(err);
+          if (err) {
+            console.error('Error deleting the file:', err);
+          } else {
+            console.log('File deleted successfully');
+          }
+        });
+
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
 
   const result = await demandePersonnelDao.deleteDemandePersonnel(id, db);
 
-  if (toBeDeleted.status !== 'Approuvée' || toBeDeleted.status !== 'Réfusée') {
-    const oldPdfFileName = toBeDeleted.generated_doc;
+  // if (toBeDeleted.status !== 'Approuvée' || toBeDeleted.status !== 'Réfusée') {
+  //   const oldPdfFileName = toBeDeleted.generated_doc;
 
-    const oldDoxFileName = oldPdfFileName.replace(/\.[^/.]+$/, ".docx");
+  //   const oldDoxFileName = oldPdfFileName.replace(/\.[^/.]+$/, ".docx");
 
-    const restul2 = await generatedDocService.deleteGeneratedDocByDocName(oldPdfFileName, useNew)
+  //   const restul2 = await generatedDocService.deleteGeneratedDocByDocName(oldPdfFileName, useNew)
 
-    try {
-      fs.unlink(`./files/generated_docs/docx/employee_docx/${oldDoxFileName}`, (err) => {
-        conso.log(err);
-        if (err) {
-          console.error('Error deleting the file:', err);
-        } else {
-          console.log('File deleted successfully');
-        }
-      });
+  // try {
+  //   fs.unlink(`./files/generated_docs/docx/employee_docx/${oldDoxFileName}`, (err) => {
+  //     conso.log(err);
+  //     if (err) {
+  //       console.error('Error deleting the file:', err);
+  //     } else {
+  //       console.log('File deleted successfully');
+  //     }
+  //   });
 
-      fs.unlink(`./files/generated_docs/pdf/employee_pdf/${oldPdfFileName}`, (err) => {
-        conso.log(err);
-        if (err) {
-          console.error('Error deleting the file:', err);
-        } else {
-          console.log('File deleted successfully');
-        }
-      });
+  //   fs.unlink(`./files/generated_docs/pdf/employee_pdf/${oldPdfFileName}`, (err) => {
+  //     conso.log(err);
+  //     if (err) {
+  //       console.error('Error deleting the file:', err);
+  //     } else {
+  //       console.log('File deleted successfully');
+  //     }
+  //   });
 
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  // } catch (error) {
+  //   console.log(error);
+  // }
+  // }
+
   return result;
 };
+
+
+
 const deleteManyDemandePersonnel = async (useNew, ids) => {
   const db = await getDb(useNew);
   return demandePersonnelDao.deleteManyDemandePersonnel(db, ids);
@@ -231,6 +276,10 @@ async function saveFile(base64String, fileName, file_path) {
   });
 }
 
+const getDemandesByAdminId = async (adminId, useNew) => {
+  const db = await getDb(useNew);
+  return await demandePersonnelDao.getDemandesByAdminId(adminId, db);
+};
 module.exports = {
   createDemandePersonnel,
   getAllDemandePersonnels,
@@ -240,4 +289,5 @@ module.exports = {
   deleteManyDemandePersonnel,
   handleDemandePersonnel,
   getDemandesByPersonnelId,
+  getDemandesByAdminId
 };

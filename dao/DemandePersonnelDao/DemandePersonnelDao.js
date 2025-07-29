@@ -1,5 +1,5 @@
 const DemandePersonnelSchema = require("../../model/DemandePersonnelModel/DemandePersonnelModel");
-
+const templateBodyDao = require("../TemplateBodyDao/templateBodyDao")
 function getDemandePersonnelModel(dbConnection) {
   return (
     dbConnection.models.DemandePersonnel ||
@@ -109,6 +109,35 @@ const getDemandeByPersonnelId = async (id, dbName) => {
   }
 };
 
+const findExistingPendingDemande = async ({ personnelId, piece_demande, langue }, dbName) => {
+  const DemandePersonnel = await getDemandePersonnelModel(dbName);
+
+  return await DemandePersonnel.findOne({
+    personnelId,
+    piece_demande,
+    langue,
+    current_status: "En attente",
+  });
+};
+
+const getDemandesByAdminId = async (adminId, dbName) => {
+  const DemandePersonnel = await getDemandePersonnelModel(dbName);
+
+  const allowedTemplates = await templateBodyDao.getTemplateBodiesByAdminId(adminId, dbName);
+  const templateIds = allowedTemplates.map((tpl) => tpl._id);
+  if (templateIds.length === 0) return [];
+
+  const demandes = await DemandePersonnel.find({
+    piece_demande: { $in: templateIds },
+  })
+    .populate("piece_demande")
+    .populate("personnelId")
+    .populate("added_by");
+
+  return demandes;
+};
+
+
 module.exports = {
   createDemandePersonnel,
   getAllDemandePersonnels,
@@ -117,4 +146,6 @@ module.exports = {
   deleteDemandePersonnel,
   deleteManyDemandePersonnel,
   getDemandeByPersonnelId,
+  findExistingPendingDemande,
+  getDemandesByAdminId
 };

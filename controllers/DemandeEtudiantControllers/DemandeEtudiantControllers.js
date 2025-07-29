@@ -92,10 +92,11 @@ const updateDemandeEtudiant = async (req, res) => {
   );
 
   console.log(file)
+  console.log("FileExtension", FileExtension)
 
   let documents = [];
 
-  if (FileExtension !== '') {
+  if (FileExtension !== '' && FileExtension !== undefined && FileExtension !== null) {
     documents.push({
       base64String: FileBase64,
       extension: FileExtension,
@@ -105,7 +106,7 @@ const updateDemandeEtudiant = async (req, res) => {
   }
   try {
     let updatedDemandeEtudiant;
-    if (FileExtension == '') {
+    if (FileExtension == '' || FileExtension === undefined || FileExtension === null) {
       updatedDemandeEtudiant = await demandeEtudiantService.updateDemandeEtudiant(
         req.body._id,
         {
@@ -232,6 +233,24 @@ const handleDemandeEtudiant = async (req, res) => {
   }
 };
 
+const getDemandesByAdmin = async (req, res) => {
+  try {
+    const adminId = req.params.adminId;
+
+    if (!adminId) {
+      return res.status(400).json({ message: "Admin ID is required" });
+    }
+
+    const demandes = await demandeEtudiantService.getDemandesByAdminId(adminId, useNewDb(req));
+    res.status(200).json(demandes);
+  } catch (err) {
+    console.error("Error fetching demandes by admin:", err);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
+
+
 module.exports = {
   createDemandeEtudiant,
   getAllDemandeEtudiants,
@@ -241,4 +260,5 @@ module.exports = {
   getDemandesByStudentId,
   handleDemandeEtudiant,
   deleteManyDemandeEtudiant,
+  getDemandesByAdmin
 };

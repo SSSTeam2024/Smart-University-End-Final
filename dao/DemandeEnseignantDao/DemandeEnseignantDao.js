@@ -1,4 +1,7 @@
 const DemandeEnseignantSchema = require("../../model/DemandeEnseignantModel/DemandeEnseignantModel");
+const mongoose = require('mongoose');
+const templateBodyDao = require("../TemplateBodyDao/templateBodyDao")
+
 
 function getDemandeEnseignantModel(dbConnection) {
   return (
@@ -6,7 +9,9 @@ function getDemandeEnseignantModel(dbConnection) {
     dbConnection.model("DemandeEnseignant", DemandeEnseignantSchema)
   );
 }
-
+function getTemplateBodyModel(dbConnection) {
+  return dbConnection.models.TemplateBody || dbConnection.model("TemplateBody", TemplateBodySchema);
+}
 const createDemandeEnseignant = async (DemandeEnseignantData, dbName) => {
   const DemandeEnseignant = await getDemandeEnseignantModel(dbName);
   const demandeEnseignant = new DemandeEnseignant(DemandeEnseignantData);
@@ -110,6 +115,37 @@ const deleteManyDemandeEnseignants = async (dbName, ids) => {
   return await demandeEnseignantsModel.deleteMany(query);
 };
 
+const findExistingPendingDemande = async ({ enseignantId, piece_demande, langue }, dbName) => {
+  const DemandeEnseignant = await getDemandeEnseignantModel(dbName);
+
+  return await DemandeEnseignant.findOne({
+    enseignantId,
+    piece_demande,
+    langue,
+    current_status: "En attente",
+  });
+};
+
+const getDemandesByAdminId = async (adminId, dbName) => {
+  const DemandeEnseignant = await getDemandeEnseignantModel(dbName);
+
+  const allowedTemplates = await templateBodyDao.getTemplateBodiesByAdminId(adminId, dbName);
+  const templateIds = allowedTemplates.map((tpl) => tpl._id);
+  if (templateIds.length === 0) return [];
+
+  const demandes = await DemandeEnseignant.find({
+    piece_demande: { $in: templateIds },
+  })
+    .populate("piece_demande")
+    .populate("enseignantId")
+    .populate("added_by");
+
+  return demandes;
+};
+
+
+
+
 module.exports = {
   createDemandeEnseignant,
   getAllDemandeEnseignants,
@@ -118,4 +154,6 @@ module.exports = {
   deleteDemandeEnseignant,
   getDemandesByTeacherId,
   deleteManyDemandeEnseignants,
+  findExistingPendingDemande,
+  getDemandesByAdminId
 };

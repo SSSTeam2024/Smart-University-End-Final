@@ -49,4 +49,7 @@ router.post(
   demandeEtudiantController.handleDemandeEtudiant
 );
 
+
+router.get("/by-admin/:adminId", demandeEtudiantController.getDemandesByAdmin);
+
 module.exports = router;

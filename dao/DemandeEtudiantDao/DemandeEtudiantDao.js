@@ -1,5 +1,5 @@
 const DemandeEtudiantSchema = require("../../model/DemandeEtudiantModel/DemandeEtudiantModel");
-
+const templateBodyDao = require("../TemplateBodyDao/templateBodyDao")
 function getDemandeEtudiantModel(dbConnection) {
   return (
     dbConnection.models.DemandeEtudiant ||
@@ -100,6 +100,32 @@ const deleteManyDemandeEtudiants = async (dbName, ids) => {
   return await demandeEtudiantModel.deleteMany(query);
 };
 
+const findExistingPendingDemande = async ({ studentId, piece_demande, langue }, dbName) => {
+  const DemandeEtudiant = await getDemandeEtudiantModel(dbName);
+
+  return await DemandeEtudiant.findOne({
+    studentId,
+    piece_demande,
+    langue,
+    current_status: "En attente",
+  });
+};
+
+const getDemandesByAdminId = async (adminId, dbName) => {
+  const DemandeEtudiant = await getDemandeEtudiantModel(dbName);
+
+  const allowedTemplates = await templateBodyDao.getTemplateBodiesByAdminId(adminId, dbName);
+  const templateIds = allowedTemplates.map((tpl) => tpl._id);
+  if (templateIds.length === 0) return [];
+
+  const demandes = await DemandeEtudiant.find({
+    piece_demande: { $in: templateIds },
+  })
+    .populate("piece_demande")
+    .populate("studentId")
+    .populate("added_by");
+  return demandes;
+};
 module.exports = {
   createDemandeEtudiant,
   getAllDemandeEtudiants,
@@ -108,4 +134,6 @@ module.exports = {
   deleteDemandeEtudiant,
   getDemandesByStudentId,
   deleteManyDemandeEtudiants,
+  findExistingPendingDemande,
+  getDemandesByAdminId
 };

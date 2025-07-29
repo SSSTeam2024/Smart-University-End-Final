@@ -8,6 +8,10 @@ const templateBodySchema = new Schema({
   intended_for: String,
   has_code: String,
   has_number: String,
+  handled_by: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User', // Assuming your admin users are in the User model
+  }]
 });
 
 // module.exports = mongoose.model('TemplateBody', templateBodySchema);

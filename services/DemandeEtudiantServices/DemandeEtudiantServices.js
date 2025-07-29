@@ -8,12 +8,27 @@ const globalFunctions = require("../../utils/globalFunctions");
 
 const { getDb } = require("../../config/dbSwitcher");
 
+// const createDemandeEtudiant = async (demandeEtudiantData, useNew) => {
+//   const db = await getDb(useNew);
+//   return await demandeEtudiantDao.createDemandeEtudiant(
+//     demandeEtudiantData,
+//     db
+//   );
+// };
+
 const createDemandeEtudiant = async (demandeEtudiantData, useNew) => {
   const db = await getDb(useNew);
-  return await demandeEtudiantDao.createDemandeEtudiant(
-    demandeEtudiantData,
-    db
-  );
+  const existingDemande = await demandeEtudiantDao.findExistingPendingDemande({
+    studentId: demandeEtudiantData.studentId,
+    piece_demande: demandeEtudiantData.piece_demande,
+    langue: demandeEtudiantData.langue,
+  }, db);
+
+  if (existingDemande) {
+    throw new Error("Une demande similaire est déjà en attente.");
+  }
+
+  return demandeEtudiantDao.createDemandeEtudiant(demandeEtudiantData, db);
 };
 
 const getAllDemandeEtudiants = async (useNew) => {
@@ -117,40 +132,40 @@ const updateDemandeEtudiant = async (id, updateData, documents, useNew) => {
 const deleteDemandeEtudiant = async (id, useNew) => {
   const db = await getDb(useNew);
 
-  const toBeDeleted = await demandeEtudiantDao.getDemandeEtudiantById(id, db);
+  // const toBeDeleted = await demandeEtudiantDao.getDemandeEtudiantById(id, db);
 
   const result = await demandeEtudiantDao.deleteDemandeEtudiant(id, db);
 
-  if (toBeDeleted.status !== 'Approuvée' || toBeDeleted.status !== 'Réfusée') {
-    const oldPdfFileName = toBeDeleted.generated_doc;
+  // if (toBeDeleted.status !== 'Approuvée' || toBeDeleted.status !== 'Réfusée') {
+  //   const oldPdfFileName = toBeDeleted.generated_doc;
 
-    const oldDoxFileName = oldPdfFileName.replace(/\.[^/.]+$/, ".docx");
+  //   const oldDoxFileName = oldPdfFileName.replace(/\.[^/.]+$/, ".docx");
 
-    const restul2 = await generatedDocService.deleteGeneratedDocByDocName(oldPdfFileName, useNew)
+  //   const restul2 = await generatedDocService.deleteGeneratedDocByDocName(oldPdfFileName, useNew)
 
-    try {
-      fs.unlink(`./files/generated_docs/docx/student_docx/${oldDoxFileName}`, (err) => {
-        conso.log(err);
-        if (err) {
-          console.error('Error deleting the file:', err);
-        } else {
-          console.log('File deleted successfully');
-        }
-      });
+  //   try {
+  //     fs.unlink(`./files/generated_docs/docx/student_docx/${oldDoxFileName}`, (err) => {
+  //       conso.log(err);
+  //       if (err) {
+  //         console.error('Error deleting the file:', err);
+  //       } else {
+  //         console.log('File deleted successfully');
+  //       }
+  //     });
 
-      fs.unlink(`./files/generated_docs/pdf/student_pdf/${oldPdfFileName}`, (err) => {
-        conso.log(err);
-        if (err) {
-          console.error('Error deleting the file:', err);
-        } else {
-          console.log('File deleted successfully');
-        }
-      });
+  //     fs.unlink(`./files/generated_docs/pdf/student_pdf/${oldPdfFileName}`, (err) => {
+  //       conso.log(err);
+  //       if (err) {
+  //         console.error('Error deleting the file:', err);
+  //       } else {
+  //         console.log('File deleted successfully');
+  //       }
+  //     });
 
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
   return result;
 };
 const getDemandesByStudentId = async (studentId, useNew) => {
@@ -223,6 +238,11 @@ const handleDemandeEtudiant = async (
   );
   return result;
 };
+
+const getDemandesByAdminId = async (adminId, useNew) => {
+  const db = await getDb(useNew);
+  return await demandeEtudiantDao.getDemandesByAdminId(adminId, db);
+};
 module.exports = {
   createDemandeEtudiant,
   getAllDemandeEtudiants,
@@ -232,4 +252,5 @@ module.exports = {
   getDemandesByStudentId,
   deleteManyDemandesEtudiants,
   handleDemandeEtudiant,
+  getDemandesByAdminId
 };

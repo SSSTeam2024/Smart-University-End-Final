@@ -79,6 +79,10 @@ const diversDocExtraRoutes = require("./DiversDocExtraRoutes/DiversDocExtraRoute
 
 const DatabaseNamesRoutes = require("./DatabaseNamesRoutes/DatabaseNamesRoutes");
 
+const StudentsRoomRoutes = require("./StudentsRoomRoutes/StudentsRoomRoutes");
+const StudentsMessageRoutes = require("./StudentsMessageRoutes/StudentsMessageRoutes");
+router.use("/students-room", StudentsRoomRoutes);
+router.use("/students-message", StudentsMessageRoutes);
 router.use("/demande-tirage", demandeTirageRoutes);
 router.use("/extra-short-code", extraShortCodeRoutes);
 router.use("/divers-doc-extra", diversDocExtraRoutes);
@@ -91,6 +95,8 @@ router.use("/module-parcours", moduleParcoursRoutes);
 
 router.use("/domaine-classe", domaineClasseRoutes);
 router.use("/mention-classe", mentionClasseRoutes);
+
+
 //! Notes Examen
 const notesExamenRoutes = require("./NotesExamenRoutes/notesExamenRoutes");
 const virtualServiceRoutes = require("./VirtualServiceRoutes/VirtualServiceRoutes");

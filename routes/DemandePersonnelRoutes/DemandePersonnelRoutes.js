@@ -28,7 +28,7 @@ router.put(
 
 // Delete a demandePersonnel by ID
 router.delete(
-  "/delete-demande-Personnel/:personnelId",
+  "/delete-demande-personnel/:id",
   demandePersonnelController.deleteDemandePersonnel
 );
 // Handle demand
@@ -48,5 +48,9 @@ router.get(
   "/by-personnel-id/:id",
   demandePersonnelController.getDemandesByPersonnelId
 );
+
+//get demands by id admin
+
+router.get("/by-admin/:adminId", demandePersonnelController.getDemandesByAdmin);
 
 module.exports = router;

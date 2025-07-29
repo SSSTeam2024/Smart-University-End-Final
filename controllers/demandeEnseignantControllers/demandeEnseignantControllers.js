@@ -6,9 +6,81 @@ function useNewDb(req) {
 
 const createDemandeEnseignant = async (req, res) => {
   try {
+    const {
+      enseignantId,
+      title,
+      description,
+      piece_demande,
+      langue,
+      nombre_copie,
+      response,
+      status_history,
+      current_status,
+      generated_doc,
+      extra_data,
+      createdAt,
+      updatedAt,
+      added_by,
+    } = req.body;
+
+    const filePath = "files/demandeEnseignant/extraFilesDemande/";
+
+    let documents = [];
+
+
+    for (let index = 0; index < extra_data.length; index++) {
+
+      // if (extra_data[index].FileExtension !== undefined) {
+      //   let fileName = globalFunctions.generateUniqueFilename(
+      //     extra_data[index].FileExtension,
+      //     "extra_files"
+      //   );
+      //   extra_data[index].value = fileName;
+      //   documents.push({
+      //     base64String: extra_data[index].FileBase64,
+      //     extension: extra_data[index].FileExtension,
+      //     name: fileName,
+      //     path: filePath,
+      //   })
+      // }
+      if (extra_data[index].FileExtension !== undefined) {
+        let fileName = globalFunctions.generateUniqueFilename(
+          extra_data[index].FileExtension,
+          "extra_files"
+        );
+
+        // ✅ DON'T override value (keep the label like "congés de matérnité")
+        // ✅ Store file path in a dedicated field
+        extra_data[index].filePath = fileName;
+
+        documents.push({
+          base64String: extra_data[index].FileBase64,
+          extension: extra_data[index].FileExtension,
+          name: fileName,
+          path: filePath,
+        });
+      }
+
+    }
+
     const DemandeEnseignant =
       await demandeEnseignantService.createDemandeEnseignant(
-        req.body,
+        {
+          enseignantId,
+          title,
+          description,
+          piece_demande,
+          langue,
+          nombre_copie,
+          response,
+          status_history,
+          current_status,
+          generated_doc,
+          extra_data,
+          createdAt,
+          updatedAt,
+          added_by,
+        }, documents,
         useNewDb(req)
       );
     res.status(201).json(DemandeEnseignant);
@@ -81,7 +153,7 @@ const updateDemandeEnseignant = async (req, res) => {
 
   let documents = [];
 
-  if (FileExtension !== '') {
+  if (FileExtension !== '' && FileExtension !== undefined && FileExtension !== null) {
     documents.push({
       base64String: FileBase64,
       extension: FileExtension,
@@ -91,7 +163,7 @@ const updateDemandeEnseignant = async (req, res) => {
   }
   try {
     let updatedDemandeEnseignant;
-    if (FileExtension == '') {
+    if (FileExtension == '' || FileExtension === undefined || FileExtension === null) {
       updatedDemandeEnseignant = await demandeEnseignantService.updateDemandeEnseignant(
         req.body._id,
         {
@@ -218,6 +290,26 @@ const deleteManyDemandeEnseignant = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+
+//get demand by id admin
+
+const getDemandesByAdmin = async (req, res) => {
+  try {
+    const adminId = req.params.adminId;
+
+    if (!adminId) {
+      return res.status(400).json({ message: "Admin ID is required" });
+    }
+
+    const demandes = await demandeEnseignantService.getDemandesByAdminId(adminId, useNewDb(req));
+    res.status(200).json(demandes);
+  } catch (err) {
+    console.error("Error fetching demandes by admin:", err);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
+
 module.exports = {
   createDemandeEnseignant,
   getAllDemandeEnseignants,
@@ -227,4 +319,5 @@ module.exports = {
   getDemandesByTeacherId,
   deleteManyDemandeEnseignant,
   handleDemandeEnseignant,
+  getDemandesByAdmin
 };

@@ -21,7 +21,13 @@ const DemandePersonnelSchema = new Schema({
   file: String,
   status_history: [{
     value: String,
-    date: String
+    date: String,
+    time: String,
+    handled_by: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    }
   }],
   current_status: String, //rejetee, acceptee, en attente, generee
   generated_doc: { type: String, required: false },

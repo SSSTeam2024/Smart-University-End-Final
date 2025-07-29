@@ -9,12 +9,31 @@ const fs = require("fs").promises;
 
 const { getDb } = require("../../config/dbSwitcher");
 
-const createDemandeEnseignant = async (demandeEnseignantData, useNew) => {
+// const createDemandeEnseignant = async (demandeEnseignantData, useNew) => {
+//   const db = await getDb(useNew);
+//   return demandeEnseignantDao.createDemandeEnseignant(
+//     demandeEnseignantData,
+//     db
+//   );
+// };
+const createDemandeEnseignant = async (demandeEnseignantData, documents, useNew) => {
   const db = await getDb(useNew);
-  return demandeEnseignantDao.createDemandeEnseignant(
-    demandeEnseignantData,
-    db
-  );
+
+  // Check for existing demande with same criteria and status "En attente"
+  const existingDemande = await demandeEnseignantDao.findExistingPendingDemande({
+    enseignantId: demandeEnseignantData.enseignantId,
+    piece_demande: demandeEnseignantData.piece_demande,
+    langue: demandeEnseignantData.langue,
+  }, db);
+
+  if (existingDemande) {
+    throw new Error("Une demande similaire est déjà en attente.");
+  }
+  if (documents.length > 0) {
+    saveResult = await saveDocumentToServer(documents);
+  }
+
+  return demandeEnseignantDao.createDemandeEnseignant(demandeEnseignantData, db);
 };
 
 const getAllDemandeEnseignants = async (useNew) => {
@@ -75,38 +94,57 @@ const deleteDemandeEnseignant = async (id, useNew) => {
 
   const toBeDeleted = await demandeEnseignantDao.getDemandeEnseignantById(id, db);
 
-  const result = await demandeEnseignantDao.deleteDemandeEnseignant(id, db);
 
-  if (toBeDeleted.status !== 'Approuvée' || toBeDeleted.status !== 'Réfusée') {
-    const oldPdfFileName = toBeDeleted.generated_doc;
+  const regex = /extra_files\.(jpeg|png|jpg|pdf|docx)$/;
 
-    const oldDoxFileName = oldPdfFileName.replace(/\.[^/.]+$/, ".docx");
+  for (const extra of toBeDeleted.extra_data) {
+    if (regex.test(extra.value)) {
+      try {
+        fs.unlink(`./files/demandeEnseignant/extraFilesDemande/${extra.value}`, (err) => {
+          conso.log(err);
+          if (err) {
+            console.error('Error deleting the file:', err);
+          } else {
+            console.log('File deleted successfully');
+          }
+        });
 
-    const restul2 = await generatedDocService.deleteGeneratedDocByDocName(oldPdfFileName, useNew)
-
-    try {
-      fs.unlink(`./files/generated_docs/docx/teacher_docx/${oldDoxFileName}`, (err) => {
-        conso.log(err);
-        if (err) {
-          console.error('Error deleting the file:', err);
-        } else {
-          console.log('File deleted successfully');
-        }
-      });
-
-      fs.unlink(`./files/generated_docs/pdf/teacher_pdf/${oldPdfFileName}`, (err) => {
-        conso.log(err);
-        if (err) {
-          console.error('Error deleting the file:', err);
-        } else {
-          console.log('File deleted successfully');
-        }
-      });
-
-    } catch (error) {
-      console.log(error);
+      } catch (error) {
+        console.log(error);
+      }
     }
   }
+  // if (toBeDeleted.status !== 'Approuvée' || toBeDeleted.status !== 'Réfusée') {
+  //   const oldPdfFileName = toBeDeleted.generated_doc;
+
+  //   const oldDoxFileName = oldPdfFileName.replace(/\.[^/.]+$/, ".docx");
+
+  //   const restul2 = await generatedDocService.deleteGeneratedDocByDocName(oldPdfFileName, useNew)
+
+  //   try {
+  //     fs.unlink(`./files/generated_docs/docx/teacher_docx/${oldDoxFileName}`, (err) => {
+  //       conso.log(err);
+  //       if (err) {
+  //         console.error('Error deleting the file:', err);
+  //       } else {
+  //         console.log('File deleted successfully');
+  //       }
+  //     });
+
+  //     fs.unlink(`./files/generated_docs/pdf/teacher_pdf/${oldPdfFileName}`, (err) => {
+  //       conso.log(err);
+  //       if (err) {
+  //         console.error('Error deleting the file:', err);
+  //       } else {
+  //         console.log('File deleted successfully');
+  //       }
+  //     });
+
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+  const result = await demandeEnseignantDao.deleteDemandeEnseignant(id, db);
   return result;
 };
 
@@ -151,6 +189,13 @@ const handleDemandeEnseignant = async (
   );
   return result;
 };
+
+//get demands by id admin
+
+const getDemandesByAdminId = async (adminId, useNew) => {
+  const db = await getDb(useNew);
+  return await demandeEnseignantDao.getDemandesByAdminId(adminId, db);
+};
 module.exports = {
   createDemandeEnseignant,
   getAllDemandeEnseignants,
@@ -160,4 +205,5 @@ module.exports = {
   getDemandesByTeacherId,
   deleteManyDemandeEnseignant,
   handleDemandeEnseignant,
+  getDemandesByAdminId
 };

@@ -47,4 +47,8 @@ router.delete(
   demandeEnseignantController.deleteManyDemandeEnseignant
 );
 
+//get demands by id admin
+
+router.get("/by-admin/:adminId", demandeEnseignantController.getDemandesByAdmin);
+
 module.exports = router;

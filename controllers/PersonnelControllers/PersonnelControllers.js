@@ -52,22 +52,22 @@ const addPersonnel = async (req, res) => {
       PhotoProfilFileBase64String,
       password,
       historique_positions
-     
+
     } = req.body;
 
     // If PhotoProfilFileBase64String is provided, prepare the document array
     const documents = PhotoProfilFileBase64String
       ? [
-          {
-            base64String: PhotoProfilFileBase64String,
-            extension: PhotoProfilFileExtension,
-            name: globalFunctions.generateUniqueFilename(
-              PhotoProfilFileExtension,
-              "photo_profil"
-            ),
-            path: "files/personnelFiles/PhotoProfil/",
-          },
-        ]
+        {
+          base64String: PhotoProfilFileBase64String,
+          extension: PhotoProfilFileExtension,
+          name: globalFunctions.generateUniqueFilename(
+            PhotoProfilFileExtension,
+            "photo_profil"
+          ),
+          path: "files/personnelFiles/PhotoProfil/",
+        },
+      ]
       : []; // Empty array if no file data
 
     // Prepare personnel data for creation
@@ -114,9 +114,9 @@ const addPersonnel = async (req, res) => {
       historique_positions,
       photo_profil: PhotoProfilFileBase64String
         ? globalFunctions.generateUniqueFilename(
-            PhotoProfilFileExtension,
-            "photo_profil"
-          )
+          PhotoProfilFileExtension,
+          "photo_profil"
+        )
         : null, // Add photo filename if a profile photo is uploaded
     };
 
@@ -129,7 +129,7 @@ const addPersonnel = async (req, res) => {
 
     // Populate related data before sending the response
     const populatedPersonnel = await personnelService.getPersonnelDaoById(personnel._id)
-  
+
 
     res.json(populatedPersonnel);
   } catch (error) {
@@ -168,7 +168,7 @@ const updatePersonnelById = async (req, res) => {
       return res.status(400).send("Personnel ID is required.");
     }
     const {
-      
+
       nom_fr,
       nom_ar,
       prenom_fr,
@@ -314,8 +314,8 @@ const updatePersonnelById = async (req, res) => {
 
 const getPersonnelById = async (req, res) => {
   try {
-    const personnelId = req.params.id;
-
+    const personnelId = req.body._id;
+    console.log(req.body._id)
     const getPersonnel = await personnelService.getPersonnelDaoById(
       personnelId,
       useNewDb(req)

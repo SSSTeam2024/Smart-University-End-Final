@@ -1,5 +1,6 @@
 const templateBodyDao = require("../../dao/TemplateBodyDao/templateBodyDao");
 const { getDb } = require("../../config/dbSwitcher");
+const userDao = require("../../dao/userDao/userDao")
 
 const fs = require("fs").promises;
 
@@ -47,6 +48,10 @@ const createTemplateBody = async (templateBodyData, documents, useNew) => {
 const getTemplateBodys = async (useNew) => {
   const db = await getDb(useNew);
   const result = await templateBodyDao.getTemplateBodys(db);
+  // const admins = await userDao.getAllUsers(db);
+  // const adminIds = admins.map((admin) => admin._id);
+  // await templateBodyDao.updateAmdinsInCharge(adminIds, db);
+
   return result;
 };
 
@@ -91,6 +96,11 @@ const getTemplateBodyByContext = async (intended_for, useNew) => {
   );
   return result;
 };
+//get templates by admin id
+const getTemplateBodiesByAdminId = async (adminId, useNew) => {
+  const db = await getDb(useNew);
+  return await templateBodyDao.getTemplateBodiesByAdminId(adminId, db);
+}
 
 const updateTemplateBodyById = async (id, data, documents,
   oldFileName, useNew) => {
@@ -140,4 +150,5 @@ module.exports = {
   deleteTemplateBody,
   getTemplateBodyByContext,
   updateTemplateBodyById,
+  getTemplateBodiesByAdminId
 };

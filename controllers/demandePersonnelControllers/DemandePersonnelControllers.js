@@ -5,10 +5,66 @@ function useNewDb(req) {
 }
 
 const createDemandePersonnel = async (req, res) => {
+
   try {
+    const {
+      personnelId,
+      title,
+      description,
+      piece_demande,
+      langue,
+      nombre_copie,
+      response,
+      status_history,
+      current_status,
+      generated_doc,
+      extra_data,
+      createdAt,
+      updatedAt,
+      added_by,
+    } = req.body;
+
+    const filePath = "files/demandePersonnel/extraFilesDemande/";
+
+    let documents = [];
+
+
+    for (let index = 0; index < extra_data.length; index++) {
+
+      if (extra_data[index].FileExtension !== undefined) {
+        let fileName = globalFunctions.generateUniqueFilename(
+          extra_data[index].FileExtension,
+          "extra_files"
+        );
+        extra_data[index].value = fileName;
+        documents.push({
+          base64String: extra_data[index].FileBase64,
+          extension: extra_data[index].FileExtension,
+          name: fileName,
+          path: filePath,
+        })
+      }
+    }
+
+
     const DemandePersonnel =
       await demandePersonnelService.createDemandePersonnel(
-        req.body,
+        {
+          personnelId,
+          title,
+          description,
+          piece_demande,
+          langue,
+          nombre_copie,
+          response,
+          status_history,
+          current_status,
+          generated_doc,
+          extra_data,
+          createdAt,
+          updatedAt,
+          added_by,
+        }, documents,
         useNewDb(req)
       );
     res.status(201).json(DemandePersonnel);
@@ -232,6 +288,22 @@ const deleteManyDemandePersonnel = async (req, res) => {
   }
 };
 
+const getDemandesByAdmin = async (req, res) => {
+  try {
+    const adminId = req.params.adminId;
+
+    if (!adminId) {
+      return res.status(400).json({ message: "Admin ID is required" });
+    }
+
+    const demandes = await demandePersonnelService.getDemandesByAdminId(adminId, useNewDb(req));
+    res.status(200).json(demandes);
+  } catch (err) {
+    console.error("Error fetching demandes by admin:", err);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
 module.exports = {
   createDemandePersonnel,
   getAllDemandePersonnels,
@@ -241,4 +313,5 @@ module.exports = {
   deleteManyDemandePersonnel,
   handleDemandePersonnel,
   getDemandesByPersonnelId,
+  getDemandesByAdmin
 };

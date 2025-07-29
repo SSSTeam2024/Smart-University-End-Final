@@ -82,8 +82,15 @@ const societeSchema = require("../model/SocieteModel/SocieteModel");
 const stagePfeSchema = require("../model/StagePfeModel/StagePfeModel");
 const extraShortCodeSchema = require("../model/ShortCodeModel/extraShortCodeModel")
 const diversDocExtraSchema = require("../model/DiversDocExtraModel/DiversDocExtraModel")
-
+const studentsMessageSchema = require("../model/StudentsMessageModel/StudentsMessageModel")
+const studentsRoomSchema = require("../model/StudentsRoomModel/StudentsRoomModel")
 function registerModels(conn) {
+
+  //message and room massenger for students
+  conn.model("StudentsRoom", studentsRoomSchema);
+  conn.model("StudentsMessage", studentsMessageSchema);
+
+
   conn.model("User", userSchema);
   conn.model("Enseignant", enseignantSchema);
   conn.model("Personnel", personnelSchema);
