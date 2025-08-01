@@ -7,8 +7,15 @@ const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 const path = require("path");
 
+const socketHandler = require("./socket");
+const { init } = require("./socket/ioInstance");
+
 const app = express();
 const httpServer = createServer(app);
+
+const io = init(httpServer);
+
+socketHandler(io);
 
 dotenv.config();
 app.use(

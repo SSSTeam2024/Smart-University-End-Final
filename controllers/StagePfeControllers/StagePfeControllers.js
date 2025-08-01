@@ -420,9 +420,38 @@ const deleteStagePfe = async (req, res) => {
   }
 };
 
+
+const updateJuryAssignment = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const juryFields = {
+      rapporteur1,
+      rapporteur2,
+      examinateur1,
+      examinateur2,
+      invite1,
+      invite2,
+      chef_jury,
+    } = req.body;
+
+    const updated = await StagePfeDao.updateStagePfe(id, juryFields, useNewDb(req));
+
+    if (!updated) {
+      return res.status(404).json({ message: "StagePfe not found" });
+    }
+
+    res.status(200).json({ message: "Jury assigned successfully", data: updated });
+  } catch (err) {
+    console.error("Error assigning jury:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   deleteStagePfe,
   getStagesPfe,
   createStagePfe,
   updateStagePfe,
+  updateJuryAssignment
 };

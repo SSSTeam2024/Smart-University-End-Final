@@ -7,7 +7,7 @@ function useNewDb(req) {
 
 const createStudentsMessage = async (req, res) => {
     try {
-        const { receiverId, senderId, roomId, text, status, seenAt, files } =
+        const { receiverId, senderId, roomId, msg_type, text, files } =
             req.body;
         let documents = [];
         let fileNames = [];
@@ -35,7 +35,8 @@ const createStudentsMessage = async (req, res) => {
                 receiverId,
                 senderId,
                 roomId,
-                text, status, seenAt, files: fileNames
+                msg_type,
+                text, files: fileNames
             }, documents,
             useNewDb(req)
         );
@@ -45,25 +46,41 @@ const createStudentsMessage = async (req, res) => {
     }
 };
 
-const loadMessagesByRoom = async (req, res) => {
+const loadLatestMessages = async (req, res) => {
     try {
         const { roomId } = req.params;
         const { limit, before } = req.query;
-        const messages = await StudentsMessageService.loadMessagesByRoom(
+        const messagesData = await StudentsMessageService.loadLatestMessages(
             roomId,
             parseInt(limit) || 20,
             before ? new Date(before) : new Date(),
             useNewDb(req)
         );
-        res.json(messages);
+
+        res.json(messagesData);
     } catch (error) {
-        console.error("Error loading messages:", error);
-        res.status(500).json({ error: "Erreur lors du chargement des messages." });
+        console.error("Error loading latest messages:", error);
+        res.status(500).json({ error: "Erreur lors du chargement des messages recents." });
     }
 };
 
+const loadMessagesWithPagination = async (req, res) => {
+    try {
+        const roomId = req.params.roomId;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+
+        const paginatedMessages = await StudentsMessageService.loadMessagesWithPagination(roomId, page, limit, useNewDb(req));
+
+        res.json(paginatedMessages);
+    } catch (error) {
+        console.error("Error loading paginated messages:", error);
+        res.status(500).json({ error: "Erreur lors du chargement des messages paginations." });
+    }
+};
 
 module.exports = {
     createStudentsMessage,
-    loadMessagesByRoom
+    loadLatestMessages,
+    loadMessagesWithPagination
 };

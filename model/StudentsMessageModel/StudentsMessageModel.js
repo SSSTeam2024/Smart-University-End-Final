@@ -26,8 +26,11 @@ const studentsMessageSchema = new mongoose.Schema(
             type: String,
             enum: ["envoyé", "livré", "vu"],
             default: "envoyé",
-        }
-        ,
+        },
+        msg_type: {
+            type: String,
+            default: "",
+        },
         seenAt: {
             type: Date,
             default: null,
