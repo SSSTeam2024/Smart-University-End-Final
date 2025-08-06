@@ -59,9 +59,65 @@ async function saveDocumentsToServer(documents) {
   if (counter == documents.length) return true;
 }
 
+const updateJuryAssignment = async (id, juryFields, useNew) => {
+  try {
+    const db = await getDb(useNew);
+    return await StagePfeDao.updateJuryAssignment(id, juryFields, db);
+  } catch (error) {
+    console.error("Error in assignJuryToStagePfe service:", error);
+    throw error;
+  }
+};
+
+// Service
+const getDisponibiliteDetails = async (date, heureDebut, heureFin, avecSoutenance, useNew) => {
+  try {
+    const db = await getDb(useNew);
+    const stages = await StagePfeDao.getDisponibiliteStage(date, heureDebut, heureFin, avecSoutenance, db);
+
+    const unavailableSalle = new Set();
+    const unavailableEtudiants = new Set();
+    const unavailableEnseignants = new Set();
+
+    stages.forEach(stage => {
+      if (stage.salle) unavailableSalle.add(stage.salle);
+
+      if (stage.etudiant) unavailableEtudiants.add(stage.etudiant.toString());
+      if (stage.binome) unavailableEtudiants.add(stage.binome.toString());
+
+      const juryMembers = [
+        stage.rapporteur1,
+        stage.rapporteur2,
+        stage.examinateur1,
+        stage.examinateur2,
+        stage.invite1,
+        stage.invite2,
+        stage.chef_jury,
+      ];
+
+      juryMembers.forEach(member => {
+        if (member) unavailableEnseignants.add(member.toString());
+      });
+    });
+
+    return {
+      salles: Array.from(unavailableSalle),
+      etudiants: Array.from(unavailableEtudiants),
+      enseignants: Array.from(unavailableEnseignants),
+    };
+  } catch (error) {
+    console.error("Error in getDisponibiliteDetails service:", error);
+    throw error;
+  }
+
+};
+
+
 module.exports = {
   createStagePfe,
   updateStagePfe,
   getStagesPfe,
   deleteStagePfe,
+  updateJuryAssignment,
+  getDisponibiliteDetails
 };

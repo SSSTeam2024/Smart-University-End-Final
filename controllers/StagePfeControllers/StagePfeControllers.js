@@ -424,8 +424,7 @@ const deleteStagePfe = async (req, res) => {
 const updateJuryAssignment = async (req, res) => {
   try {
     const { id } = req.params;
-
-    const juryFields = {
+    const {
       rapporteur1,
       rapporteur2,
       examinateur1,
@@ -435,16 +434,54 @@ const updateJuryAssignment = async (req, res) => {
       chef_jury,
     } = req.body;
 
-    const updated = await StagePfeDao.updateStagePfe(id, juryFields, useNewDb(req));
+    const updatedStage = await stagePfeServices.updateJuryAssignment(
+      id,
+      {
+        rapporteur1,
+        rapporteur2,
+        examinateur1,
+        examinateur2,
+        invite1,
+        invite2,
+        chef_jury,
+      },
+      useNewDb(req)
+    );
 
-    if (!updated) {
+    if (!updatedStage) {
       return res.status(404).json({ message: "StagePfe not found" });
     }
 
-    res.status(200).json({ message: "Jury assigned successfully", data: updated });
-  } catch (err) {
-    console.error("Error assigning jury:", err);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(200).json({
+      message: "Jury assigned successfully",
+      data: updatedStage,
+    });
+  } catch (error) {
+    console.error("Error assigning jury in controller:", error);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+// Controller
+const getDisponibilite = async (req, res) => {
+  try {
+    const { date, heureDebut, heureFin, avecSoutenance } = req.body;
+
+    if (!date || !heureDebut || !heureFin || !avecSoutenance) {
+      return res.status(400).json({ message: "Missing required fields." });
+    }
+
+    const result = await stagePfeServices.getDisponibiliteDetails(
+      date,
+      heureDebut,
+      heureFin,
+      avecSoutenance,
+      useNewDb(req)
+    );
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("Error in getDisponibilite:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -453,5 +490,6 @@ module.exports = {
   getStagesPfe,
   createStagePfe,
   updateStagePfe,
-  updateJuryAssignment
+  updateJuryAssignment,
+  getDisponibilite
 };

@@ -1,9 +1,8 @@
-
 // In-memory DB
 let io = null;
 const users = new Map(); // userId -> socketId
 const activeChats = new Map(); // userId -> chattingWith
-const rooms = new Map(); // 
+const rooms = new Map(); //
 /* [
   [
     "room1",
@@ -32,44 +31,79 @@ module.exports = {
   },
 
   setNewConnectedUser: (userId, socketId) => {
-    users.set(userId, socketId);
+    try {
+      users.set(userId, socketId);
+    } catch (error) {
+      console.log("Socket: Error setting new connected user!: ", error);
+    }
   },
 
   getConnectedUser: (userId) => {
-    users.get(userId);
+    try {
+      return users.get(userId);
+    } catch (error) {
+      console.log("Socket: Error getting connected user!: ", error);
+    }
   },
 
   setNewUserOnRoom: (userId, room) => {
-    if (!rooms.has(room)) {
-      rooms.set(room, { users: new Set() });
+    try {
+      if (!rooms.has(room)) {
+        rooms.set(room, { users: new Set() });
+      }
+      rooms.get(room).users.add(userId);
+    } catch (error) {
+      console.log(
+        "Socket: Error setting new room or new user inside room!: ",
+        error
+      );
     }
-    rooms.get(room).users.add(userId);
   },
 
   removeUserFromRoom: (userId, room) => {
-    rooms.get(room).users.delete(userId);
-  },
-
-  setNewActiveChatsPair: (userId, chattingWith) => {
-    activeChats.set(userId, chattingWith);
-  },
-
-  removeActiveChatsPair: (userId) => {
-    activeChats.delete(userId);
-  },
-
-  getActiveChatsPair: (userId) => {
-    activeChats.get(userId);
-  },
-
-  removeUserTempData: (socket) => {
-    for (let [userId, sockId] of users.entries()) {
-      if (sockId === socket.id) {
-        users.delete(userId);
-        activeChats.delete(userId);
-        break;
-      }
+    try {
+      rooms.get(room).users.delete(userId);
+    } catch (error) {
+      console.log("Socket: Error deleting user from room!: ", error);
     }
   },
 
+  setNewActiveChatsPair: (userId, chattingWith) => {
+    try {
+      activeChats.set(userId, chattingWith);
+      console.log("Active chats: ", activeChats);
+    } catch (error) {
+      console.log("Socket: Error setting user on active chats!: ", error);
+    }
+  },
+
+  removeActiveChatsPair: (userId) => {
+    try {
+      activeChats.delete(userId);
+    } catch (error) {
+      console.log("Socket: Error deleting user from active chats!: ", error);
+    }
+  },
+
+  getActiveChatsPair: (userId) => {
+    try {
+      return activeChats.get(userId);
+    } catch (error) {
+      console.log("Socket: Error getting user from active chats!: ", error);
+    }
+  },
+
+  removeUserTempData: (socket) => {
+    try {
+      for (let [userId, sockId] of users.entries()) {
+        if (sockId === socket.id) {
+          users.delete(userId);
+          activeChats.delete(userId);
+          break;
+        }
+      }
+    } catch (error) {
+      console.log("Socket: Error removing user's temp data!: ", error);
+    }
+  },
 };
