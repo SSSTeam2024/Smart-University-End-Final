@@ -90,10 +90,14 @@ const commissionSchema = require("../model/CommissionModel/CommissionModel");
 const typeStageSchema = require("../model/TypeStageModel/TypeStageModel");
 const avisCommissionSchema = require("../model/AvisCommission/AvisCommission");
 const generatedPvSchema = require("../model/GeneratedPvModel/GeneratedPvModel");
-const encadrementSchema = require("../model/EncadrementModel/EncadrementModel")
+const encadrementSchema = require("../model/EncadrementModel/EncadrementModel");
+const teachersMessageSchema = require("../model/TeachersMessageModel/TeachersMessageModel");
+const teachersRoomSchema = require("../model/TeachersRoomModel/TeachersRoomModel");
 
 function registerModels(conn) {
 
+  conn.model("TeachersRoom", teachersRoomSchema);
+  conn.model("TeachersMessage", teachersMessageSchema);
   //message and room massenger for students
   conn.model("StudentsRoom", studentsRoomSchema);
   conn.model("StudentsMessage", studentsMessageSchema);

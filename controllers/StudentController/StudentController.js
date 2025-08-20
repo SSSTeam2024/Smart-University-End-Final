@@ -194,7 +194,7 @@ const addStudent = async (req, res) => {
       };
     });
 
-const updatedHistoriqueEtudiant = (historique_etudiant || []).map((item, index) => {
+    const updatedHistoriqueEtudiant = (historique_etudiant || []).map((item, index) => {
       const updatedItem = { ...item };
 
       // fichier_affectation
@@ -211,12 +211,12 @@ const updatedHistoriqueEtudiant = (historique_etudiant || []).map((item, index) 
           path: "files/etudiantFiles/historique/",
         });
       }
-        return updatedItem;
+      return updatedItem;
     });
 
     const code = generateCode.generateCompositeCode();
     let pwd = String(num_CIN).split("").reverse().join("");
-    
+
     const etudiant = await studentService.registerEtudiant(
       {
         nom_fr,
@@ -475,12 +475,12 @@ const updateStudent = async (req, res) => {
     } = req.body;
 
     // Define file paths
-   const filePaths = {
+    const filePaths = {
       face1CIN: "files/etudiantFiles/Face1CIN/",
       face2CIN: "files/etudiantFiles/Face2CIN/",
       fichePaiement: "files/etudiantFiles/FichePaiement/",
       photoProfil: "files/etudiantFiles/PhotoProfil/",
-      // additional: "files/etudiantFiles/Additional/",
+      additional: "files/etudiantFiles/Additional/",
     };
 
     const generateUniqueFilename = (extension, name) => {
@@ -503,7 +503,7 @@ const updateStudent = async (req, res) => {
     };
 
     // Prepare documents array
-   const documents = [];
+    const documents = [];
 
     if (Face1CINFileBase64String && Face1CINFileExtension) {
       const name = generateUniqueFilename(Face1CINFileExtension, "face_1_CIN");
@@ -538,8 +538,8 @@ const updateStudent = async (req, res) => {
 
     // Construct update object
 
-     let subscriptionFiles = [];
-      for (const file of files) {
+    let subscriptionFiles = [];
+    for (const file of files) {
       const { name_fr, base64String, extension } = file;
       if (!base64String || !extension) {
         return res.status(400).json({
@@ -561,7 +561,7 @@ const updateStudent = async (req, res) => {
       file_type: file.fileType,
       fileName: file.name,
     }));
-  
+
     const historiqueEtudiantPath = "files/etudiantFiles/historique/";
 
     const updatedHistoriqueEtudiant = (historique_etudiant || []).map((item, index) => {
@@ -577,7 +577,7 @@ const updateStudent = async (req, res) => {
         updatedItem.fichier_depart = filename;
       }
 
-    
+
       return updatedItem;
     });
 
@@ -643,7 +643,7 @@ const updateStudent = async (req, res) => {
       historique_etudiant: updatedHistoriqueEtudiant
     };
 
-     // Assign uploaded file names to specific fields
+    // Assign uploaded file names to specific fields
     for (const doc of documents) {
       if (doc.name.includes("face_1_CIN")) updateFields.face_1_CIN = doc.name;
       if (doc.name.includes("face_2_CIN")) updateFields.face_2_CIN = doc.name;

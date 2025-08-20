@@ -82,6 +82,12 @@ const DatabaseNamesRoutes = require("./DatabaseNamesRoutes/DatabaseNamesRoutes")
 
 const StudentsRoomRoutes = require("./StudentsRoomRoutes/StudentsRoomRoutes");
 const StudentsMessageRoutes = require("./StudentsMessageRoutes/StudentsMessageRoutes");
+
+const TeachersRoomRoutes = require("./TeachersRoomRoutes/TeachersRoomRoutes");
+const TeachersMessageRoutes = require("./TeachersMessageRoutes/TeachersMessageRoutes");
+
+router.use("/teachers-room", TeachersRoomRoutes);
+router.use("/teachers-message", TeachersMessageRoutes);
 router.use("/students-room", StudentsRoomRoutes);
 router.use("/students-message", StudentsMessageRoutes);
 router.use("/demande-tirage", demandeTirageRoutes);

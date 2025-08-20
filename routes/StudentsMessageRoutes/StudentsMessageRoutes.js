@@ -8,7 +8,7 @@ router.post(
   studentsMessageController.createStudentsMessage
 );
 router.get(
-  "/load-by-room/:roomId/:senderId",
+  "/load-by-latest/:roomId/:senderId",
   studentsMessageController.loadLatestMessages
 );
 router.get(

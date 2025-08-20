@@ -34,20 +34,36 @@ const deleteStagePfe = async (id, useNew) => {
   return await StagePfeDao.deleteStagePfe(id, db);
 };
 
+// async function saveFile(base64String, fileName, file_path) {
+//   if (base64String != undefined) {
+//     const binaryData = Buffer.from(base64String, "base64");
+//     const filePath = file_path + fileName;
+//     await globalFunctions.ensureDirectoryExistence(file_path);
+//     fs.writeFile(filePath, binaryData, "binary", (err) => {
+//       if (err) {
+//         console.error("Error saving the file:", err);
+//       } else {
+//         console.log("File saved successfully!");
+//       }
+//     });
+//   }
+// }
+
 async function saveFile(base64String, fileName, file_path) {
-  if (base64String != undefined) {
-    const binaryData = Buffer.from(base64String, "base64");
-    const filePath = file_path + fileName;
-    await globalFunctions.ensureDirectoryExistence(file_path);
-    fs.writeFile(filePath, binaryData, "binary", (err) => {
-      if (err) {
-        console.error("Error saving the file:", err);
-      } else {
-        console.log("File saved successfully!");
-      }
-    });
-  }
+  if (!base64String || base64String.trim() === "") return;
+
+  const binaryData = Buffer.from(base64String, "base64");
+  const filePath = file_path + fileName;
+  await globalFunctions.ensureDirectoryExistence(file_path);
+  fs.writeFile(filePath, binaryData, "binary", (err) => {
+    if (err) {
+      console.error("Error saving the file:", err);
+    } else {
+      console.log("File saved successfully!");
+    }
+  });
 }
+
 
 async function saveDocumentsToServer(documents) {
   let counter = 0;

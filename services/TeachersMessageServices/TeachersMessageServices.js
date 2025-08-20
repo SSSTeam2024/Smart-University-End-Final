@@ -1,8 +1,7 @@
-const StudentsMessageDao = require("../../dao/StudentsMessageDao/StudentsMessageDao");
+const TeachersMessageDao = require("../../dao/TeachersMessageDao/TeachersMessageDao");
 const { getDb } = require("../../config/dbSwitcher");
 const fs = require("fs");
-const StudentsRoomService = require("../StudentsRoomServices/StudentsRoomServices");
-const StudentsRoomDao = require("../../dao/StudentsRoomDao/StudentsRoomDao");
+const TeachersRoomDao = require("../../dao/TeachersRoomDao/TeachersRoomDao");
 
 const {
   getIO,
@@ -69,8 +68,8 @@ async function saveFile(base64String, fileName, filePath) {
   }
 }
 
-const createStudentsMessage = async (
-  studentsMessageData,
+const createTeachersMessage = async (
+  teachersMessageData,
   documents,
   useNew
 ) => {
@@ -80,20 +79,28 @@ const createStudentsMessage = async (
     if (!saveResult) {
       throw new Error("Not all files were saved successfully.");
     }
-    const recipientSocket = getConnectedUser(studentsMessageData.receiverId, "student");
+    const recipientSocket = getConnectedUser(
+      teachersMessageData.receiverId,
+      "teacher"
+    );
 
-    const senderSocket = getConnectedUser(studentsMessageData.senderId, "student");
+    const senderSocket = getConnectedUser(
+      teachersMessageData.senderId,
+      "teacher"
+    );
 
     const receiverIsOnChat =
-      getActiveChatsPair(studentsMessageData.receiverId, "student") ===
-      studentsMessageData.senderId;
+      getActiveChatsPair(teachersMessageData.receiverId, "teacher") ===
+      teachersMessageData.senderId;
+
     let status = "envoyé";
+
     if (recipientSocket) {
       status = receiverIsOnChat ? "vu" : "livré";
     }
-    const creationResult = await StudentsMessageDao.createStudentsMessage(
+    const creationResult = await TeachersMessageDao.createTeachersMessage(
       {
-        ...studentsMessageData,
+        ...teachersMessageData,
         status: status,
       },
       db
@@ -101,14 +108,14 @@ const createStudentsMessage = async (
     let updatedRoom;
     if (receiverIsOnChat) {
       updatedRoom =
-        await StudentsRoomDao.updateAndRestartUnreadedMessagesNumber(
+        await TeachersRoomDao.updateAndRestartUnreadedMessagesNumber(
           creationResult.roomId,
           creationResult._id,
           db
         );
     } else {
       updatedRoom =
-        await StudentsRoomDao.updateAndIncrementUnreadedMessagesNumber(
+        await TeachersRoomDao.updateAndIncrementUnreadedMessagesNumber(
           creationResult.roomId,
           creationResult._id,
           db
@@ -117,34 +124,37 @@ const createStudentsMessage = async (
 
     const io = getIO();
     if (recipientSocket) {
-      io.to(studentsMessageData.roomId).emit("student_receive_message", creationResult);
+      io.to(teachersMessageData.roomId).emit(
+        "teacher_receive_message",
+        creationResult
+      );
       const createdAt = new Date();
       if (receiverIsOnChat) {
-        await StudentsMessageDao.updateSeenAtDate(
+        await TeachersMessageDao.updateSeenAtDate(
           creationResult._id,
           createdAt,
           db
         );
-        io.to(senderSocket).emit("student_message_seen", {
-          to: studentsMessageData.receiverId,
-          message: studentsMessageData.text,
+        io.to(senderSocket).emit("teacher_message_seen", {
+          to: teachersMessageData.receiverId,
+          message: teachersMessageData.text,
           seenAt: createdAt,
         });
       }
       if (!receiverIsOnChat) {
         io.to(recipientSocket).emit(
-          "student_tab_bar_message_notifier",
+          "teacher_tab_bar_message_notifier",
           creationResult,
           updatedRoom
         );
       }
     } else {
-      io.to(senderSocket).emit("student_receive_message", creationResult);
+      io.to(senderSocket).emit("teacher_receive_message", creationResult);
     }
 
     return creationResult;
   } catch (error) {
-    console.error("Error creating Model:", error);
+    console.error("Error creating Message:", error);
     throw error;
   }
 };
@@ -158,7 +168,7 @@ const loadLatestMessages = async (
 ) => {
   try {
     const db = await getDb(useNew);
-    const messages = await StudentsMessageDao.loadLatestMessages(
+    const messages = await TeachersMessageDao.loadLatestMessages(
       roomId,
       limit,
       beforeDate,
@@ -169,7 +179,7 @@ const loadLatestMessages = async (
     let totalMessages = [];
 
     if (messages.length > 0) {
-      totalMessages = await StudentsMessageDao.getAllMessagesByRoom(roomId, db);
+      totalMessages = await TeachersMessageDao.getAllMessagesByRoom(roomId, db);
       hasMore = totalMessages.length > limit;
 
       sortedMessages = messages.reverse();
@@ -178,7 +188,7 @@ const loadLatestMessages = async (
         sortedMessages[sortedMessages.length - 1].receiverId.toString() ===
         senderId
       ) {
-        await StudentsRoomDao.updateAndRestartUnreadedMessagesNumber(
+        await TeachersRoomDao.updateAndRestartUnreadedMessagesNumber(
           roomId,
           sortedMessages[sortedMessages.length - 1]._id.toString(),
           db
@@ -200,7 +210,7 @@ const loadLatestMessages = async (
 const getNotSeenMessages = async (userId, chattingWith, useNew) => {
   try {
     const db = await getDb(useNew);
-    const messages = await StudentsMessageDao.getNotSeenMessages(
+    const messages = await TeachersMessageDao.getNotSeenMessages(
       userId,
       chattingWith,
       db
@@ -217,7 +227,7 @@ const updateNotSeenMessagesToSeen = async (userId, chattingWith, useNew) => {
   try {
     const db = await getDb(useNew);
     const updatedMessages =
-      await StudentsMessageDao.updateNotSeenMessagesToSeen(
+      await TeachersMessageDao.updateNotSeenMessagesToSeen(
         userId,
         chattingWith,
         db
@@ -234,7 +244,7 @@ const loadMessagesWithPagination = async (roomId, page, limit, useNew) => {
     const db = await getDb(useNew);
 
     // Get all messages sorted newest first
-    const allMessages = await StudentsMessageDao.getAllMessagesByRoom(
+    const allMessages = await TeachersMessageDao.getAllMessagesByRoom(
       roomId,
       db
     );
@@ -268,7 +278,7 @@ const loadMessagesWithPagination = async (roomId, page, limit, useNew) => {
 };
 
 module.exports = {
-  createStudentsMessage,
+  createTeachersMessage,
   loadLatestMessages,
   loadMessagesWithPagination,
   getNotSeenMessages,

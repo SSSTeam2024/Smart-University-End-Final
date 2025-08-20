@@ -95,7 +95,7 @@ const deleteEtudiant = async (id, dbName) => {
 
 const updateEtudiant = async (id, updateData, dbName) => {
   const etudiantModel = await getEtudiantModel(dbName);
-  return await etudiantModel.findByIdAndUpdate(id, updateData, { new: true });
+  return await etudiantModel.findByIdAndUpdate(id, updateData, { new: true }).populate("type_inscription");
 };
 
 const updateGroupeClasse = async (studentIds, groupeClasseId, dbName) => {
